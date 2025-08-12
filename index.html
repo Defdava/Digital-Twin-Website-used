@@ -213,7 +213,7 @@
             font-size: 16px;
         }
 
-        .history-list {
+        .history-list, .customer-list {
             max-height: 100px;
             overflow-y: auto;
             border: 1px solid #ccc;
@@ -541,16 +541,7 @@
             </div>
             <div class="customers">
                 <h2>Customers Message</h2>
-                <div class="customer-item">
-                    <span>MH 27 CA 2305</span>
-                    <span>Powan Kumar Jain</span>
-                    <span class="status in">In</span>
-                </div>
-                <div class="customer-item">
-                    <span>MH 41 WD 7689</span>
-                    <span>Nikunj Kelkar</span>
-                    <span class="status out">Out</span>
-                </div>
+                <div class="customer-list" id="customerList"></div>
             </div>
             <div class="park-condition">
                 <h2>Park Condition (3D)</h2>
@@ -656,6 +647,7 @@
         firebase.initializeApp(firebaseConfig);
         const dbRef = firebase.database().ref("slot_parking");
         const slotHistoryRef = firebase.database().ref("slot_history");
+        const slotMessageUserRef = firebase.database().ref("slot_message_user");
 
         // 3D Visualization Variables
         let scene, camera, renderer, cars = [], allSlots = [], animationFrame;
@@ -1095,6 +1087,35 @@
                             slotHistoryList.appendChild(div);
                         });
                     });
+            });
+
+            // Customer Message Update from slot_message_user
+            slotMessageUserRef.on("value", (snapshot) => {
+                console.log("Firebase slot_message_user data:", snapshot.val());
+                const customerData = snapshot.val();
+                const customerList = document.getElementById("customerList");
+                customerList.innerHTML = "";
+
+                if (!customerData) {
+                    console.warn("No customer data received from Firebase");
+                    showError("No customer messages available.");
+                    return;
+                }
+
+                Object.entries(customerData).forEach(([key, data]) => {
+                    const div = document.createElement("div");
+                    div.className = "customer-item";
+                    const status = data.status || "unknown";
+                    div.innerHTML = `
+                        <span>${data.vehicleNumber || "Unknown"}</span>
+                        <span>${data.customerName || "Unknown"}</span>
+                        <span class="status ${status === 'in' ? 'in' : status === 'out' ? 'out' : ''}">${status}</span>
+                    `;
+                    customerList.appendChild(div);
+                });
+            }, (error) => {
+                console.error("❌ Firebase slot_message_user read error:", error);
+                showError("Failed to fetch customer messages. Please try again.");
             });
 
             // 3D Visualization Toggle
