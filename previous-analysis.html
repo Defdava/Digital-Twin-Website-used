@@ -138,18 +138,21 @@
 
       // Realtime Customers Message
       const customersMessageList = document.getElementById("customersMessageList");
-      function updateCustomersMessage(data) {
+        function updateCustomersMessage(data) {
         customersMessageList.innerHTML = '';
         for (const slot in data) {
-          const { idWorker, lastAction, plate, timestamp, user } = data[slot];
-          customersMessageList.innerHTML += `
+            const { idWorker, lastAction, plate, timestamp, user, catatan, kontak } = data[slot];
+            customersMessageList.innerHTML += `
             <div class="customer-item">
-              <span><b>${slot.replace('_', ' ').toUpperCase()}</b> - ${lastAction}</span>
-              <span>${plate} | ${timestamp} | by ${user}</span>
-            </div>
-          `;
-        }
-      }
+                <span><b>${slot.replace('_', ' ').toUpperCase()}</b> - ${lastAction}</span>
+                <span>${plate} | ${timestamp} | by ${user}</span><br>
+                <span><i>Catatan:</i> ${catatan || '-'}</span><br>
+                <span><i>Kontak:</i> ${kontak || '-'}</span>
+                </div>
+    `;
+  }
+}
+
       firebase.database().ref("slot_message_user").on("value", (snapshot) => {
         const data = snapshot.val();
         if (data) updateCustomersMessage(data);
