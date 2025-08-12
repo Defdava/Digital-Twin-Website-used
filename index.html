@@ -161,7 +161,7 @@
             color: black;
         }
 
-        .overview, .history, .customers, .park-condition, .park-condition-2d {
+        .overview, .history, .park-condition, .park-condition-2d {
             background-color: lightgrey;
             padding: 10px;
             border-radius: 8px;
@@ -207,13 +207,13 @@
             color: #007bff;
         }
 
-        .history h2, .customers h2, .park-condition h2, .park-condition-2d h2 {
+        .history h2, .park-condition h2, .park-condition-2d h2 {
             margin-top: 0;
             color: #007bff;
             font-size: 16px;
         }
 
-        .history-list, .customer-list {
+        .history-list {
             max-height: 100px;
             overflow-y: auto;
             border: 1px solid #ccc;
@@ -221,9 +221,9 @@
             border-radius: 5px;
         }
 
-        .history-item, .customer-item {
+        .history-item {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 0.5fr; /* Four columns for vehicle, name, timestamp, status */
+            grid-template-columns: 1fr 1fr 0.5fr; /* Adjusted to three columns: slot, timestamp, status */
             padding: 6px 0;
             font-size: 10px;
             align-items: center;
@@ -540,10 +540,6 @@
                 <h2>Slot History</h2>
                 <div class="history-list" id="slotHistoryList"></div>
             </div>
-            <div class="customers">
-                <h2>Customers Message</h2>
-                <div class="customer-list" id="customerList"></div>
-            </div>
             <div class="park-condition">
                 <h2>Park Condition (3D)</h2>
                 <div id="cameraContainer" style="width: 100%; position: relative; min-height: 300px;">
@@ -648,7 +644,6 @@
         firebase.initializeApp(firebaseConfig);
         const dbRef = firebase.database().ref("slot_parking");
         const slotHistoryRef = firebase.database().ref("slot_history");
-        const slotMessageUserRef = firebase.database().ref("slot_message_user");
 
         // 3D Visualization Variables
         let scene, camera, renderer, cars = [], allSlots = [], animationFrame;
@@ -1088,65 +1083,6 @@
                             slotHistoryList.appendChild(div);
                         });
                     });
-            });
-
-            // Customer Message Update from slot_message_user
-            slotMessageUserRef.on("value", (snapshot) => {
-                console.log("Firebase slot_message_user data:", snapshot.val());
-                const customerData = snapshot.val();
-                const customerList = document.getElementById("customerList");
-                customerList.innerHTML = ""; // Clear existing content
-
-                if (!customerData) {
-                    console.warn("No customer data received from Firebase");
-                    showError("No customer messages available.");
-                    const div = document.createElement("div");
-                    div.className = "customer-item";
-                    div.innerHTML = `<span>Tidak ada data</span><span></span><span></span><span></span>`;
-                    customerList.appendChild(div);
-                    return;
-                }
-
-                Object.entries(customerData)
-                    .sort((a, b) => {
-                        // Sort by timestamp if available, otherwise by key
-                        const aTime = a[1].timestamp ? new Date(a[1].timestamp).getTime() : parseInt(a[0].split("_")[1] || 0);
-                        const bTime = b[1].timestamp ? new Date(b[1].timestamp).getTime() : parseInt(b[0].split("_")[1] || 0);
-                        return bTime - aTime; // Newest first
-                    })
-                    .forEach(([key, data]) => {
-                        const div = document.createElement("div");
-                        div.className = "customer-item";
-                        const status = data.status || "unknown";
-                        const timestamp = data.timestamp 
-                            ? new Date(data.timestamp).toLocaleString('id-ID', { 
-                                timeZone: 'Asia/Jakarta',
-                                year: 'numeric',
-                                month: '2-digit',
-                                day: '2-digit',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                second: '2-digit',
-                                hour12: false
-                            }) + ' WIB'
-                            : "Waktu tidak diketahui";
-                        div.innerHTML = `
-                            <span>${data.vehicleNumber || "Tidak diketahui"}</span>
-                            <span>${data.customerName || "Tidak diketahui"}</span>
-                            <span>${timestamp}</span>
-                            <span class="status ${status === 'in' ? 'in' : status === 'out' ? 'out' : ''}">${status}</span>
-                        `;
-                        customerList.appendChild(div);
-                    });
-            }, (error) => {
-                console.error("❌ Firebase slot_message_user read error:", error);
-                showError("Gagal mengambil data pelanggan. Silakan coba lagi.");
-                const customerList = document.getElementById("customerList");
-                customerList.innerHTML = "";
-                const div = document.createElement("div");
-                div.className = "customer-item";
-                div.innerHTML = `<span>Error memuat data</span><span></span><span></span><span></span>`;
-                customerList.appendChild(div);
             });
 
             // 3D Visualization Toggle
