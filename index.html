@@ -1102,7 +1102,7 @@
                     showError("No customer messages available.");
                     const div = document.createElement("div");
                     div.className = "customer-item";
-                    div.innerHTML = `<span>No data available</span><span></span><span></span><span></span>`;
+                    div.innerHTML = `<span>Tidak ada data</span><span></span><span></span><span></span>`;
                     customerList.appendChild(div);
                     return;
                 }
@@ -1119,7 +1119,7 @@
                         div.className = "customer-item";
                         const status = data.status || "unknown";
                         const timestamp = data.timestamp 
-                            ? new Date(data.timestamp).toLocaleString('en-US', { 
+                            ? new Date(data.timestamp).toLocaleString('id-ID', { 
                                 timeZone: 'Asia/Jakarta',
                                 year: 'numeric',
                                 month: '2-digit',
@@ -1128,11 +1128,11 @@
                                 minute: '2-digit',
                                 second: '2-digit',
                                 hour12: false
-                            }) 
-                            : "Unknown time";
+                            }) + ' WIB'
+                            : "Waktu tidak diketahui";
                         div.innerHTML = `
-                            <span>${data.vehicleNumber || "Unknown"}</span>
-                            <span>${data.customerName || "Unknown"}</span>
+                            <span>${data.vehicleNumber || "Tidak diketahui"}</span>
+                            <span>${data.customerName || "Tidak diketahui"}</span>
                             <span>${timestamp}</span>
                             <span class="status ${status === 'in' ? 'in' : status === 'out' ? 'out' : ''}">${status}</span>
                         `;
@@ -1140,12 +1140,12 @@
                     });
             }, (error) => {
                 console.error("❌ Firebase slot_message_user read error:", error);
-                showError("Failed to fetch customer messages. Please try again.");
+                showError("Gagal mengambil data pelanggan. Silakan coba lagi.");
                 const customerList = document.getElementById("customerList");
                 customerList.innerHTML = "";
                 const div = document.createElement("div");
                 div.className = "customer-item";
-                div.innerHTML = `<span>Error loading data</span><span></span><span></span><span></span>`;
+                div.innerHTML = `<span>Error memuat data</span><span></span><span></span><span></span>`;
                 customerList.appendChild(div);
             });
 
