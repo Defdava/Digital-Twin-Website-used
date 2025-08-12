@@ -9,7 +9,6 @@
   <title>BRIN Previous Analysis</title>
 
   <style>
-    /* CSS tetap sama seperti file asli kamu */
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; color: darkslategrey; overflow-x: hidden; }
     body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: none; opacity: 0.2; z-index: -1; }
     video#bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; opacity: 0.4; }
@@ -32,7 +31,8 @@
     .overview h1 { margin: 0 0 10px; color: #007bff; font-size: 18px; }
     .history h2, .customers h2 { margin-top: 0; color: #007bff; font-size: 16px; }
     .history-list { max-height: 100px; overflow-y: auto; border: 1px solid #ccc; padding: 8px; border-radius: 5px; background: white; }
-    .history-item, .customer-item { display: flex; justify-content: space-between; padding: 6px 0; font-size: 10px; align-items: center; }
+    .history-item, .customer-item { display: flex; flex-direction: column; padding: 6px 0; font-size: 10px; border-bottom: 1px solid #ccc; }
+    .customer-item span { margin: 1px 0; }
     .status.in { color: red; font-weight: bold; }
     .status.out { color: green; font-weight: bold; }
   </style>
@@ -138,21 +138,20 @@
 
       // Realtime Customers Message
       const customersMessageList = document.getElementById("customersMessageList");
-        function updateCustomersMessage(data) {
+      function updateCustomersMessage(data) {
         customersMessageList.innerHTML = '';
         for (const slot in data) {
-            const { idWorker, lastAction, plate, timestamp, user, catatan, kontak } = data[slot];
-            customersMessageList.innerHTML += `
+          const { idWorker, lastAction, plate, timestamp, user, catatan, kontak } = data[slot];
+          customersMessageList.innerHTML += `
             <div class="customer-item">
-                <span><b>${slot.replace('_', ' ').toUpperCase()}</b> - ${lastAction}</span>
-                <span>${plate} | ${timestamp} | by ${user}</span><br>
-                <span><i>Catatan:</i> ${catatan || '-'}</span><br>
-                <span><i>Kontak:</i> ${kontak || '-'}</span>
-                </div>
-    `;
-  }
-}
-
+              <span><b>${slot.replace('_', ' ').toUpperCase()}</b> - ${lastAction}</span>
+              <span>${plate} | ${timestamp} | by ${user}</span>
+              <span><i>Catatan:</i> ${catatan || '-'}</span>
+              <span><i>Kontak:</i> ${kontak || '-'}</span>
+            </div>
+          `;
+        }
+      }
       firebase.database().ref("slot_message_user").on("value", (snapshot) => {
         const data = snapshot.val();
         if (data) updateCustomersMessage(data);
