@@ -1,145 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Overview - Digital Twin Parking</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-        }
-        .container {
-            display: flex;
-            padding: 20px;
-        }
-        .section {
-            flex: 1;
-            margin: 0 10px;
-            background-color: #fff;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .section h2 {
-            margin-top: 0;
-        }
-        #customersMessageList .customer-item {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-        #customersMessageList .customer-item:last-child {
-            border-bottom: none;
-        }
-        #parkCondition {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-        .slot {
-            width: 60px;
-            height: 100px;
-            border-radius: 5px;
-            background-color: #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-        .occupied {
-            background-color: #ff4d4d;
-            color: white;
-        }
-        .free {
-            background-color: #4CAF50;
-            color: white;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>BRIN Previous Analysis</title>
+
+  <style>
+    /* CSS tetap sama seperti file asli kamu */
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; color: darkslategrey; overflow-x: hidden; }
+    body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: none; opacity: 0.2; z-index: -1; }
+    video#bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; opacity: 0.4; }
+    header { background-image: linear-gradient(to right, lightseagreen, palevioletred); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 100%; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
+    .logo { display: flex; align-items: center; cursor: pointer; }
+    .logo img { height: 40px; vertical-align: middle; }
+    .logo span { margin-left: 10px; font-size: 16px; font-weight: bold; }
+    .header-right { display: flex; align-items: center; }
+    .header-right span { margin-right: 20px; font-size: 14px; }
+    .main-content { margin-left: 0; padding: 80px 20px 20px; min-height: 100vh; }
+    .toolbar { position: fixed; top: 60px; left: -400px; width: 200px; height: 100%; background-image: linear-gradient(to bottom, lightseagreen, palevioletred); padding: 15px; box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); transition: left 0.3s ease-in-out; z-index: 999; overflow-y: auto; }
+    .toolbar.active { left: 0; }
+    .toolbar .feature-box { background-color: lightgrey; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 13px; }
+    .toolbar .feature-box h3 { margin: 0 0 8px; font-size: 14px; color: black; }
+    .toolbar .feature-box button { width: 100%; padding: 6px; background-color: darkgrey; color: black; border: none; border-radius: 5px; cursor: pointer; font-size: 11px; margin-bottom: 4px; }
+    .toolbar .feature-box button:hover { background-color: darkslategrey; color: white; }
+    .toolbar .user-info { text-align: center; }
+    .toolbar .user-info img { width: 40px; height: 40px; border-radius: 50%; margin-bottom: 8px; }
+    .overview, .history, .customers { background-color: lightgrey; padding: 10px; border-radius: 8px; border: 2px solid #dc3545; min-height: 150px; margin-bottom: 15px; }
+    .overview h1 { margin: 0 0 10px; color: #007bff; font-size: 18px; }
+    .history h2, .customers h2 { margin-top: 0; color: #007bff; font-size: 16px; }
+    .history-list { max-height: 100px; overflow-y: auto; border: 1px solid #ccc; padding: 8px; border-radius: 5px; background: white; }
+    .history-item, .customer-item { display: flex; justify-content: space-between; padding: 6px 0; font-size: 10px; align-items: center; }
+    .status.in { color: red; font-weight: bold; }
+    .status.out { color: green; font-weight: bold; }
+  </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAef3SJwvVVTunr6CWki79aenfpXlgYc0s",
+      authDomain: "digitaltwinparkingbrin.firebaseapp.com",
+      databaseURL: "https://digitaltwinparkingbrin-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "digitaltwinparkingbrin",
+      storageBucket: "digitaltwinparkingbrin.firebasestorage.app",
+      messagingSenderId: "608462498913",
+      appId: "1:608462498913:web:73695d8c91f923e2db8e20",
+      measurementId: "G-F1TRY65RTG"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
 </head>
 <body>
+  <video id="bg-video" autoplay muted loop>
+    <source src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/wave.mp4?raw=true" type="video/mp4">
+  </video>
 
-<div class="container">
-    <!-- Customers Message -->
-    <div class="section">
+  <header>
+    <div class="logo" id="toggleToolbar">
+      <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true" alt="BRIN Logo">
+      <span>BRIN</span><span>Badan Riset Nasional</span>
+    </div>
+    <div class="header-right"><span>Parking Management System</span></div>
+  </header>
+
+  <aside class="toolbar" id="toolbar">
+    <div class="feature-box"><h3>Parking Management System</h3></div>
+    <div class="feature-box">
+      <button onclick="window.location.href='index.html'">Live Overview</button>
+      <button onclick="window.location.href='previous-analysis.html'">Previous Analysis</button>
+    </div>
+    <div class="feature-box user-info" id="userInfo">
+      <h3>User</h3>
+      <img src="../assets/user.JPG" alt="User">
+      <span>Welcome Back</span>
+      <span id="userName">Defdava Haryadi</span>
+      <button class="logout">Log Out</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="overview">
+      <h1>Previous Analysis</h1>
+      <div class="history">
+        <h2>Status Slot Parkir Realtime</h2>
+        <div id="slotStatusList" class="history-list"></div>
+      </div>
+      <div class="customers">
         <h2>Customers Message</h2>
-        <div id="customersMessageList"></div>
+        <div id="customersMessageList" class="history-list"></div>
+      </div>
     </div>
+  </main>
 
-    <!-- Park Condition -->
-    <div class="section">
-        <h2>Park Condition</h2>
-        <div id="parkCondition"></div>
-    </div>
-</div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) {
+        alert('Silakan login terlebih dahulu!');
+        window.location.replace('login.html');
+        return;
+      }
+      document.getElementById('userName').textContent = currentUser.username;
 
-<!-- Firebase App -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js"></script>
+      document.querySelector('.logout').addEventListener('click', () => {
+        localStorage.removeItem('currentUser');
+        alert('Berhasil logout!');
+        window.location.replace('login.html');
+      });
 
-<script>
-    // Konfigurasi Firebase
-    const firebaseConfig = {
-        apiKey: "API_KEY",
-        authDomain: "PROJECT_ID.firebaseapp.com",
-        databaseURL: "https://PROJECT_ID.firebaseio.com",
-        projectId: "PROJECT_ID",
-        storageBucket: "PROJECT_ID.appspot.com",
-        messagingSenderId: "SENDER_ID",
-        appId: "APP_ID"
-    };
+      document.getElementById('toggleToolbar').addEventListener('click', () => {
+        document.getElementById('toolbar').classList.toggle('active');
+      });
 
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+      // Realtime Slot Status
+      const slotStatusList = document.getElementById("slotStatusList");
+      function updateSlotStatus(data) {
+        slotStatusList.innerHTML = '';
+        for (const slot in data) {
+          const status = data[slot] ? 'Terisi' : 'Kosong';
+          const statusClass = data[slot] ? 'status in' : 'status out';
+          slotStatusList.innerHTML += `
+            <div class="history-item">
+              <span>${slot.replace('_', ' ').toUpperCase()}</span>
+              <span class="${statusClass}">${status}</span>
+            </div>
+          `;
+        }
+      }
+      firebase.database().ref("slot_parking").on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data) updateSlotStatus(data);
+      });
 
-    const customersMessageList = document.getElementById('customersMessageList');
-    const parkCondition = document.getElementById('parkCondition');
-
-    // Update Customers Message
-    function updateCustomersMessage(data) {
+      // Realtime Customers Message
+      const customersMessageList = document.getElementById("customersMessageList");
+      function updateCustomersMessage(data) {
         customersMessageList.innerHTML = '';
         for (const slot in data) {
-            const { lastAction, plate, timestamp, user, note, contact } = data[slot];
-            customersMessageList.innerHTML += `
-                <div class="customer-item">
-                    <div><b>${slot.replace('_', ' ').toUpperCase()}</b> - ${lastAction || '-'}</div>
-                    <div>Plat: ${plate || '-'}</div>
-                    <div>Waktu: ${timestamp || '-'}</div>
-                    <div>User: ${user || '-'}</div>
-                    <div>Catatan: ${note || '-'}</div>
-                    <div>Kontak: ${contact || '-'}</div>
-                </div>
-            `;
+          const { idWorker, lastAction, plate, timestamp, user } = data[slot];
+          customersMessageList.innerHTML += `
+            <div class="customer-item">
+              <span><b>${slot.replace('_', ' ').toUpperCase()}</b> - ${lastAction}</span>
+              <span>${plate} | ${timestamp} | by ${user}</span>
+            </div>
+          `;
         }
-    }
-
-    // Update Park Condition
-    function updateParkCondition(data) {
-        parkCondition.innerHTML = '';
-        let slotNumber = 1;
-        for (const slot in data) {
-            const isOccupied = data[slot];
-            const slotDiv = document.createElement('div');
-            slotDiv.className = `slot ${isOccupied ? 'occupied' : 'free'}`;
-            slotDiv.textContent = `Slot ${slotNumber}`;
-            parkCondition.appendChild(slotDiv);
-            slotNumber++;
-        }
-    }
-
-    // Listener Firebase
-    db.ref('slot_message_user').on('value', snapshot => {
-        if (snapshot.exists()) {
-            updateCustomersMessage(snapshot.val());
-        }
+      }
+      firebase.database().ref("slot_message_user").on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data) updateCustomersMessage(data);
+      });
     });
-
-    db.ref('slot_parking').on('value', snapshot => {
-        if (snapshot.exists()) {
-            updateParkCondition(snapshot.val());
-        }
-    });
-</script>
-
+  </script>
 </body>
 </html>
