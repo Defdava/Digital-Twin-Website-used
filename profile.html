@@ -103,7 +103,6 @@
             border-radius: 8px;
             padding: 12px;
             margin-bottom: 16px;
-            color: white;
             font-size: 13px;
         }
 
@@ -128,6 +127,7 @@
 
         .toolbar .feature-box button:hover {
             background-color: darkslategrey;
+            color: white;
         }
 
         .toolbar .user-info {
@@ -243,25 +243,21 @@
         </div>
     </header>
     <aside class="toolbar" id="toolbar">
-        <div class="feature-box">
-            <h3>Parking Management System</h3>
-        </div>
-        <div class="feature-box">
-            <button class="live-overview" onclick="window.location.href='/index.html'">Live Overview</button>
-            <button class="prev-analysis" onclick="window.location.href='/previous-analysis.html'">Previous Analysis</button>
-        </div>
         <div class="feature-box user-info" id="userInfo">
             <h3>User</h3>
             <img id="profilePic" src="/assets/user.JPG" alt="User">
             <span>Welcome Back</span>
             <span id="userName"></span>
+            <button class="profile" onclick="window.location.href='/profile.html'">Profile</button>
             <button class="logout">Log Out</button>
         </div>
         <div class="feature-box">
+            <h3>Parking Management System</h3>
+            <button class="live-overview" onclick="window.location.href='/index.html'">Live Overview</button>
+            <button class="prev-analysis" onclick="window.location.href='/previous-analysis.html'">Previous Analysis</button>
             <button class="export-data">Export Data</button>
             <button class="3d-viewer-vr">3D Viewer VR</button>
             <button class="helpdesk">Helpdesk</button>
-            <button class="profile" onclick="window.location.href='/profile.html'">Profile</button>
             <button class="parking-analysis">Parking Analysis</button>
         </div>
     </aside>
