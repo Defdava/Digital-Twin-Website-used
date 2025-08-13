@@ -242,18 +242,17 @@
 
         .parking-lot {
             display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            gap: 10px;
+            flex-direction: column;
+            gap: 5px;
             padding: 5px;
             justify-content: center;
         }
 
         .column {
             display: flex;
-            flex-direction: row;
+            flex-direction: row-reverse;
             gap: 5px;
-            align-items: center;
+            justify-content: center;
         }
 
         .slot {
@@ -542,7 +541,7 @@
             <div class="park-condition">
                 <h2>Park Condition (3D)</h2>
                 <div id="cameraContainer" style="width: 100%; position: relative; min-height: 300px;">
-                    <div id="threeContainer"></div>
+                    <div id="twoContainer"></div>
                     <div id="threeError">3D visualization failed to load.</div>
                     <button id="toggleCameraBtn">Click to Expand</button>
                     <div id="controls">
@@ -559,28 +558,28 @@
                 <h2>Park Condition (2D)</h2>
                 <div class="parking-lot">
                     <div class="column">
-                        <div class="slot" data-slot="12"><span>12</span><div class="car"></div></div>
-                        <div class="slot" data-slot="13"><span>13</span><div class="car"></div></div>
-                        <div class="slot" data-slot="14"><span>14</span><div class="car"></div></div>
-                        <div class="slot" data-slot="15"><span>15</span><div class="car"></div></div>
-                        <div class="slot" data-slot="16"><span>16</span><div class="car"></div></div>
-                        <div class="slot" data-slot="17"><span>17</span><div class="car"></div></div>
-                        <div class="slot" data-slot="18"><span>18</span><div class="car"></div></div>
-                        <div class="slot" data-slot="19"><span>19</span><div class="car"></div></div>
                         <div class="slot" data-slot="20"><span>20</span><div class="car"></div></div>
+                        <div class="slot" data-slot="19"><span>19</span><div class="car"></div></div>
+                        <div class="slot" data-slot="18"><span>18</span><div class="car"></div></div>
+                        <div class="slot" data-slot="17"><span>17</span><div class="car"></div></div>
+                        <div class="slot" data-slot="16"><span>16</span><div class="car"></div></div>
+                        <div class="slot" data-slot="15"><span>15</span><div class="car"></div></div>
+                        <div class="slot" data-slot="14"><span>14</span><div class="car"></div></div>
+                        <div class="slot" data-slot="13"><span>13</span><div class="car"></div></div>
+                        <div class="slot" data-slot="12"><span>12</span><div class="car"></div></div>
                     </div>
                     <div class="column">
-                        <div class="slot" data-slot="1"><span>1</span><div class="car"></div></div>
-                        <div class="slot" data-slot="2"><span>2</span><div class="car"></div></div>
-                        <div class="slot" data-slot="3"><span>3</span><div class="car"></div></div>
-                        <div class="slot" data-slot="4"><span>4</span><div class="car"></div></div>
-                        <div class="slot" data-slot="5"><span>5</span><div class="car"></div></div>
-                        <div class="slot" data-slot="6"><span>6</span><div class="car"></div></div>
-                        <div class="slot" data-slot="7"><span>7</span><div class="car"></div></div>
-                        <div class="slot" data-slot="8"><span>8</span><div class="car"></div></div>
-                        <div class="slot" data-slot="9"><span>9</span><div class="car"></div></div>
-                        <div class="slot" data-slot="10"><span>10</span><div class="car"></div></div>
                         <div class="slot" data-slot="11"><span>11</span><div class="car"></div></div>
+                        <div class="slot" data-slot="10"><span>10</span><div class="car"></div></div>
+                        <div class="slot" data-slot="9"><span>9</span><div class="car"></div></div>
+                        <div class="slot" data-slot="8"><span>8</span><div class="car"></div></div>
+                        <div class="slot" data-slot="7"><span>7</span><div class="car"></div></div>
+                        <div class="slot" data-slot="6"><span>6</span><div class="car"></div></div>
+                        <div class="slot" data-slot="5"><span>5</span><div class="car"></div></div>
+                        <div class="slot" data-slot="4"><span>4</span><div class="car"></div></div>
+                        <div class="slot" data-slot="3"><span>3</span><div class="car"></div></div>
+                        <div class="slot" data-slot="2"><span>2</span><div class="car"></div></div>
+                        <div class="slot" data-slot="1"><span>1</span><div class="car"></div></div>
                     </div>
                 </div>
             </div>
@@ -662,7 +661,7 @@
         // Initialize Three.js Scene
         function initScene() {
             console.log("Initializing Three.js scene...");
-            const threeContainer = document.getElementById('threeContainer');
+            const threeContainer = document.getElementById('twoContainer');
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x87CEEB);
             
@@ -890,7 +889,7 @@
         function initThree() {
             console.log("Initializing 3D visualization...");
             try {
-                const threeContainer = document.getElementById('threeContainer');
+                const threeContainer = document.getElementById('twoContainer');
                 console.log("threeContainer dimensions:", threeContainer.clientWidth, threeContainer.clientHeight);
                 initScene();
                 createParkingSlots();
@@ -1086,7 +1085,7 @@
 
             // 3D Visualization Toggle
             const toggleCameraBtn = document.getElementById('toggleCameraBtn');
-            const threeContainer = document.getElementById('threeContainer');
+            const threeContainer = document.getElementById('twoContainer');
             let isExpanded = false;
 
             toggleCameraBtn.addEventListener('click', () => {
@@ -1101,7 +1100,7 @@
                         initThree();
                     } else {
                         // Reinitialize renderer and restore scene
-                        const threeContainer = document.getElementById('threeContainer');
+                        const threeContainer = document.getElementById('twoContainer');
                         renderer = new THREE.WebGLRenderer({ antialias: true });
                         renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
                         renderer.shadowMap.enabled = true;
@@ -1119,7 +1118,7 @@
             // Handle Window Resize
             window.addEventListener('resize', () => {
                 if (scene && renderer) {
-                    const threeContainer = document.getElementById('threeContainer');
+                    const threeContainer = document.getElementById('twoContainer');
                     camera.aspect = threeContainer.clientWidth / (threeContainer.clientHeight || 300);
                     camera.updateProjectionMatrix();
                     renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
