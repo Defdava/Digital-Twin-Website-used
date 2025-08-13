@@ -250,7 +250,7 @@
 
         .column {
             display: flex;
-            flex-direction: row-reverse;
+            flex-direction: row;
             gap: 5px;
             justify-content: center;
         }
@@ -260,11 +260,11 @@
             padding: 5px;
             text-align: center;
             background-color: #e9ecef;
-            font-size: 10px;
+            font-size: 12px;
             border-radius: 5px;
             position: relative;
-            width: 25px;
-            height: 20px;
+            width: 35px;
+            height: 25px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -277,13 +277,13 @@
         }
 
         .slot span {
-            font-size: 10px;
+            font-size: 12px;
             font-weight: bold;
         }
 
         .slot .car {
-            width: 20px;
-            height: 10px;
+            width: 28px;
+            height: 14px;
             background-color: red;
             border-radius: 3px;
             position: absolute;
@@ -541,7 +541,7 @@
             <div class="park-condition">
                 <h2>Park Condition (3D)</h2>
                 <div id="cameraContainer" style="width: 100%; position: relative; min-height: 300px;">
-                    <div id="twoContainer"></div>
+                    <div id="threeContainer"></div>
                     <div id="threeError">3D visualization failed to load.</div>
                     <button id="toggleCameraBtn">Click to Expand</button>
                     <div id="controls">
@@ -661,7 +661,7 @@
         // Initialize Three.js Scene
         function initScene() {
             console.log("Initializing Three.js scene...");
-            const threeContainer = document.getElementById('twoContainer');
+            const threeContainer = document.getElementById('threeContainer');
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x87CEEB);
             
@@ -889,7 +889,7 @@
         function initThree() {
             console.log("Initializing 3D visualization...");
             try {
-                const threeContainer = document.getElementById('twoContainer');
+                const threeContainer = document.getElementById('threeContainer');
                 console.log("threeContainer dimensions:", threeContainer.clientWidth, threeContainer.clientHeight);
                 initScene();
                 createParkingSlots();
@@ -1085,7 +1085,7 @@
 
             // 3D Visualization Toggle
             const toggleCameraBtn = document.getElementById('toggleCameraBtn');
-            const threeContainer = document.getElementById('twoContainer');
+            const threeContainer = document.getElementById('threeContainer');
             let isExpanded = false;
 
             toggleCameraBtn.addEventListener('click', () => {
@@ -1100,7 +1100,7 @@
                         initThree();
                     } else {
                         // Reinitialize renderer and restore scene
-                        const threeContainer = document.getElementById('twoContainer');
+                        const threeContainer = document.getElementById('threeContainer');
                         renderer = new THREE.WebGLRenderer({ antialias: true });
                         renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
                         renderer.shadowMap.enabled = true;
@@ -1118,7 +1118,7 @@
             // Handle Window Resize
             window.addEventListener('resize', () => {
                 if (scene && renderer) {
-                    const threeContainer = document.getElementById('twoContainer');
+                    const threeContainer = document.getElementById('threeContainer');
                     camera.aspect = threeContainer.clientWidth / (threeContainer.clientHeight || 300);
                     camera.updateProjectionMatrix();
                     renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
