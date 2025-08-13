@@ -250,8 +250,16 @@
 
         .column {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             gap: 10px;
+            align-items: center;
+        }
+
+        .row {
+            display: flex;
+            flex-direction: row-reverse;
+            gap: 10px;
+            justify-content: center;
         }
 
         .slot {
@@ -557,28 +565,28 @@
                 <h2>Park Condition (2D)</h2>
                 <div class="parking-lot">
                     <div class="column">
-                        <div class="slot" data-slot="20"><span>20</span><div class="car"></div></div>
-                        <div class="slot" data-slot="19"><span>19</span><div class="car"></div></div>
-                        <div class="slot" data-slot="18"><span>18</span><div class="car"></div></div>
-                        <div class="slot" data-slot="17"><span>17</span><div class="car"></div></div>
-                        <div class="slot" data-slot="16"><span>16</span><div class="car"></div></div>
-                        <div class="slot" data-slot="15"><span>15</span><div class="car"></div></div>
-                        <div class="slot" data-slot="14"><span>14</span><div class="car"></div></div>
-                        <div class="slot" data-slot="13"><span>13</span><div class="car"></div></div>
-                        <div class="slot" data-slot="12"><span>12</span><div class="car"></div></div>
+                        <div class="row"><div class="slot" data-slot="20"><span>20</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="19"><span>19</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="18"><span>18</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="17"><span>17</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="16"><span>16</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="15"><span>15</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="14"><span>14</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="13"><span>13</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="12"><span>12</span><div class="car"></div></div></div>
                     </div>
                     <div class="column">
-                        <div class="slot" data-slot="11"><span>11</span><div class="car"></div></div>
-                        <div class="slot" data-slot="10"><span>10</span><div class="car"></div></div>
-                        <div class="slot" data-slot="9"><span>9</span><div class="car"></div></div>
-                        <div class="slot" data-slot="8"><span>8</span><div class="car"></div></div>
-                        <div class="slot" data-slot="7"><span>7</span><div class="car"></div></div>
-                        <div class="slot" data-slot="6"><span>6</span><div class="car"></div></div>
-                        <div class="slot" data-slot="5"><span>5</span><div class="car"></div></div>
-                        <div class="slot" data-slot="4"><span>4</span><div class="car"></div></div>
-                        <div class="slot" data-slot="3"><span>3</span><div class="car"></div></div>
-                        <div class="slot" data-slot="2"><span>2</span><div class="car"></div></div>
-                        <div class="slot" data-slot="1"><span>1</span><div class="car"></div></div>
+                        <div class="row"><div class="slot" data-slot="11"><span>11</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="10"><span>10</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="9"><span>9</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="8"><span>8</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="7"><span>7</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="6"><span>6</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="5"><span>5</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="4"><span>4</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="3"><span>3</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="2"><span>2</span><div class="car"></div></div></div>
+                        <div class="row"><div class="slot" data-slot="1"><span>1</span><div class="car"></div></div></div>
                     </div>
                 </div>
             </div>
