@@ -9,31 +9,204 @@
   <title>BRIN Previous Analysis</title>
 
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; color: darkslategrey; overflow-x: hidden; }
-    body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: none; opacity: 0.2; z-index: -1; }
-    video#bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; opacity: 0.4; }
-    header { background-image: linear-gradient(to right, lightseagreen, palevioletred); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; position: fixed; width: 100%; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
-    .logo { display: flex; align-items: center; cursor: pointer; }
-    .logo img { height: 40px; vertical-align: middle; }
-    .logo span { margin-left: 10px; font-size: 16px; font-weight: bold; }
-    .header-right { display: flex; align-items: center; }
-    .header-right span { margin-right: 20px; font-size: 14px; }
-    .main-content { margin-left: 0; padding: 80px 20px 20px; min-height: 100vh; }
-    .toolbar { position: fixed; top: 60px; left: -400px; width: 200px; height: 100%; background-image: linear-gradient(to bottom, lightseagreen, palevioletred); padding: 15px; box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); transition: left 0.3s ease-in-out; z-index: 999; overflow-y: auto; }
-    .toolbar.active { left: 0; }
-    .toolbar .feature-box { background-color: lightgrey; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 13px; }
-    .toolbar .feature-box h3 { margin: 0 0 8px; font-size: 14px; color: black; }
-    .toolbar .feature-box button { width: 100%; padding: 6px; background-color: darkgrey; color: black; border: none; border-radius: 5px; cursor: pointer; font-size: 11px; margin-bottom: 4px; }
-    .toolbar .feature-box button:hover { background-color: darkslategrey; color: white; }
-    .toolbar .user-info { text-align: center; }
-    .toolbar .user-info img { width: 40px; height: 40px; border-radius: 50%; margin-bottom: 8px; }
-    .overview, .history, .customers { background-color: lightgrey; padding: 10px; border-radius: 8px; border: 2px solid #dc3545; min-height: 150px; margin-bottom: 15px; }
-    .overview h1 { margin: 0 0 10px; color: #007bff; font-size: 18px; }
-    .history h2, .customers h2 { margin-top: 0; color: #007bff; font-size: 16px; }
-    .history-list { max-height: 100px; overflow-y: auto; border: 1px solid #ccc; padding: 8px; border-radius: 5px; background: white; }
-    .history-item, .customer-item { padding: 6px 0; font-size: 10px; }
-    .status.in { color: red; font-weight: bold; }
-    .status.out { color: green; font-weight: bold; }
+    body { 
+      font-family: Arial, sans-serif; 
+      margin: 0; 
+      padding: 0; 
+      color: darkslategrey; 
+      overflow-x: hidden; 
+    }
+    body::before { 
+      content: ""; 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: none; 
+      opacity: 0.2; 
+      z-index: -1; 
+    }
+    video#bg-video { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      z-index: -2; 
+      opacity: 0.4; 
+    }
+    header { 
+      background-image: linear-gradient(to right, lightseagreen, palevioletred); 
+      color: white; 
+      padding: 10px 20px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      position: fixed; 
+      width: 100%; 
+      top: 0; 
+      z-index: 1000; 
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    }
+    .logo { 
+      display: flex; 
+      align-items: center; 
+      cursor: pointer; 
+    }
+    .logo img { 
+      height: 40px; 
+      vertical-align: middle; 
+    }
+    .logo span { 
+      margin-left: 10px; 
+      font-size: 16px; 
+      font-weight: bold; 
+    }
+    .header-right { 
+      display: flex; 
+      align-items: center; 
+    }
+    .header-right span { 
+      margin-right: 20px; 
+      font-size: 14px; 
+    }
+    .main-content { 
+      margin-left: 0; 
+      padding: 80px 20px 20px; 
+      min-height: 100vh; 
+    }
+    .toolbar { 
+      position: fixed; 
+      top: 60px; 
+      left: -400px; 
+      width: 200px; 
+      height: 100%; 
+      background-image: linear-gradient(to bottom, lightseagreen, palevioletred); 
+      padding: 15px; 
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); 
+      transition: left 0.3s ease-in-out; 
+      z-index: 999; 
+      overflow-y: auto; 
+    }
+    .toolbar.active { 
+      left: 0; 
+    }
+    .toolbar .feature-box { 
+      background-color: lightgrey; 
+      border-radius: 8px; 
+      padding: 12px; 
+      margin-bottom: 16px; 
+      font-size: 13px; 
+    }
+    .toolbar .feature-box h3 { 
+      margin: 0 0 8px; 
+      font-size: 14px; 
+      color: black; 
+    }
+    .toolbar .feature-box button { 
+      width: 100%; 
+      padding: 6px; 
+      background-color: darkgrey; 
+      color: black; 
+      border: none; 
+      border-radius: 5px; 
+      cursor: pointer; 
+      font-size: 11px; 
+      margin-bottom: 4px; 
+    }
+    .toolbar .feature-box button:hover { 
+      background-color: darkslategrey; 
+      color: white; 
+    }
+    .toolbar .user-info { 
+      text-align: center; 
+    }
+    .toolbar .user-info img { 
+      width: 40px; 
+      height: 40px; 
+      border-radius: 50%; 
+      margin-bottom: 8px; 
+    }
+    .overview { 
+      background-color: lightgrey; 
+      padding: 20px; 
+      border-radius: 8px; 
+      border: 2px solid #dc3545; 
+      margin-bottom: 20px; 
+    }
+    .overview h1 { 
+      margin: 0 0 15px; 
+      color: #007bff; 
+      font-size: 20px; 
+      font-weight: bold; 
+    }
+    .history, .customers { 
+      background-color: white; 
+      padding: 15px; 
+      border-radius: 8px; 
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+      margin-bottom: 20px; 
+    }
+    .history h2, .customers h2 { 
+      margin: 0 0 10px; 
+      color: #007bff; 
+      font-size: 16px; 
+      font-weight: bold; 
+    }
+    .history-list { 
+      max-height: 200px; 
+      overflow-y: auto; 
+      border: 1px solid #ddd; 
+      padding: 10px; 
+      border-radius: 5px; 
+      background: #f9f9f9; 
+    }
+    .history-item, .customer-item { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 10px; 
+      font-size: 12px; 
+      border-bottom: 1px solid #eee; 
+      transition: background 0.2s; 
+    }
+    .history-item:last-child, .customer-item:last-child { 
+      border-bottom: none; 
+    }
+    .history-item:hover, .customer-item:hover { 
+      background: #f0f0f0; 
+    }
+    .status.in { 
+      color: red; 
+      font-weight: bold; 
+      background: #ffe6e6; 
+      padding: 5px 10px; 
+      border-radius: 5px; 
+    }
+    .status.out { 
+      color: green; 
+      font-weight: bold; 
+      background: #e6ffe6; 
+      padding: 5px 10px; 
+      border-radius: 5px; 
+    }
+    .customer-item { 
+      flex-direction: column; 
+      align-items: flex-start; 
+      gap: 5px; 
+      font-size: 13px; 
+    }
+    .customer-item strong { 
+      color: #333; 
+      font-size: 14px; 
+      margin-bottom: 5px; 
+    }
+    .customer-item span { 
+      display: block; 
+      color: #555; 
+    }
   </style>
 
   <!-- Firebase SDK -->
@@ -142,15 +315,15 @@
         for (const slot in data) {
           const { contactNumber, idWorker, lastAction, parkingNotes, plate, timestamp, user } = data[slot];
           customersMessageList.innerHTML += `
-            <div class="customer-item" style="border-bottom:1px solid #ccc; margin-bottom:5px; padding-bottom:5px;">
-              <strong>${slot.replace('_', ' ').toUpperCase()}</strong><br>
-              Contact: ${contactNumber} <br>
-              ID Worker: ${idWorker} <br>
-              Last Action: ${lastAction} <br>
-              Parking Notes: ${parkingNotes} <br>
-              Plate: ${plate} <br>
-              Timestamp: ${timestamp} <br>
-              User: ${user}
+            <div class="customer-item">
+              <strong>${slot.replace('_', ' ').toUpperCase()}</strong>
+              <span>Contact: ${contactNumber}</span>
+              <span>ID Worker: ${idWorker}</span>
+              <span>Last Action: ${lastAction}</span>
+              <span>Parking Notes: ${parkingNotes}</span>
+              <span>Plate: ${plate}</span>
+              <span>Timestamp: ${timestamp}</span>
+              <span>User: ${user}</span>
             </div>
           `;
         }
