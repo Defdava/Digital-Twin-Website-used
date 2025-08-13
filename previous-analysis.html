@@ -115,6 +115,7 @@
       cursor: pointer; 
       font-size: 11px; 
       margin-bottom: 4px; 
+      transition: background-color 0.3s; 
     }
     .toolbar .feature-box button:hover { 
       background-color: darkslategrey; 
@@ -128,6 +129,12 @@
       height: 40px; 
       border-radius: 50%; 
       margin-bottom: 8px; 
+    }
+    .toolbar .user-info span { 
+      display: block; 
+      margin: 4px 0; 
+      font-size: 11px; 
+      color: black; 
     }
     .overview { 
       background-color: lightgrey; 
@@ -240,17 +247,23 @@
   </header>
 
   <aside class="toolbar" id="toolbar">
-    <div class="feature-box"><h3>Parking Management System</h3></div>
-    <div class="feature-box">
-      <button onclick="window.location.href='index.html'">Live Overview</button>
-      <button onclick="window.location.href='previous-analysis.html'">Previous Analysis</button>
-    </div>
     <div class="feature-box user-info" id="userInfo">
       <h3>User</h3>
-      <img src="../assets/user.JPG" alt="User">
+      <img id="profilePic" src="../assets/user.JPG" alt="User">
       <span>Welcome Back</span>
-      <span id="userName">Defdava Haryadi</span>
+      <span id="userName"></span>
+      <button class="profile" onclick="window.location.href='profile.html'">Profile</button>
+      <button class="form-message" onclick="window.location.href='index.html'">Form Message</button>
       <button class="logout">Log Out</button>
+    </div>
+    <div class="feature-box">
+      <h3>Parking Management System</h3>
+      <button onclick="window.location.href='index.html'">Live Overview</button>
+      <button onclick="window.location.href='previous-analysis.html'">Previous Analysis</button>
+      <button onclick="window.location.href='export-data.html'">Export Data</button>
+      <button onclick="window.location.href='3d-viewer.html'">3D Viewer</button>
+      <button onclick="window.location.href='helpdesk.html'">Helpdesk</button>
+      <button onclick="window.location.href='parkir-analysis.html'">Parkir Analysis</button>
     </div>
   </aside>
 
@@ -277,6 +290,7 @@
         return;
       }
       document.getElementById('userName').textContent = currentUser.username;
+      document.getElementById('profilePic').src = currentUser.profilePic || '../assets/user.JPG';
 
       document.querySelector('.logout').addEventListener('click', () => {
         localStorage.removeItem('currentUser');
@@ -331,6 +345,15 @@
       firebase.database().ref("slot_message_user").on("value", (snapshot) => {
         const data = snapshot.val();
         if (data) updateCustomersMessage(data);
+      });
+
+      // Prevent Undo/Redo
+      document.addEventListener('keydown', (event) => {
+        if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
+          event.preventDefault();
+          event.stopPropagation();
+          console.log('Undo/Redo is disabled');
+        }
       });
     });
   </script>
