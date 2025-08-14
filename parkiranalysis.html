@@ -15,19 +15,6 @@
             color: darkslategrey;
             overflow-x: hidden;
         }
-
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: none;
-            opacity: 0.2;
-            z-index: -1;
-        }
-
         video#bg-video {
             position: fixed;
             top: 0;
@@ -38,7 +25,6 @@
             z-index: -2;
             opacity: 0.4;
         }
-
         header {
             background-image: linear-gradient(to right, lightseagreen, palevioletred);
             color: white;
@@ -50,117 +36,24 @@
             width: 100%;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-
         .logo {
             display: flex;
             align-items: center;
             cursor: pointer;
         }
-
         .logo img {
             height: 40px;
-            vertical-align: middle;
         }
-
         .logo span {
             margin-left: 10px;
             font-size: 16px;
             font-weight: bold;
         }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-        }
-
-        .header-right span {
-            margin-right: 20px;
-            font-size: 14px;
-        }
-
         .main-content {
-            margin-left: 0;
             padding: 80px 20px 20px;
             min-height: 100vh;
         }
-
-        .main-content-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .toolbar {
-            position: fixed;
-            top: 60px;
-            left: -400px;
-            width: 200px;
-            height: 100%;
-            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
-            padding: 15px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            transition: left 0.3s ease-in-out;
-            z-index: 999;
-            overflow-y: auto;
-        }
-
-        .toolbar.active {
-            left: 0;
-        }
-
-        .toolbar .feature-box {
-            background-color: lightgrey;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 16px;
-            font-size: 13px;
-        }
-
-        .toolbar .feature-box h3 {
-            margin: 0 0 8px;
-            font-size: 14px;
-            color: black;
-        }
-
-        .toolbar .feature-box button {
-            width: 100%;
-            padding: 6px;
-            background-color: darkgrey;
-            color: black;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 11px;
-            margin-bottom: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .toolbar .feature-box button:hover {
-            background-color: darkslategrey;
-            color: white;
-        }
-
-        .toolbar .user-info {
-            text-align: center;
-        }
-
-        .toolbar .user-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-bottom: 8px;
-        }
-
-        .toolbar .user-info span {
-            display: block;
-            margin: 4px 0;
-            font-size: 11px;
-            color: black;
-        }
-
         .analysis-panel {
             background-color: lightgrey;
             padding: 10px;
@@ -168,41 +61,19 @@
             border: 2px solid #dc3545;
             min-height: 150px;
         }
-
         .analysis-panel h1 {
             margin: 0 0 10px;
             color: #007bff;
             font-size: 16px;
         }
-
         .stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
             margin-bottom: 10px;
             font-size: 12px;
         }
-
-        .stats div {
-            background-color: #e9ecef;
-            padding: 6px;
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        .stats span:first-child {
-            display: block;
-            font-size: 12px;
+        .stats span {
             font-weight: bold;
             color: #555;
-            margin-bottom: 5px;
         }
-
-        .stats span:last-child {
-            font-size: 12px;
-            color: #007bff;
-        }
-
         .message-list {
             max-height: 300px;
             overflow-y: auto;
@@ -210,7 +81,6 @@
             padding: 8px;
             border-radius: 5px;
         }
-
         .message-item {
             display: grid;
             grid-template-columns: 0.5fr 1fr 0.5fr 1fr;
@@ -220,7 +90,6 @@
             gap: 5px;
             border-bottom: 1px solid #eee;
         }
-
         #error-message {
             position: absolute;
             top: 10px;
@@ -239,7 +108,6 @@
 <body>
     <video id="bg-video" autoplay muted loop>
         <source src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/wave.mp4?raw=true" type="video/mp4">
-        Your browser does not support the video tag.
     </video>
     <header>
         <div class="logo" id="toggleToolbar">
@@ -251,82 +119,20 @@
             <span>Parking Management System</span>
         </div>
     </header>
-    <aside class="toolbar" id="toolbar">
-        <div class="feature-box user-info" id="userInfo">
-            <h3>User</h3>
-            <img id="profilePic" src="/assets/user.JPG" alt="User">
-            <span>Welcome Back</span>
-            <span id="userName"></span>
-            <button class="profile" onclick="window.location.href='/profile.html'">Profile</button>
-            <button class="logout">Log Out</button>
-        </div>
-        <div class="feature-box">
-            <h3>Parking Management System</h3>
-            <button class="live-overview" onclick="window.location.href='/index.html'">Live Overview</button>
-            <button class="prev-analysis" onclick="window.location.href='/previous-analysis.html'">Previous Analysis</button>
-            <button class="export-data">Export Data</button>
-            <button class="3d-viewer-vr">3D Viewer VR</button>
-            <button class="helpdesk">Helpdesk</button>
-            <button class="parking-analysis" onclick="window.location.href='/parkinganalysis.html'">Parking Analysis</button>
-        </div>
-    </aside>
     <main class="main-content">
-        <div class="main-content-grid">
-            <div class="analysis-panel">
-                <h1>Parking Analysis (Messages)</h1>
-                <div class="stats">
-                    <div>
-                        <span>Time</span>
-                        <span id="currentTime"></span>
-                    </div>
-                </div>
-                <div class="message-list" id="messageList"></div>
-                <div id="error-message"></div>
+        <div class="analysis-panel">
+            <h1>Parking Analysis (Messages)</h1>
+            <div class="stats">
+                <span>Current Time:</span> <span id="currentTime"></span>
             </div>
+            <div class="message-list" id="messageList"></div>
+            <div id="error-message"></div>
         </div>
     </main>
+
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script>
-        // Authentication System
-        class User {
-            constructor(username, email, password, idWorker, profilePic = '/assets/user.JPG') {
-                this.username = username;
-                this.email = email;
-                this.password = password;
-                this.idWorker = idWorker;
-                this.profilePic = profilePic;
-            }
-        }
-
-        class AuthSystem {
-            constructor() {
-                this.users = JSON.parse(localStorage.getItem('users')) || [];
-            }
-
-            register(username, email, password, idWorker, profilePic) {
-                const userExists = this.users.some(user => user.email === email);
-                if (userExists) {
-                    throw new Error('User already exists!');
-                }
-                const user = new User(username, email, password, idWorker, profilePic);
-                this.users.push(user);
-                localStorage.setItem('users', JSON.stringify(this.users));
-                return user;
-            }
-
-            login(email, password) {
-                const user = this.users.find(u => u.email === email && u.password === password);
-                if (user) {
-                    return user;
-                }
-                throw new Error('Invalid email or password!');
-            }
-        }
-
-        const auth = new AuthSystem();
-
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAef3SJwvVVTunr6CWki79aenfpXlgYc0s",
             authDomain: "digitaltwinparkingbrin.firebaseapp.com",
@@ -337,154 +143,53 @@
             appId: "1:608462498913:web:73695d8c91f923e2db8e20",
             measurementId: "G-F1TRY65RTG"
         };
-
-        // Initialize Firebase
-        try {
-            firebase.initializeApp(firebaseConfig);
-            console.log("Firebase initialized successfully");
-        } catch (error) {
-            console.error("Firebase initialization error:", error);
-            showError("Failed to initialize Firebase. Check console for details.");
-            return;
-        }
+        firebase.initializeApp(firebaseConfig);
         const dbRef = firebase.database().ref("slot_messages_vr");
 
-        // Show Error Message
         function showError(message) {
             const errorElement = document.getElementById('error-message');
             errorElement.textContent = message;
             errorElement.style.display = 'block';
-            setTimeout(() => {
-                errorElement.style.display = 'none';
-            }, 5000);
+            setTimeout(() => { errorElement.style.display = 'none'; }, 5000);
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            // Authentication
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            const userInfo = document.getElementById('userInfo');
-            const userName = document.getElementById('userName');
-            const profilePic = document.getElementById('profilePic');
-            if (!currentUser) {
-                alert('Silakan login terlebih dahulu!');
-                window.location.replace('/login.html');
-                return;
-            } else {
-                userName.textContent = currentUser.username;
-                profilePic.src = currentUser.profilePic || '/assets/user.JPG';
-            }
+        function updateClock() {
+            const now = new Date();
+            const options = { timeZone: 'Asia/Jakarta', hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: false };
+            document.getElementById('currentTime').textContent = new Intl.DateTimeFormat('en-US', options).format(now) + ' WIB';
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
-            // Logout
-            document.querySelector('.logout').addEventListener('click', () => {
-                localStorage.removeItem('currentUser');
-                alert('Berhasil logout!');
-                window.location.replace('/login.html');
-            });
-
-            // Toggle Toolbar
-            const toggleToolbar = document.getElementById('toggleToolbar');
-            const toolbar = document.getElementById('toolbar');
-            toggleToolbar.addEventListener('click', () => {
-                toolbar.classList.toggle('active');
-            });
-
-            // Real-time Clock
-            function updateClock() {
-                try {
-                    const now = new Date();
-                    const options = {
-                        timeZone: 'Asia/Jakarta',
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: false
-                    };
-                    const timeString = new Intl.DateTimeFormat('en-US', options).format(now) + ' WIB';
-                    const currentTimeElement = document.getElementById('currentTime');
-                    if (currentTimeElement) {
-                        currentTimeElement.textContent = timeString;
-                    }
-                } catch (error) {
-                    console.error('Kesalahan pembaruan jam:', error);
-                    showError('Failed to update clock.');
-                }
-            }
-            updateClock();
-            setInterval(updateClock, 1000);
-
-            // Firebase Listener for slot_messages_vr
+        dbRef.on("value", (snapshot) => {
             const messageList = document.getElementById('messageList');
-            dbRef.on("value", (snapshot) => {
-                messageList.innerHTML = "";
-                const data = snapshot.val();
-                if (!data) {
-                    messageList.innerHTML = "<div>No messages available</div>";
-                    console.warn("No data found in slot_messages_vr");
-                    return;
-                }
-
-                console.log("📊 slot_messages_vr data:", data);
-
-                // Sort messages by timestamp (if available) or key
-                const messages = Object.entries(data).map(([key, value]) => ({
-                    key,
-                    ...value
-                })).sort((a, b) => {
-                    const aTime = a.timestamp ? new Date(a.timestamp).getTime() : parseInt(a.key.split('_')[1] || 0);
-                    const bTime = b.timestamp ? new Date(b.timestamp).getTime() : parseInt(b.key.split('_')[1] || 0);
-                    return bTime - aTime; // Sort descending (newest first)
-                });
-
-                messages.forEach(({ key, slot, message, timestamp }) => {
-                    const div = document.createElement("div");
-                    div.className = "message-item";
-                    // Handle both object and string values
-                    const slotDisplay = slot || key.split('_')[1] || 'N/A';
-                    const messageDisplay = message || (typeof value === 'string' ? value : 'No command');
-                    // Split timestamp into tanggal and jam
-                    let tanggalDisplay = 'N/A';
-                    let jamDisplay = 'N/A';
-                    if (timestamp) {
-                        const date = new Date(timestamp);
-                        if (!isNaN(date.getTime())) {
-                            tanggalDisplay = date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }); // e.g., 13-08-2025
-                            jamDisplay = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }); // e.g., 21:20
-                        } else {
-                            console.warn("Invalid timestamp format for key:", key, timestamp);
-                        }
-                    }
-                    div.innerHTML = `
-                        <span><strong>Slot ${slotDisplay}</strong></span>
-                        <span>${tanggalDisplay}</span>
-                        <span>${jamDisplay}</span>
-                        <span>${messageDisplay}</span>
-                    `;
-                    messageList.appendChild(div);
-                });
-            }, (error) => {
-                console.error("Firebase error:", error.code, error.message);
-                messageList.innerHTML = "<div>Error loading messages</div>";
-                showError(`Failed to fetch messages: ${error.message}`);
-            });
-
-            // Prevent Undo/Redo and Navigation
-            document.addEventListener('keydown', (event) => {
-                if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    console.log('Undo/Redo is disabled');
+            messageList.innerHTML = "";
+            const data = snapshot.val();
+            if (!data) {
+                messageList.innerHTML = "<div>No messages available</div>";
+                return;
+            }
+            Object.entries(data).forEach(([slotKey, messagesObj]) => {
+                if (typeof messagesObj === 'object') {
+                    Object.entries(messagesObj).forEach(([timeKey, msgValue]) => {
+                        const div = document.createElement("div");
+                        div.className = "message-item";
+                        const [dateStr, timeStr] = timeKey.split(" ");
+                        const [year, month, day] = dateStr.split("-");
+                        const tanggalDisplay = `${day}-${month}-${year}`;
+                        const jamDisplay = timeStr ? timeStr.slice(0, 5) : 'N/A';
+                        div.innerHTML = `
+                            <span><strong>${slotKey.replace('slot_', 'Slot ')}</strong></span>
+                            <span>${tanggalDisplay}</span>
+                            <span>${jamDisplay}</span>
+                            <span>${msgValue}</span>
+                        `;
+                        messageList.appendChild(div);
+                    });
                 }
             });
-
-            window.addEventListener('popstate', (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                if (!localStorage.getItem('currentUser')) {
-                    window.location.replace('/login.html');
-                } else {
-                    history.replaceState(null, null, window.location.href);
-                }
-            });
+        }, (error) => {
+            showError(`Failed to fetch messages: ${error.message}`);
         });
     </script>
 </body>
