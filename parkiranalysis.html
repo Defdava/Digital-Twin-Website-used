@@ -50,9 +50,67 @@
             font-size: 16px;
             font-weight: bold;
         }
+        /* Toolbar Style */
+        .toolbar {
+            position: fixed;
+            top: 60px;
+            left: 0; /* selalu tampil */
+            width: 200px;
+            height: 100%;
+            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
+            padding: 15px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            overflow-y: auto;
+        }
+        .toolbar .feature-box {
+            background-color: lightgrey;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+        .toolbar .feature-box h3 {
+            margin: 0 0 8px;
+            font-size: 14px;
+            color: black;
+        }
+        .toolbar .feature-box button {
+            width: 100%;
+            padding: 6px;
+            background-color: darkgrey;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-bottom: 4px;
+            transition: background-color 0.3s;
+        }
+        .toolbar .feature-box button:hover {
+            background-color: darkslategrey;
+            color: white;
+        }
+        .toolbar .user-info {
+            text-align: center;
+        }
+        .toolbar .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+        }
+        .toolbar .user-info span {
+            display: block;
+            margin: 4px 0;
+            font-size: 11px;
+            color: black;
+        }
+        /* Main Content */
         .main-content {
             padding: 80px 20px 20px;
             min-height: 100vh;
+            margin-left: 220px; /* geser karena toolbar */
         }
         .analysis-panel {
             background-color: lightgrey;
@@ -110,7 +168,7 @@
         <source src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/wave.mp4?raw=true" type="video/mp4">
     </video>
     <header>
-        <div class="logo" id="toggleToolbar">
+        <div class="logo">
             <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true" alt="BRIN Logo">
             <span>BRIN</span>
             <span>Badan Riset Nasional</span>
@@ -119,6 +177,27 @@
             <span>Parking Management System</span>
         </div>
     </header>
+
+    <aside class="toolbar" id="toolbar">
+        <div class="feature-box user-info" id="userInfo">
+            <h3>User</h3>
+            <img id="profilePic" src="/assets/user.JPG" alt="User">
+            <span>Welcome Back</span>
+            <span id="userName"></span>
+            <button class="profile" onclick="window.location.href='/profile.html'">Profile</button>
+            <button class="logout">Log Out</button>
+        </div>
+        <div class="feature-box">
+            <h3>Parking Management System</h3>
+            <button onclick="window.location.href='/index.html'">Live Overview</button>
+            <button onclick="window.location.href='/previous-analysis.html'">Previous Analysis</button>
+            <button>Export Data</button>
+            <button>3D Viewer VR</button>
+            <button>Helpdesk</button>
+            <button onclick="window.location.href='/parkinganalysis.html'">Parking Analysis</button>
+        </div>
+    </aside>
+
     <main class="main-content">
         <div class="analysis-panel">
             <h1>Parking Analysis (Messages)</h1>
@@ -190,6 +269,18 @@
             });
         }, (error) => {
             showError(`Failed to fetch messages: ${error.message}`);
+        });
+
+        // Ambil user dari localStorage
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser) {
+            document.getElementById('userName').textContent = currentUser.username;
+            document.getElementById('profilePic').src = currentUser.profilePic || '/assets/user.JPG';
+        }
+        document.querySelector('.logout').addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            alert('Berhasil logout!');
+            window.location.replace('/login.html');
         });
     </script>
 </body>
