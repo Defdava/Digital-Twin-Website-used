@@ -175,6 +175,34 @@
             font-size: 16px;
         }
 
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .stats div {
+            background-color: #e9ecef;
+            padding: 6px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .stats span:first-child {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .stats span:last-child {
+            font-size: 12px;
+            color: #007bff;
+        }
+
         .message-list {
             max-height: 300px;
             overflow-y: auto;
@@ -185,11 +213,36 @@
 
         .message-item {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 0.5fr 1fr 1fr 0.5fr;
             padding: 6px 0;
             font-size: 10px;
             align-items: center;
             gap: 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .message-item .status.in {
+            color: green;
+            font-weight: bold;
+        }
+
+        .message-item .status.out {
+            color: red;
+            font-weight: bold;
+        }
+
+        #error-message {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            z-index: 102;
+            display: none;
         }
     </style>
 </head>
@@ -231,7 +284,14 @@
         <div class="main-content-grid">
             <div class="analysis-panel">
                 <h1>Parking Analysis (Messages)</h1>
+                <div class="stats">
+                    <div>
+                        <span>Time</span>
+                        <span id="currentTime"></span>
+                    </div>
+                </div>
                 <div class="message-list" id="messageList"></div>
+                <div id="error-message"></div>
             </div>
         </div>
     </main>
@@ -291,6 +351,16 @@
         firebase.initializeApp(firebaseConfig);
         const dbRef = firebase.database().ref("slot_messages_vr");
 
+        // Show Error Message
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
             // Authentication
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -322,16 +392,24 @@
 
             // Real-time Clock
             function updateClock() {
-                const now = new Date();
-                const options = {
-                    timeZone: 'Asia/Jakarta',
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    hour12: false
-                };
-                const timeString = new Intl.DateTimeFormat('en-US', options).format(now) + ' WIB';
-                document.getElementById('currentTime').textContent = timeString;
+                try {
+                    const now = new Date();
+                    const options = {
+                        timeZone: 'Asia/Jakarta',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    };
+                    const timeString = new Intl.DateTimeFormat('en-US', options).format(now) + ' WIB';
+                    const currentTimeElement = document.getElementById('currentTime');
+                    if (currentTimeElement) {
+                        currentTimeElement.textContent = timeString;
+                    }
+                } catch (error) {
+                    console.error('Kesalahan pembaruan jam:', error);
+                    showError('Failed to update clock.');
+                }
             }
             updateClock();
             setInterval(updateClock, 1000);
@@ -341,22 +419,63 @@
             dbRef.on("value", (snapshot) => {
                 messageList.innerHTML = "";
                 const data = snapshot.val();
-                if (data) {
-                    Object.entries(data).forEach(([key, value]) => {
-                        const div = document.createElement("div");
-                        div.className = "message-item";
-                        div.innerHTML = `
-                            <span><strong>Message ${key}</strong></span>
-                            <span>${value || 'No message'}</span>
-                        `;
-                        messageList.appendChild(div);
-                    });
-                } else {
+                if (!data) {
                     messageList.innerHTML = "<div>No messages available</div>";
+                    console.warn("No messages found in slot_messages_vr");
+                    return;
                 }
+
+                console.log("📊 slot_messages_vr data:", data);
+
+                // Sort messages by timestamp (if available) or key
+                const messages = Object.entries(data).map(([key, value]) => ({
+                    key,
+                    ...value
+                })).sort((a, b) => {
+                    const aTime = a.timestamp ? new Date(a.timestamp).getTime() : parseInt(a.key.split('_')[1] || 0);
+                    const bTime = b.timestamp ? new Date(b.timestamp).getTime() : parseInt(b.key.split('_')[1] || 0);
+                    return bTime - aTime; // Sort descending (newest first)
+                });
+
+                messages.forEach(({ key, slot, message, timestamp, status }) => {
+                    const div = document.createElement("div");
+                    div.className = "message-item";
+                    // Handle both object and string values
+                    const slotDisplay = slot || key.split('_')[1] || 'N/A';
+                    const messageDisplay = message || (typeof value === 'string' ? value : 'No message');
+                    const timestampDisplay = timestamp || 'N/A';
+                    const statusDisplay = status || 'N/A';
+                    div.innerHTML = `
+                        <span><strong>Slot ${slotDisplay}</strong></span>
+                        <span>${messageDisplay}</span>
+                        <span>${timestampDisplay}</span>
+                        <span class="status ${status === 'terisi' ? 'in' : status === 'kosong' ? 'out' : ''}">${statusDisplay}</span>
+                    `;
+                    messageList.appendChild(div);
+                });
             }, (error) => {
                 console.error("Error fetching messages:", error);
                 messageList.innerHTML = "<div>Error loading messages</div>";
+                showError("Failed to fetch messages from Firebase.");
+            });
+
+            // Prevent Undo/Redo and Navigation
+            document.addEventListener('keydown', (event) => {
+                if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    console.log('Undo/Redo is disabled');
+                }
+            });
+
+            window.addEventListener('popstate', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                if (!localStorage.getItem('currentUser')) {
+                    window.location.replace('/login.html');
+                } else {
+                    history.replaceState(null, null, window.location.href);
+                }
             });
         });
     </script>
