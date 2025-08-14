@@ -221,16 +221,6 @@
             border-bottom: 1px solid #eee;
         }
 
-        .message-item .status.in {
-            color: green;
-            font-weight: bold;
-        }
-
-        .message-item .status.out {
-            color: red;
-            font-weight: bold;
-        }
-
         #error-message {
             position: absolute;
             top: 10px;
@@ -449,8 +439,8 @@
                     if (timestamp) {
                         const date = new Date(timestamp);
                         if (!isNaN(date.getTime())) {
-                            tanggalDisplay = date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }); // e.g., 14-08-2025
-                            jamDisplay = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }); // e.g., 13:00
+                            tanggalDisplay = date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }); // e.g., 13-08-2025
+                            jamDisplay = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }); // e.g., 21:20
                         }
                     }
                     div.innerHTML = `
