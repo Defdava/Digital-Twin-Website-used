@@ -54,7 +54,7 @@
         .toolbar {
             position: fixed;
             top: 60px;
-            left: 0; /* selalu tampil */
+            left: -200px; /* Mulai dari tersembunyi */
             width: 200px;
             height: 100%;
             background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
@@ -62,6 +62,10 @@
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
             z-index: 999;
             overflow-y: auto;
+            transition: left 0.3s ease-in-out; /* Efek transisi */
+        }
+        .toolbar.active {
+            left: 0; /* Tampil saat active */
         }
         .toolbar .feature-box {
             background-color: lightgrey;
@@ -110,7 +114,11 @@
         .main-content {
             padding: 80px 20px 20px;
             min-height: 100vh;
-            margin-left: 220px; /* geser karena toolbar */
+            margin-left: 0; /* Default tanpa toolbar */
+            transition: margin-left 0.3s ease-in-out; /* Efek transisi */
+        }
+        .main-content.with-toolbar {
+            margin-left: 220px; /* Geser saat toolbar aktif */
         }
         .analysis-panel {
             background-color: lightgrey;
@@ -168,7 +176,7 @@
         <source src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/wave.mp4?raw=true" type="video/mp4">
     </video>
     <header>
-        <div class="logo">
+        <div class="logo" id="toggleToolbar">
             <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true" alt="BRIN Logo">
             <span>BRIN</span>
             <span>Badan Riset Nasional</span>
@@ -198,7 +206,7 @@
         </div>
     </aside>
 
-    <main class="main-content">
+    <main class="main-content" id="mainContent">
         <div class="analysis-panel">
             <h1>Parking Analysis (Messages)</h1>
             <div class="stats">
@@ -281,6 +289,15 @@
             localStorage.removeItem('currentUser');
             alert('Berhasil logout!');
             window.location.replace('/login.html');
+        });
+
+        // Toggle Toolbar
+        const toggleToolbar = document.getElementById('toggleToolbar');
+        const toolbar = document.getElementById('toolbar');
+        const mainContent = document.getElementById('mainContent');
+        toggleToolbar.addEventListener('click', () => {
+            toolbar.classList.toggle('active');
+            mainContent.classList.toggle('with-toolbar');
         });
     </script>
 </body>
