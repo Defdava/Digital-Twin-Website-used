@@ -246,7 +246,7 @@
             flex-direction: column;
             gap: 0.5px;
             padding: 3px;
-            margin-top: 50px; /* Increased margin-top to move it more downward */
+            margin-top: 50px;
             justify-content: center;
             align-items: center;
         }
@@ -255,15 +255,14 @@
             display: flex;
             flex-direction: row;
             justify-content: center;
-            /* Removed fixed width to allow auto-sizing and better centering */
         }
 
         .column.top {
-            gap: 5px; /* Standardized gap for alignment */
+            gap: 5px;
         }
 
         .column.bottom {
-            gap: 5px; /* Standardized gap for alignment */
+            gap: 5px;
         }
 
         .slot {
@@ -511,7 +510,7 @@
             <button class="export-data">Export Data</button>
             <button class="3d-viewer-vr">3D Viewer VR</button>
             <button class="helpdesk">Helpdesk</button>
-            <button class="parking-analysis">Parking Analysis</button>
+            <button class="parking-analysis" onclick="window.location.href='/parkinganalysis.html'">Parking Analysis</button>
         </div>
     </aside>
     <main class="main-content">
