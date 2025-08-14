@@ -338,7 +338,15 @@
             measurementId: "G-F1TRY65RTG"
         };
 
-        firebase.initializeApp(firebaseConfig);
+        // Initialize Firebase
+        try {
+            firebase.initializeApp(firebaseConfig);
+            console.log("Firebase initialized successfully");
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+            showError("Failed to initialize Firebase. Check console for details.");
+            return;
+        }
         const dbRef = firebase.database().ref("slot_messages_vr");
 
         // Show Error Message
@@ -411,7 +419,7 @@
                 const data = snapshot.val();
                 if (!data) {
                     messageList.innerHTML = "<div>No messages available</div>";
-                    console.warn("No messages found in slot_messages_vr");
+                    console.warn("No data found in slot_messages_vr");
                     return;
                 }
 
@@ -441,6 +449,8 @@
                         if (!isNaN(date.getTime())) {
                             tanggalDisplay = date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }); // e.g., 13-08-2025
                             jamDisplay = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }); // e.g., 21:20
+                        } else {
+                            console.warn("Invalid timestamp format for key:", key, timestamp);
                         }
                     }
                     div.innerHTML = `
@@ -452,9 +462,9 @@
                     messageList.appendChild(div);
                 });
             }, (error) => {
-                console.error("Error fetching messages:", error);
+                console.error("Firebase error:", error.code, error.message);
                 messageList.innerHTML = "<div>Error loading messages</div>";
-                showError("Failed to fetch messages from Firebase.");
+                showError(`Failed to fetch messages: ${error.message}`);
             });
 
             // Prevent Undo/Redo and Navigation
