@@ -7,338 +7,161 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>BRIN Parking Analysis</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: darkslategrey;
-            overflow-x: hidden;
-        }
-        video#bg-video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -2;
-            opacity: 0.4;
-        }
-        header {
-            background-image: linear-gradient(to right, lightseagreen, palevioletred);
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-        }
-        .logo {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        .logo img {
-            height: 40px;
-        }
-        .logo span {
-            margin-left: 10px;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        /* Toolbar Style */
-        .toolbar {
-            position: fixed;
-            top: 60px;
-            left: -400px;
-            width: 200px;
-            height: 100%;
-            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
-            padding: 15px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            z-index: 999;
-            overflow-y: auto;
-            transition: left 0.3s ease-in-out;
-        }
-        .toolbar.active {
-            left: 0;
-        }
-        .toolbar .feature-box {
-            background-color: lightgrey;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 16px;
-            font-size: 13px;
-        }
-        .toolbar .feature-box h3 {
-            margin: 0 0 8px;
-            font-size: 14px;
-            color: black;
-        }
-        .toolbar .feature-box button {
-            width: 100%;
-            padding: 6px;
-            background-color: darkgrey;
-            color: black;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 11px;
-            margin-bottom: 4px;
-            transition: background-color 0.3s;
-        }
-        .toolbar .feature-box button:hover {
-            background-color: darkslategrey;
-            color: white;
-        }
-        .toolbar .user-info {
-            text-align: center;
-        }
-        .toolbar .user-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-bottom: 8px;
-        }
-        .toolbar .user-info span {
-            display: block;
-            margin: 4px 0;
-            font-size: 11px;
-            color: black;
-        }
-        /* Main Content */
-        .main-content {
-            padding: 80px 20px 20px;
-            min-height: 100vh;
-            margin-left: 0;
-            transition: margin-left 0.3s ease-in-out;
-        }
-        .main-content.with-toolbar {
-            margin-left: 220px;
-        }
-        .analysis-panel {
-            background-color: lightgrey;
-            padding: 10px;
-            border-radius: 8px;
-            border: 2px solid #dc3545;
-            min-height: 150px;
-        }
-        .analysis-panel h1 {
-            margin: 0 0 10px;
-            color: #007bff;
-            font-size: 16px;
-        }
-        .stats {
-            margin-bottom: 10px;
-            font-size: 12px;
-        }
-        .stats span {
-            font-weight: bold;
-            color: #555;
-        }
-        .message-list {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 8px;
-            border-radius: 5px;
-        }
-        .message-item {
-            display: grid;
-            grid-template-columns: 0.5fr 1fr 0.5fr 1fr;
-            padding: 6px 0;
-            font-size: 10px;
-            align-items: center;
-            gap: 5px;
-            border-bottom: 1px solid #eee;
-        }
-        #error-message {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 0, 0, 0.8);
-            color: white;
-            padding: 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            z-index: 102;
-            display: none;
-        }
-        .filter-container {
-            margin-bottom: 10px;
-        }
-        .filter-container select {
-            padding: 5px;
-            font-size: 12px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            background-color: white;
-            cursor: pointer;
-        }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/babel-standalone@7.22.10/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-    <video id="bg-video" autoplay muted loop>
+    <video id="bg-video" autoplay muted loop class="fixed top-0 left-0 w-full h-full object-cover z-[-2] opacity-40">
         <source src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/wave.mp4?raw=true" type="video/mp4">
     </video>
-    <header>
-        <div class="logo" id="toggleToolbar">
-            <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true" alt="BRIN Logo">
-            <span>BRIN</span>
-            <span>Badan Riset Nasional</span>
-        </div>
-        <div class="header-right">
-            <span>Parking Management System</span>
-        </div>
-    </header>
+    <div id="root"></div>
 
-    <aside class="toolbar" id="toolbar">
-        <div class="feature-box user-info" id="userInfo">
-            <h3>User</h3>
-            <img id="profilePic" src="/assets/user.JPG" alt="User">
-            <span>Welcome Back</span>
-            <span id="userName"></span>
-            <button class="profile" onclick="window.location.href='/profile.html'">Profile</button>
-            <button class="logout">Log Out</button>
-        </div>
-        <div class="feature-box">
-            <h3>Parking Management System</h3>
-            <button onclick="window.location.href='/index.html'">Live Overview</button>
-            <button onclick="window.location.href='/previous-analysis.html'">Previous Analysis</button>
-            <button>Export Data</button>
-            <button>3D Viewer VR</button>
-            <button>Helpdesk</button>
-            <button onclick="window.location.href='/parkinganalysis.html'">Parking Analysis</button>
-        </div>
-    </aside>
+    <script type="text/babel">
+        function App() {
+            const [isToolbarActive, setIsToolbarActive] = React.useState(false);
+            const [currentTime, setCurrentTime] = React.useState('');
+            const [messages, setMessages] = React.useState([]);
+            const [sortOption, setSortOption] = React.useState('slot');
+            const [error, setError] = React.useState(null);
+            const [user, setUser] = React.useState(null);
 
-    <main class="main-content" id="mainContent">
-        <div class="analysis-panel">
-            <h1>Parking Analysis (Messages)</h1>
-            <div class="stats">
-                <span>Current Time:</span> <span id="currentTime"></span>
-            </div>
-            <div class="filter-container">
-                <select id="sortFilter" onchange="renderMessages()">
-                    <option value="slot">Sort by Slot</option>
-                    <option value="newest">Sort by Newest</option>
-                    <option value="oldest">Sort by Oldest</option>
-                </select>
-            </div>
-            <div class="message-list" id="messageList"></div>
-            <div id="error-message"></div>
-        </div>
-    </main>
+            // Update clock
+            React.useEffect(() => {
+                const updateClock = () => {
+                    const now = new Date();
+                    const options = { timeZone: 'Asia/Jakarta', hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: false };
+                    setCurrentTime(new Intl.DateTimeFormat('en-US', options).format(now) + ' WIB');
+                };
+                updateClock();
+                const interval = setInterval(updateClock, 1000);
+                return () => clearInterval(interval);
+            }, []);
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAef3SJwvVVTunr6CWki79aenfpXlgYc0s",
-            authDomain: "digitaltwinparkingbrin.firebaseapp.com",
-            databaseURL: "https://digitaltwinparkingbrin-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "digitaltwinparkingbrin",
-            storageBucket: "digitaltwinparkingbrin.appspot.com",
-            messagingSenderId: "608462498913",
-            appId: "1:608462498913:web:73695d8c91f923e2db8e20",
-            measurementId: "G-F1TRY65RTG"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const dbRef = firebase.database().ref("slot_messages_vr");
+            // Load user from localStorage
+            React.useEffect(() => {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (currentUser) setUser(currentUser);
+            }, []);
 
-        let messagesData = [];
+            // Fetch messages from backend
+            React.useEffect(() => {
+                fetch(`http://localhost:3000/api/messages?sort=${sortOption}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            setError(data.error);
+                            setMessages([]);
+                        } else {
+                            setMessages(data);
+                            setError(null);
+                        }
+                    })
+                    .catch(err => {
+                        setError('Failed to fetch messages');
+                        setMessages([]);
+                    });
+            }, [sortOption]);
 
-        function showError(message) {
-            const errorElement = document.getElementById('error-message');
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
-            setTimeout(() => { errorElement.style.display = 'none'; }, 5000);
+            // Handle logout
+            const handleLogout = () => {
+                localStorage.removeItem('currentUser');
+                alert('Berhasil logout!');
+                window.location.replace('/login.html');
+            };
+
+            // Toggle toolbar
+            const toggleToolbar = () => {
+                setIsToolbarActive(!isToolbarActive);
+            };
+
+            // Handle error display
+            React.useEffect(() => {
+                if (error) {
+                    const timer = setTimeout(() => setError(null), 5000);
+                    return () => clearTimeout(timer);
+                }
+            }, [error]);
+
+            return (
+                <div>
+                    <header className="bg-gradient-to-r from-teal-400 to-pink-400 text-white p-3 flex justify-between items-center fixed w-full top-0 z-[1000]">
+                        <div className="flex items-center cursor-pointer" onClick={toggleToolbar}>
+                            <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true" alt="BRIN Logo" className="h-10" />
+                            <span className="ml-2 text-lg font-bold">BRIN</span>
+                            <span className="ml-2 text-sm">Badan Riset Nasional</span>
+                        </div>
+                        <div>
+                            <span>Parking Management System</span>
+                        </div>
+                    </header>
+
+                    <aside className={`fixed top-16 ${isToolbarActive ? 'left-0' : '-left-96'} w-56 h-full bg-gradient-to-b from-teal-400 to-pink-400 p-4 shadow-lg z-[999] overflow-y-auto transition-all duration-300`}>
+                        <div className="bg-gray-200 rounded-lg p-3 mb-4 text-center">
+                            <h3 className="text-sm font-bold text-black mb-2">User</h3>
+                            <img src={user?.profilePic || '/assets/user.JPG'} alt="User" className="w-10 h-10 rounded-full mx-auto mb-2" />
+                            <span className="block text-xs text-black">Welcome Back</span>
+                            <span className="block text-xs text-black">{user?.username || ''}</span>
+                            <button className="w-full py-1 mt-2 bg-gray-500 text-black rounded text-xs hover:bg-slate-700 hover:text-white" onClick={() => window.location.href='/profile.html'}>Profile</button>
+                            <button className="w-full py-1 mt-2 bg-gray-500 text-black rounded text-xs hover:bg-slate-700 hover:text-white" onClick={handleLogout}>Log Out</button>
+                        </div>
+                        <div className="bg-gray-200 rounded-lg p-3">
+                            <h3 className="text-sm font-bold text-black mb-2">Parking Management System</h3>
+                            <button className="w-full py-1 mb-1 bg-gray-500 text-black rounded text-xs hover:bg-slate-700 hover:text-white" onClick={() => window.location.href='/index.html'}>Live Overview</button>
+                            <button className="w-full py-1 mb-1 bg-gray-500 text-black rounded text-xs hover:bg-slate-700 hover:text-white" onClick={() => window.location.href='/previous-analysis.html'}>Previous Analysis</button>
+                            <button className="w-full py-1 mb-1 bg-gray-500 text-black rounded text-xs hover:bg-slate-700 hover:text-white">Export Data</button>
+                            <button className="w-full py-1 mb-1 bg-gray-500 text-black rounded text-xs hover:bg-slate-700 hover:text-white">3D Viewer VR</button>
+                            <button className="w-full py-1 mb-1 bg-gray-500 text-black rounded text-xs hover:bg-slate-700 hover:text-white">Helpdesk</button>
+                            <button className="w-full py-1 mb-1 bg-gray-500 text-black rounded text-xs hover:bg-slate-700 hover:text-white" onClick={() => window.location.href='/parkinganalysis.html'}>Parking Analysis</button>
+                        </div>
+                    </aside>
+
+                    <main className={`p-5 pt-20 min-h-screen ${isToolbarActive ? 'ml-60' : 'ml-0'} transition-all duration-300`}>
+                        <div className="bg-gray-200 p-3 rounded-lg border-2 border-red-500 min-h-[150px]">
+                            <h1 className="text-blue-600 text-lg mb-2">Parking Analysis (Messages)</h1>
+                            <div className="mb-2 text-sm">
+                                <span className="font-bold text-gray-600">Current Time:</span> <span>{currentTime}</span>
+                            </div>
+                            <div className="mb-2">
+                                <select className="p-2 text-sm border rounded bg-white cursor-pointer" value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+                                    <option value="slot">Sort by Slot</option>
+                                    <option value="newest">Sort by Newest</option>
+                                    <option value="oldest">Sort by Oldest</option>
+                                </select>
+                            </div>
+                            <div className="max-h-80 overflow-y-auto border border-gray-300 p-2 rounded">
+                                {messages.length === 0 ? (
+                                    <div>No messages available</div>
+                                ) : (
+                                    messages.map((msg, index) => {
+                                        const [dateStr, timeStr] = msg.timeKey.split(" ");
+                                        const [year, month, day] = dateStr.split("-");
+                                        const tanggalDisplay = `${day}-${month}-${year}`;
+                                        const jamDisplay = timeStr ? timeStr.slice(0, 5) : 'N/A';
+                                        return (
+                                            <div key={index} className="grid grid-cols-[0.5fr_1fr_0.5fr_1fr] py-1 text-xs items-center gap-1 border-b border-gray-200">
+                                                <span><strong>{msg.slotKey.replace('slot_', 'Slot ')}</strong></span>
+                                                <span>{tanggalDisplay}</span>
+                                                <span>{jamDisplay}</span>
+                                                <span>{msg.msgValue}</span>
+                                            </div>
+                                        );
+                                    })
+                                )}
+                            </div>
+                            {error && (
+                                <div className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-red-600 text-white p-2 rounded text-xs z-[102]">
+                                    {error}
+                                </div>
+                            )}
+                        </div>
+                    </main>
+                </div>
+            );
         }
 
-        function updateClock() {
-            const now = new Date();
-            const options = { timeZone: 'Asia/Jakarta', hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: false };
-            document.getElementById('currentTime').textContent = new Intl.DateTimeFormat('en-US', options).format(now) + ' WIB';
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        function renderMessages() {
-            const messageList = document.getElementById('messageList');
-            messageList.innerHTML = "";
-            const sortOption = document.getElementById('sortFilter').value;
-
-            if (!messagesData.length) {
-                messageList.innerHTML = "<div>No messages available</div>";
-                return;
-            }
-
-            let sortedMessages = [...messagesData];
-            if (sortOption === 'slot') {
-                sortedMessages.sort((a, b) => a.slotKey.localeCompare(b.slotKey));
-            } else if (sortOption === 'newest') {
-                sortedMessages.sort((a, b) => new Date(b.timeKey) - new Date(a.timeKey));
-            } else if (sortOption === 'oldest') {
-                sortedMessages.sort((a, b) => new Date(a.timeKey) - new Date(b.timeKey));
-            }
-
-            sortedMessages.forEach(({ slotKey, timeKey, msgValue }) => {
-                const div = document.createElement("div");
-                div.className = "message-item";
-                const [dateStr, timeStr] = timeKey.split(" ");
-                const [year, month, day] = dateStr.split("-");
-                const tanggalDisplay = `${day}-${month}-${year}`;
-                const jamDisplay = timeStr ? timeStr.slice(0, 5) : 'N/A';
-                div.innerHTML = `
-                    <span><strong>${slotKey.replace('slot_', 'Slot ')}</strong></span>
-                    <span>${tanggalDisplay}</span>
-                    <span>${jamDisplay}</span>
-                    <span>${msgValue}</span>
-                `;
-                messageList.appendChild(div);
-            });
-        }
-
-        dbRef.on("value", (snapshot) => {
-            messagesData = [];
-            const data = snapshot.val();
-            if (data) {
-                Object.entries(data).forEach(([slotKey, messagesObj]) => {
-                    if (typeof messagesObj === 'object') {
-                        Object.entries(messagesObj).forEach(([timeKey, msgValue]) => {
-                            messagesData.push({ slotKey, timeKey, msgValue });
-                        });
-                    }
-                });
-            }
-            renderMessages();
-        }, (error) => {
-            showError(`Failed to fetch messages: ${error.message}`);
-        });
-
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        if (currentUser) {
-            document.getElementById('userName').textContent = currentUser.username;
-            document.getElementById('profilePic').src = currentUser.profilePic || '/assets/user.JPG';
-        }
-        document.querySelector('.logout').addEventListener('click', () => {
-            localStorage.removeItem('currentUser');
-            alert('Berhasil logout!');
-            window.location.replace('/login.html');
-        });
-
-        const toggleToolbar = document.getElementById('toggleToolbar');
-        const toolbar = document.getElementById('toolbar');
-        const mainContent = document.getElementById('mainContent');
-        toggleToolbar.addEventListener('click', () => {
-            toolbar.classList.toggle('active');
-            mainContent.classList.toggle('with-toolbar');
-        });
+        ReactDOM.render(<App />, document.getElementById('root'));
     </script>
 </body>
 </html>
