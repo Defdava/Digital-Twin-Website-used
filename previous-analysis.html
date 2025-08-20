@@ -76,6 +76,10 @@
       margin-left: 0; 
       padding: 80px 20px 20px; 
       min-height: 100vh; 
+      transition: margin-left 0.3s ease-in-out;
+    }
+    .main-content.with-toolbar {
+      margin-left: 220px;
     }
     .toolbar { 
       position: fixed; 
@@ -272,12 +276,16 @@
       gap: 10px;
       flex-wrap: wrap;
     }
+    .filter-container select,
     .filter-container input {
       padding: 5px;
       font-size: 12px;
       border-radius: 5px;
       border: 1px solid #ccc;
       background-color: white;
+      cursor: pointer;
+    }
+    .filter-container input {
       width: 120px;
     }
     #error-message {
@@ -345,7 +353,7 @@
     </div>
   </aside>
 
-  <main class="main-content">
+  <main class="main-content" id="mainContent">
     <div class="overview">
       <h1>Previous Analysis</h1>
       <div class="history">
@@ -355,6 +363,11 @@
       <div class="customers">
         <h2>Customers Message</h2>
         <div class="filter-container">
+          <select id="sortFilter" onchange="updateCustomersMessage()">
+            <option value="slot">Sort by Slot</option>
+            <option value="newest">Sort by Newest</option>
+            <option value="oldest">Sort by Oldest</option>
+          </select>
           <input type="text" id="slotFilter" placeholder="Filter by Slot (e.g., slot_1)" oninput="updateCustomersMessage()">
           <input type="date" id="dateFilter" oninput="updateCustomersMessage()">
           <input type="text" id="nameFilter" placeholder="Filter by Name" oninput="updateCustomersMessage()">
@@ -384,6 +397,7 @@
 
       document.getElementById('toggleToolbar').addEventListener('click', () => {
         document.getElementById('toolbar').classList.toggle('active');
+        document.getElementById('mainContent').classList.toggle('with-toolbar');
       });
 
       function showError(message) {
@@ -472,13 +486,14 @@
       }
 
       function updateCustomersMessage() {
+        const sortOption = document.getElementById('sortFilter').value;
         const slotFilter = document.getElementById('slotFilter').value.toLowerCase();
         const dateFilter = document.getElementById('dateFilter').value;
         const nameFilter = document.getElementById('nameFilter').value.toLowerCase();
 
         customersMessageList.innerHTML = '';
 
-        const filteredMessages = messagesData.filter(({ slot, message }) => {
+        let filteredMessages = messagesData.filter(({ slot, message }) => {
           let matchesSlot = true;
           let matchesDate = true;
           let matchesName = true;
@@ -502,7 +517,16 @@
           return;
         }
 
-        filteredMessages.forEach(({ slot, message }) => {
+        let sortedMessages = [...filteredMessages];
+        if (sortOption === 'slot') {
+          sortedMessages.sort((a, b) => a.slot.localeCompare(b.slot));
+        } else if (sortOption === 'newest') {
+          sortedMessages.sort((a, b) => new Date(b.message.date) - new Date(a.message.date));
+        } else if (sortOption === 'oldest') {
+          sortedMessages.sort((a, b) => new Date(a.message.date) - new Date(b.message.date));
+        }
+
+        sortedMessages.forEach(({ slot, message }) => {
           const { contactNumber, idWorker, lastAction, parkingNotes, plate, timestamp, user, date } = message;
           const itemDiv = document.createElement('div');
           itemDiv.className = 'customer-item';
