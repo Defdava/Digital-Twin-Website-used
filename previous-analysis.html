@@ -298,6 +298,19 @@
       z-index: 1001;
       display: none;
     }
+    #success-message {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 128, 0, 0.8);
+      color: white;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      z-index: 1001;
+      display: none;
+    }
   </style>
 
   <!-- Firebase SDK -->
@@ -361,6 +374,7 @@
         <h2>Customers Message</h2>
         <div id="customersMessageList" class="history-list"></div>
         <div id="error-message"></div>
+        <div id="success-message"></div>
       </div>
     </div>
   </main>
@@ -393,6 +407,14 @@
         errorElement.style.display = 'block';
         setTimeout(() => { errorElement.style.display = 'none'; }, 5000);
         console.error('Error:', message);
+      }
+
+      function showSuccess(message) {
+        const successElement = document.getElementById('success-message');
+        successElement.textContent = message;
+        successElement.style.display = 'block';
+        setTimeout(() => { successElement.style.display = 'none'; }, 5000);
+        console.log('Success:', message);
       }
 
       // Function to parse mixed date formats (YYYY-MM-DD or DD-MM-YYYY)
@@ -474,7 +496,9 @@
           <input type="text" id="edit-parkingNotes-${slot}" value="${message.parkingNotes || ''}" placeholder="Parking Notes">
           <input type="text" id="edit-plate-${slot}" value="${message.plate || ''}" placeholder="Plate">
           <input type="text" id="edit-timestamp-${slot}" value="${message.timestamp || ''}" placeholder="Timestamp (HH:MM:SS)">
-          <input type="text" id="edit-user-${slot}" value="${message.user || ''}" placeholder="User">
+          <input type="text" id="edit-user
+
+-${slot}" value="${message.user || ''}" placeholder="User">
           <input type="date" id="edit-date-${slot}" value="${dateValue}" placeholder="Date">
           <button onclick="saveMessage('${slot}')">Save</button>
           <button class="cancel-btn" onclick="document.getElementById('${formId}').style.display = 'none'">Cancel</button>
@@ -511,22 +535,15 @@
             showError(`Slot ${newSlot} already exists. Choose a different slot.`);
             return;
           }
-          Promise.all([
-            firebase.database().ref(`slot_message_user/${newSlot}`).set(updatedMessage),
-            firebase.database().ref(`slot_messages_users/${newSlot}`).set(updatedMessage)
-          ])
+          firebase.database().ref(`slot_message_user/${newSlot}`).set(updatedMessage)
             .then(() => {
               if (newSlot !== oldSlot) {
-                return Promise.all([
-                  firebase.database().ref(`slot_message_user/${oldSlot}`).remove(),
-                  firebase.database().ref(`slot_messages_users/${oldSlot}`).remove()
-                ]);
+                return firebase.database().ref(`slot_message_user/${oldSlot}`).remove();
               }
             })
             .then(() => {
-              showError(`Message ${newSlot === oldSlot ? 'updated' : 'moved to new slot'} successfully`);
+              showSuccess(`Message ${newSlot === oldSlot ? 'updated' : 'moved to new slot'} successfully`);
               document.getElementById(`edit-form-${oldSlot}`).style.display = 'none';
-              refreshMessages();
             })
             .catch((error) => {
               showError(`Failed to update message: ${error.message}`);
@@ -535,7 +552,6 @@
       }
 
       function deleteMessage(slot) {
-        console.log('Attempting to delete message for slot:', slot);
         if (!confirm(`Are you sure you want to permanently delete the message for ${slot.replace('_', ' ').toUpperCase()}? This action cannot be undone.`)) {
           console.log('Deletion cancelled for slot:', slot);
           return;
@@ -546,14 +562,10 @@
             console.warn(`No message found for slot: ${slot}`);
             return;
           }
-          Promise.all([
-            firebase.database().ref(`slot_message_user/${slot}`).remove(),
-            firebase.database().ref(`slot_messages_users/${slot}`).remove()
-          ])
+          firebase.database().ref(`slot_message_user/${slot}`).remove()
             .then(() => {
-              console.log(`Successfully deleted message for slot: ${slot} from both slot_message_user and slot_messages_users`);
-              showError(`Message for ${slot.replace('_', ' ').toUpperCase()} deleted successfully`);
-              refreshMessages();
+              console.log(`Successfully deleted message for slot: ${slot}`);
+              showSuccess(`Message for ${slot.replace('_', ' ').toUpperCase()} deleted successfully`);
             })
             .catch((error) => {
               console.error(`Failed to delete message for slot ${slot}:`, error);
