@@ -749,4 +749,131 @@
         });
         
         // Close modal when clicking outside
-        deleteModal.
+        deleteModal.addEventListener('click', function(e) {
+          if (e.target === deleteModal) {
+            deleteModal.style.display = 'none';
+          }
+        });
+      };
+
+      function performDelete(slot) {
+        console.log('Attempting to delete slot:', slot);
+        
+        // First check if the slot exists in Firebase
+        firebase.database().ref(`slot_message_user/${slot}`).once('value', (snapshot) => {
+          if (!snapshot.exists()) {
+            showError(`Message for ${slot.replace('_', ' ').toUpperCase()} does not exist in Firebase`);
+            console.warn(`No message found for slot: ${slot}`);
+            return;
+          }
+          
+          // Perform the deletion
+          firebase.database().ref(`slot_message_user/${slot}`).remove()
+            .then(() => {
+              console.log(`Successfully deleted message for slot: ${slot}`);
+              showSuccess(`Message for ${slot.replace('_', ' ').toUpperCase()} deleted successfully`);
+              
+              // Update local data
+              messagesData = messagesData.filter(item => item.slot !== slot);
+              updateCustomersMessage();
+            })
+            .catch((error) => {
+              console.error(`Failed to delete message for slot ${slot}:`, error);
+              showError(`Failed to delete message: ${error.message}`);
+            });
+        }).catch((error) => {
+          console.error(`Error checking slot existence: ${error}`);
+          showError(`Error checking slot existence: ${error.message}`);
+        });
+      }
+
+      function refreshMessages() {
+        firebase.database().ref("slot_message_user").once("value", (snapshot) => {
+          const data = snapshot.val();
+          console.log('Customer Messages Data:', data);
+          messagesData = [];
+          if (data) {
+            for (const slot in data) {
+              messagesData.push({ slot, message: data[slot] });
+            }
+            updateCustomersMessage();
+          } else {
+            customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No messages available</div>';
+            console.log('No customer messages available');
+          }
+        }, (error) => {
+          showError(`Failed to fetch customer messages: ${error.message}`);
+        });
+      }
+
+      function updateCustomersMessage() {
+        customersMessageList.innerHTML = '';
+
+        if (!messagesData.length) {
+          customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No messages available</div>';
+          console.log('No messages in messagesData');
+          return;
+        }
+
+        let sortedMessages = sortMessages([...messagesData]);
+
+        sortedMessages.forEach(({ slot, message }) => {
+          const { contactNumber, idWorker, lastAction, parkingNotes, plate, timestamp, user, date } = message;
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'customer-item';
+          itemDiv.innerHTML = `
+            <strong>${slot.replace('_', ' ').toUpperCase()}</strong>
+            <span><strong>Contact:</strong> ${contactNumber || 'N/A'}</span>
+            <span><strong>ID Worker:</strong> ${idWorker || 'N/A'}</span>
+            <span><strong>Last Action:</strong> ${lastAction || 'N/A'}</span>
+            <span><strong>Parking Notes:</strong> ${parkingNotes || 'N/A'}</span>
+            <span><strong>Plate:</strong> ${plate || 'N/A'}</span>
+            <span><strong>Timestamp:</strong> ${timestamp || 'N/A'}</span>
+            <span><strong>User:</strong> ${user || 'N/A'}</span>
+            <span><strong>Date:</strong> ${date || 'N/A'}</span>
+            <div class="customer-actions">
+              <button class="edit-btn" onclick="toggleEditForm('${slot}')">Edit</button>
+              <button class="delete-btn" onclick="deleteMessage('${slot}')">Delete</button>
+            </div>
+          `;
+          itemDiv.appendChild(showEditForm(slot, message));
+          customersMessageList.appendChild(itemDiv);
+        });
+      }
+
+      window.toggleEditForm = function(slot) {
+        const form = document.getElementById(`edit-form-${slot}`);
+        if (form) {
+          form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+        }
+      };
+
+      // Listen for real-time updates from Firebase
+      firebase.database().ref("slot_message_user").on("value", (snapshot) => {
+        const data = snapshot.val();
+        console.log('Real-time Customer Messages Data:', data);
+        messagesData = [];
+        if (data) {
+          for (const slot in data) {
+            messagesData.push({ slot, message: data[slot] });
+          }
+          updateCustomersMessage();
+        } else {
+          customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No messages available</div>';
+        }
+      }, (error) => {
+        showError(`Failed to fetch customer messages: ${error.message}`);
+      });
+
+      // Prevent undo/redo operations
+      document.addEventListener('keydown', (event) => {
+        if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
+          event.preventDefault();
+          event.stopPropagation();
+          console.log('Undo/Redo is disabled');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
