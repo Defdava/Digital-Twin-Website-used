@@ -54,7 +54,7 @@
         .toolbar {
             position: fixed;
             top: 60px;
-            left: -400px;
+            left: -400px; /* Mulai dari tersembunyi */
             width: 200px;
             height: 100%;
             background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
@@ -62,10 +62,10 @@
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
             z-index: 999;
             overflow-y: auto;
-            transition: left 0.3s ease-in-out;
+            transition: left 0.3s ease-in-out; /* Efek transisi */
         }
         .toolbar.active {
-            left: 0;
+            left: 0; /* Tampil saat active */
         }
         .toolbar .feature-box {
             background-color: lightgrey;
@@ -114,11 +114,11 @@
         .main-content {
             padding: 80px 20px 20px;
             min-height: 100vh;
-            margin-left: 0;
-            transition: margin-left 0.3s ease-in-out;
+            margin-left: 0; /* Default tanpa toolbar */
+            transition: margin-left 0.3s ease-in-out; /* Efek transisi */
         }
         .main-content.with-toolbar {
-            margin-left: 220px;
+            margin-left: 220px; /* Geser saat toolbar aktif */
         }
         .analysis-panel {
             background-color: lightgrey;
@@ -169,17 +169,6 @@
             z-index: 102;
             display: none;
         }
-        .filter-container {
-            margin-bottom: 10px;
-        }
-        .filter-container select {
-            padding: 5px;
-            font-size: 12px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            background-color: white;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -223,13 +212,6 @@
             <div class="stats">
                 <span>Current Time:</span> <span id="currentTime"></span>
             </div>
-            <div class="filter-container">
-                <select id="sortFilter" onchange="renderMessages()">
-                    <option value="slot">Sort by Slot</option>
-                    <option value="newest">Sort by Newest</option>
-                    <option value="oldest">Sort by Oldest</option>
-                </select>
-            </div>
             <div class="message-list" id="messageList"></div>
             <div id="error-message"></div>
         </div>
@@ -251,8 +233,6 @@
         firebase.initializeApp(firebaseConfig);
         const dbRef = firebase.database().ref("slot_messages_vr");
 
-        let messagesData = [];
-
         function showError(message) {
             const errorElement = document.getElementById('error-message');
             errorElement.textContent = message;
@@ -268,59 +248,38 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        function renderMessages() {
+        dbRef.on("value", (snapshot) => {
             const messageList = document.getElementById('messageList');
             messageList.innerHTML = "";
-            const sortOption = document.getElementById('sortFilter').value;
-
-            if (!messagesData.length) {
+            const data = snapshot.val();
+            if (!data) {
                 messageList.innerHTML = "<div>No messages available</div>";
                 return;
             }
-
-            let sortedMessages = [...messagesData];
-            if (sortOption === 'slot') {
-                sortedMessages.sort((a, b) => a.slotKey.localeCompare(b.slotKey));
-            } else if (sortOption === 'newest') {
-                sortedMessages.sort((a, b) => new Date(b.timeKey) - new Date(a.timeKey));
-            } else if (sortOption === 'oldest') {
-                sortedMessages.sort((a, b) => new Date(a.timeKey) - new Date(b.timeKey));
-            }
-
-            sortedMessages.forEach(({ slotKey, timeKey, msgValue }) => {
-                const div = document.createElement("div");
-                div.className = "message-item";
-                const [dateStr, timeStr] = timeKey.split(" ");
-                const [year, month, day] = dateStr.split("-");
-                const tanggalDisplay = `${day}-${month}-${year}`;
-                const jamDisplay = timeStr ? timeStr.slice(0, 5) : 'N/A';
-                div.innerHTML = `
-                    <span><strong>${slotKey.replace('slot_', 'Slot ')}</strong></span>
-                    <span>${tanggalDisplay}</span>
-                    <span>${jamDisplay}</span>
-                    <span>${msgValue}</span>
-                `;
-                messageList.appendChild(div);
+            Object.entries(data).forEach(([slotKey, messagesObj]) => {
+                if (typeof messagesObj === 'object') {
+                    Object.entries(messagesObj).forEach(([timeKey, msgValue]) => {
+                        const div = document.createElement("div");
+                        div.className = "message-item";
+                        const [dateStr, timeStr] = timeKey.split(" ");
+                        const [year, month, day] = dateStr.split("-");
+                        const tanggalDisplay = `${day}-${month}-${year}`;
+                        const jamDisplay = timeStr ? timeStr.slice(0, 5) : 'N/A';
+                        div.innerHTML = `
+                            <span><strong>${slotKey.replace('slot_', 'Slot ')}</strong></span>
+                            <span>${tanggalDisplay}</span>
+                            <span>${jamDisplay}</span>
+                            <span>${msgValue}</span>
+                        `;
+                        messageList.appendChild(div);
+                    });
+                }
             });
-        }
-
-        dbRef.on("value", (snapshot) => {
-            messagesData = [];
-            const data = snapshot.val();
-            if (data) {
-                Object.entries(data).forEach(([slotKey, messagesObj]) => {
-                    if (typeof messagesObj === 'object') {
-                        Object.entries(messagesObj).forEach(([timeKey, msgValue]) => {
-                            messagesData.push({ slotKey, timeKey, msgValue });
-                        });
-                    }
-                });
-            }
-            renderMessages();
         }, (error) => {
             showError(`Failed to fetch messages: ${error.message}`);
         });
 
+        // Ambil user dari localStorage
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         if (currentUser) {
             document.getElementById('userName').textContent = currentUser.username;
@@ -332,6 +291,7 @@
             window.location.replace('/login.html');
         });
 
+        // Toggle Toolbar
         const toggleToolbar = document.getElementById('toggleToolbar');
         const toolbar = document.getElementById('toolbar');
         const mainContent = document.getElementById('mainContent');
