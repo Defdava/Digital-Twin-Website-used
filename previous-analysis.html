@@ -214,6 +214,58 @@
       display: block; 
       color: #555; 
     }
+    .customer-item button.edit-btn {
+      padding: 5px 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 11px;
+      margin-top: 5px;
+      transition: background-color 0.3s;
+    }
+    .customer-item button.edit-btn:hover {
+      background-color: #0056b3;
+    }
+    .edit-form {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      width: 100%;
+      padding: 10px;
+      background: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-top: 5px;
+    }
+    .edit-form input {
+      padding: 5px;
+      font-size: 12px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .edit-form button {
+      padding: 5px 10px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 11px;
+      margin-top: 5px;
+    }
+    .edit-form button:hover {
+      background-color: #218838;
+    }
+    .edit-form button.cancel-btn {
+      background-color: #dc3545;
+    }
+    .edit-form button.cancel-btn:hover {
+      background-color: #c82333;
+    }
     .filter-container {
       margin-bottom: 10px;
       display: flex;
@@ -227,6 +279,19 @@
       border: 1px solid #ccc;
       background-color: white;
       width: 120px;
+    }
+    #error-message {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 0, 0, 0.8);
+      color: white;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      z-index: 1001;
+      display: none;
     }
   </style>
 
@@ -295,6 +360,7 @@
           <input type="text" id="nameFilter" placeholder="Filter by Name" oninput="updateCustomersMessage()">
         </div>
         <div id="customersMessageList" class="history-list"></div>
+        <div id="error-message"></div>
       </div>
     </div>
   </main>
@@ -320,6 +386,13 @@
         document.getElementById('toolbar').classList.toggle('active');
       });
 
+      function showError(message) {
+        const errorElement = document.getElementById('error-message');
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+        setTimeout(() => { errorElement.style.display = 'none'; }, 5000);
+      }
+
       // Realtime Slot Status
       const slotStatusList = document.getElementById("slotStatusList");
       function updateSlotStatus(data) {
@@ -337,12 +410,66 @@
       }
       firebase.database().ref("slot_parking").on("value", (snapshot) => {
         const data = snapshot.val();
-        if (data) updateSlotStatus(data);
+        if (data) {
+          updateSlotStatus(data);
+        } else {
+          showError('No slot status data available');
+        }
+      }, (error) => {
+        showError(`Failed to fetch slot status: ${error.message}`);
       });
 
       // Realtime Customers Message
       const customersMessageList = document.getElementById("customersMessageList");
       let messagesData = [];
+
+      function showEditForm(slot, message) {
+        const formId = `edit-form-${slot}`;
+        const existingForm = document.getElementById(formId);
+        if (existingForm) {
+          existingForm.style.display = existingForm.style.display === 'none' ? 'flex' : 'none';
+          return;
+        }
+
+        const form = document.createElement('div');
+        form.className = 'edit-form';
+        form.id = formId;
+        form.innerHTML = `
+          <input type="text" id="edit-contactNumber-${slot}" value="${message.contactNumber || ''}" placeholder="Contact Number">
+          <input type="text" id="edit-idWorker-${slot}" value="${message.idWorker || ''}" placeholder="ID Worker">
+          <input type="text" id="edit-lastAction-${slot}" value="${message.lastAction || ''}" placeholder="Last Action">
+          <input type="text" id="edit-parkingNotes-${slot}" value="${message.parkingNotes || ''}" placeholder="Parking Notes">
+          <input type="text" id="edit-plate-${slot}" value="${message.plate || ''}" placeholder="Plate">
+          <input type="text" id="edit-timestamp-${slot}" value="${message.timestamp || ''}" placeholder="Timestamp (HH:MM:SS)">
+          <input type="text" id="edit-user-${slot}" value="${message.user || ''}" placeholder="User">
+          <input type="date" id="edit-date-${slot}" value="${message.date ? message.date.split('T')[0] : ''}" placeholder="Date">
+          <button onclick="saveMessage('${slot}')">Save</button>
+          <button class="cancel-btn" onclick="document.getElementById('${formId}').style.display = 'none'">Cancel</button>
+        `;
+        return form;
+      }
+
+      function saveMessage(slot) {
+        const updatedMessage = {
+          contactNumber: document.getElementById(`edit-contactNumber-${slot}`).value || null,
+          idWorker: document.getElementById(`edit-idWorker-${slot}`).value || null,
+          lastAction: document.getElementById(`edit-lastAction-${slot}`).value || null,
+          parkingNotes: document.getElementById(`edit-parkingNotes-${slot}`).value || null,
+          plate: document.getElementById(`edit-plate-${slot}`).value || null,
+          timestamp: document.getElementById(`edit-timestamp-${slot}`).value || null,
+          user: document.getElementById(`edit-user-${slot}`).value || null,
+          date: document.getElementById(`edit-date-${slot}`).value || null
+        };
+
+        firebase.database().ref(`slot_message_user/${slot}`).set(updatedMessage)
+          .then(() => {
+            showError('Message updated successfully');
+            document.getElementById(`edit-form-${slot}`).style.display = 'none';
+          })
+          .catch((error) => {
+            showError(`Failed to update message: ${error.message}`);
+          });
+      }
 
       function updateCustomersMessage() {
         const slotFilter = document.getElementById('slotFilter').value.toLowerCase();
@@ -360,10 +487,11 @@
             matchesSlot = slot.toLowerCase().includes(slotFilter);
           }
           if (dateFilter) {
-            matchesDate = message.date === dateFilter;
+            const firebaseDate = message.date ? message.date.split('T')[0] : 'N/A';
+            matchesDate = firebaseDate === dateFilter;
           }
           if (nameFilter) {
-            matchesName = message.user.toLowerCase().includes(nameFilter);
+            matchesName = (message.user || '').toLowerCase().includes(nameFilter);
           }
 
           return matchesSlot && matchesDate && matchesName;
@@ -376,19 +504,22 @@
 
         filteredMessages.forEach(({ slot, message }) => {
           const { contactNumber, idWorker, lastAction, parkingNotes, plate, timestamp, user, date } = message;
-          customersMessageList.innerHTML += `
-            <div class="customer-item">
-              <strong>${slot.replace('_', ' ').toUpperCase()}</strong>
-              <span>Contact: ${contactNumber || 'N/A'}</span>
-              <span>ID Worker: ${idWorker || 'N/A'}</span>
-              <span>Last Action: ${lastAction || 'N/A'}</span>
-              <span>Parking Notes: ${parkingNotes || 'N/A'}</span>
-              <span>Plate: ${plate || 'N/A'}</span>
-              <span>Timestamp: ${timestamp || 'N/A'}</span>
-              <span>User: ${user || 'N/A'}</span>
-              <span>Date: ${date || 'N/A'}</span>
-            </div>
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'customer-item';
+          itemDiv.innerHTML = `
+            <strong>${slot.replace('_', ' ').toUpperCase()}</strong>
+            <span>Contact: ${contactNumber || 'N/A'}</span>
+            <span>ID Worker: ${idWorker || 'N/A'}</span>
+            <span>Last Action: ${lastAction || 'N/A'}</span>
+            <span>Parking Notes: ${parkingNotes || 'N/A'}</span>
+            <span>Plate: ${plate || 'N/A'}</span>
+            <span>Timestamp: ${timestamp || 'N/A'}</span>
+            <span>User: ${user || 'N/A'}</span>
+            <span>Date: ${date || 'N/A'}</span>
+            <button class="edit-btn" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'flex' : 'none'">Edit</button>
           `;
+          itemDiv.appendChild(showEditForm(slot, message));
+          customersMessageList.appendChild(itemDiv);
         });
       }
 
@@ -399,8 +530,13 @@
           for (const slot in data) {
             messagesData.push({ slot, message: data[slot] });
           }
+          updateCustomersMessage();
+        } else {
+          customersMessageList.innerHTML = '<div>No messages available</div>';
+          showError('No customer messages available');
         }
-        updateCustomersMessage();
+      }, (error) => {
+        showError(`Failed to fetch customer messages: ${error.message}`);
       });
 
       // Prevent Undo/Redo
