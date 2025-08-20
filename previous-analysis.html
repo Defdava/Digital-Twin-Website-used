@@ -480,7 +480,7 @@
         const existingForm = document.getElementById(formId);
         if (existingForm) {
           existingForm.style.display = existingForm.style.display === 'none' ? 'flex' : 'none';
-          return;
+          return existingForm;
         }
 
         const form = document.createElement('div');
@@ -488,6 +488,7 @@
         form.id = formId;
         const dateValue = message.date ? (message.date.includes('-') && !message.date.startsWith('20') ? message.date : message.date.split('T')[0]) : '';
         form.innerHTML = `
+          <input type="text" id="edit-slot-${slot}" value="${slot}" placeholder="Slot (e.g., slot_10)">
           <input type="text" id="edit-contactNumber-${slot}" value="${message.contactNumber || ''}" placeholder="Contact Number">
           <input type="text" id="edit-idWorker-${slot}" value="${message.idWorker || ''}" placeholder="ID Worker">
           <input type="text" id="edit-lastAction-${slot}" value="${message.lastAction || ''}" placeholder="Last Action">
@@ -502,56 +503,86 @@
         return form;
       }
 
-      function saveMessage(slot) {
-        console.log('Saving message for slot:', slot);
-        let dateInput = document.getElementById(`edit-date-${slot}`).value;
-        // Convert DD-MM-YYYY to YYYY-MM-DD for Firebase consistency
+      function saveMessage(oldSlot) {
+        console.log('Saving message for old slot:', oldSlot);
+        const newSlot = document.getElementById(`edit-slot-${oldSlot}`).value || oldSlot;
+        let dateInput = document.getElementById(`edit-date-${oldSlot}`).value;
         if (/^\d{2}-\d{2}-\d{4}$/.test(dateInput)) {
           const [day, month, year] = dateInput.split('-');
           dateInput = `${year}-${month}-${day}`;
         }
         const updatedMessage = {
-          contactNumber: document.getElementById(`edit-contactNumber-${slot}`).value || null,
-          idWorker: document.getElementById(`edit-idWorker-${slot}`).value || null,
-          lastAction: document.getElementById(`edit-lastAction-${slot}`).value || null,
-          parkingNotes: document.getElementById(`edit-parkingNotes-${slot}`).value || null,
-          plate: document.getElementById(`edit-plate-${slot}`).value || null,
-          timestamp: document.getElementById(`edit-timestamp-${slot}`).value || null,
-          user: document.getElementById(`edit-user-${slot}`).value || null,
+          contactNumber: document.getElementById(`edit-contactNumber-${oldSlot}`).value || null,
+          idWorker: document.getElementById(`edit-idWorker-${oldSlot}`).value || null,
+          lastAction: document.getElementById(`edit-lastAction-${oldSlot}`).value || null,
+          parkingNotes: document.getElementById(`edit-parkingNotes-${oldSlot}`).value || null,
+          plate: document.getElementById(`edit-plate-${oldSlot}`).value || null,
+          timestamp: document.getElementById(`edit-timestamp-${oldSlot}`).value || null,
+          user: document.getElementById(`edit-user-${oldSlot}`).value || null,
           date: dateInput || null
         };
-        console.log('Updated message:', updatedMessage);
-        firebase.database().ref(`slot_message_user/${slot}`).set(updatedMessage)
+        console.log('Updated message:', updatedMessage, 'New slot:', newSlot);
+
+        // Update slot_message_user
+        firebase.database().ref(`slot_message_user/${newSlot}`).set(updatedMessage)
           .then(() => {
-            firebase.database().ref(`slot_messages_users/${slot}`).set(updatedMessage)
-              .then(() => {
-                showError('Message updated successfully');
-                document.getElementById(`edit-form-${slot}`).style.display = 'none';
-              })
-              .catch((error) => {
-                showError(`Failed to update slot_messages_users: ${error.message}`);
-              });
+            // Update slot_messages_users
+            return firebase.database().ref(`slot_messages_users/${newSlot}`).set(updatedMessage);
+          })
+          .then(() => {
+            if (newSlot !== oldSlot) {
+              // Remove old slot from both folders
+              return Promise.all([
+                firebase.database().ref(`slot_message_user/${oldSlot}`).remove(),
+                firebase.database().ref(`slot_messages_users/${oldSlot}`).remove()
+              ]);
+            }
+          })
+          .then(() => {
+            showError(`Message ${newSlot === oldSlot ? 'updated' : 'moved to new slot'} successfully`);
+            document.getElementById(`edit-form-${oldSlot}`).style.display = 'none';
+            // Manually fetch updated data to refresh UI
+            firebase.database().ref("slot_message_user").once("value", (snapshot) => {
+              const data = snapshot.val();
+              messagesData = [];
+              if (data) {
+                for (const slot in data) {
+                  messagesData.push({ slot, message: data[slot] });
+                }
+              }
+              updateCustomersMessage();
+            });
           })
           .catch((error) => {
-            showError(`Failed to update slot_message_user: ${error.message}`);
+            showError(`Failed to update message: ${error.message}`);
           });
       }
 
       function deleteMessage(slot) {
         console.log('Deleting message for slot:', slot);
         if (confirm('Are you sure you want to delete this message?')) {
-          firebase.database().ref(`slot_message_user/${slot}`).remove()
+          Promise.all([
+            firebase.database().ref(`slot_message_user/${slot}`).remove(),
+            firebase.database().ref(`slot_messages_users/${slot}`).remove()
+          ])
             .then(() => {
-              firebase.database().ref(`slot_messages_users/${slot}`).remove()
-                .then(() => {
-                  showError('Message deleted successfully');
-                })
-                .catch((error) => {
-                  showError(`Failed to delete from slot_messages_users: ${error.message}`);
-                });
+              showError('Message deleted successfully');
+              // Manually fetch updated data to refresh UI
+              firebase.database().ref("slot_message_user").once("value", (snapshot) => {
+                const data = snapshot.val();
+                messagesData = [];
+                if (data) {
+                  for (const slot in data) {
+                    messagesData.push({ slot, message: data[slot] });
+                  }
+                } else {
+                  customersMessageList.innerHTML = '<div>No messages available</div>';
+                }
+                updateCustomersMessage();
+              });
             })
             .catch((error) => {
-              showError(`Failed to delete from slot_message_user: ${error.message}`);
+              showError(`Failed to delete message: ${error.message}`);
             });
         }
       }
