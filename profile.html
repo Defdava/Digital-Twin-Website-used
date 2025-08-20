@@ -182,6 +182,7 @@
 
         .profile-container input[type="text"],
         .profile-container input[type="password"],
+        .profile-container input[type="email"],
         .profile-container input[type="file"] {
             width: 100%;
             padding: 10px;
@@ -226,6 +227,24 @@
             display: none;
         }
     </style>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAef3SJwvVVTunr6CWki79aenfpXlgYc0s",
+            authDomain: "digitaltwinparkingbrin.firebaseapp.com",
+            databaseURL: "https://digitaltwinparkingbrin-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "digitaltwinparkingbrin",
+            storageBucket: "digitaltwinparkingbrin.firebasestorage.app",
+            messagingSenderId: "608462498913",
+            appId: "1:608462498913:web:73695d8c91f923e2db8e20",
+            measurementId: "G-F1TRY65RTG"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
 </head>
 <body>
     <video id="bg-video" autoplay muted loop>
@@ -267,6 +286,7 @@
             <img id="previewPic" src="/assets/user.JPG" alt="Profile Picture">
             <input type="file" id="profilePicture" accept="image/*">
             <input type="text" id="username" placeholder="Username">
+            <input type="email" id="email" placeholder="Email">
             <input type="password" id="password" placeholder="New Password">
             <input type="password" id="confirmPassword" placeholder="Confirm New Password">
             <button id="saveProfile">Save Changes</button>
@@ -291,14 +311,18 @@
                 this.users = JSON.parse(localStorage.getItem('users')) || [];
             }
 
-            updateUser(email, updatedData) {
-                const userIndex = this.users.findIndex(user => user.email === email);
+            updateUser(oldEmail, updatedData) {
+                const userIndex = this.users.findIndex(user => user.email === oldEmail);
                 if (userIndex !== -1) {
                     this.users[userIndex] = { ...this.users[userIndex], ...updatedData };
                     localStorage.setItem('users', JSON.stringify(this.users));
                     return this.users[userIndex];
                 }
                 throw new Error('User not found!');
+            }
+
+            checkEmailExists(email, excludeEmail = '') {
+                return this.users.some(user => user.email === email && user.email !== excludeEmail);
             }
         }
 
@@ -312,6 +336,7 @@
             const profilePic = document.getElementById('profilePic');
             const previewPic = document.getElementById('previewPic');
             const usernameInput = document.getElementById('username');
+            const emailInput = document.getElementById('email');
             const passwordInput = document.getElementById('password');
             const confirmPasswordInput = document.getElementById('confirmPassword');
             const profilePictureInput = document.getElementById('profilePicture');
@@ -328,6 +353,7 @@
                 profilePic.src = currentUser.profilePic || '/assets/user.JPG';
                 previewPic.src = currentUser.profilePic || '/assets/user.JPG';
                 usernameInput.value = currentUser.username;
+                emailInput.value = currentUser.email;
             }
 
             // Toggle Toolbar
@@ -359,6 +385,7 @@
             // Save Profile Changes
             saveProfileBtn.addEventListener('click', () => {
                 const newUsername = usernameInput.value.trim();
+                const newEmail = emailInput.value.trim();
                 const newPassword = passwordInput.value;
                 const confirmPassword = confirmPasswordInput.value;
                 const file = profilePictureInput.files[0];
@@ -366,48 +393,82 @@
                 errorMessage.style.display = 'none';
                 successMessage.style.display = 'none';
 
+                // Validation
                 if (!newUsername) {
                     errorMessage.textContent = 'Username cannot be empty!';
                     errorMessage.style.display = 'block';
                     return;
                 }
-
+                if (!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+                    errorMessage.textContent = 'Please enter a valid email!';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+                if (auth.checkEmailExists(newEmail, currentUser.email)) {
+                    errorMessage.textContent = 'Email is already in use!';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
                 if (newPassword && newPassword !== confirmPassword) {
                     errorMessage.textContent = 'Passwords do not match!';
                     errorMessage.style.display = 'block';
                     return;
                 }
 
-                try {
-                    let updatedData = { username: newUsername };
-                    if (newPassword) {
-                        updatedData.password = newPassword;
-                    }
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            updatedData.profilePic = e.target.result;
-                            const updatedUser = auth.updateUser(currentUser.email, updatedData);
-                            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-                            userName.textContent = updatedUser.username;
-                            profilePic.src = updatedUser.profilePic;
-                            previewPic.src = updatedUser.profilePic;
-                            successMessage.textContent = 'Profile updated successfully!';
-                            successMessage.style.display = 'block';
-                        };
-                        reader.readAsDataURL(file);
-                    } else {
+                // Prepare updated data
+                const updatedData = {
+                    username: newUsername,
+                    email: newEmail
+                };
+                if (newPassword) {
+                    updatedData.password = newPassword;
+                }
+
+                // Handle profile picture upload
+                const updateProfile = () => {
+                    try {
                         const updatedUser = auth.updateUser(currentUser.email, updatedData);
-                        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-                        userName.textContent = updatedUser.username;
-                        profilePic.src = updatedUser.profilePic || '/assets/user.JPG';
-                        previewPic.src = updatedUser.profilePic || '/assets/user.JPG';
-                        successMessage.textContent = 'Profile updated successfully!';
-                        successMessage.style.display = 'block';
+                        // Update Firebase Realtime Database
+                        firebase.database().ref(`users/${newEmail}`).set(updatedUser)
+                            .then(() => {
+                                if (newEmail !== currentUser.email) {
+                                    return firebase.database().ref(`users/${currentUser.email}`).remove();
+                                }
+                            })
+                            .then(() => {
+                                localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                                userName.textContent = updatedUser.username;
+                                profilePic.src = updatedUser.profilePic || '/assets/user.JPG';
+                                previewPic.src = updatedUser.profilePic || '/assets/user.JPG';
+                                emailInput.value = updatedUser.email;
+                                successMessage.textContent = 'Profile updated successfully!';
+                                successMessage.style.display = 'block';
+                            })
+                            .catch((error) => {
+                                errorMessage.textContent = `Failed to update profile: ${error.message}`;
+                                errorMessage.style.display = 'block';
+                            });
+                    } catch (error) {
+                        errorMessage.textContent = error.message;
+                        errorMessage.style.display = 'block';
                     }
-                } catch (error) {
-                    errorMessage.textContent = error.message;
-                    errorMessage.style.display = 'block';
+                };
+
+                if (file) {
+                    const storageRef = firebase.storage().ref(`profile_pictures/${newEmail}.jpg`);
+                    storageRef.put(file)
+                        .then((snapshot) => snapshot.ref.getDownloadURL())
+                        .then((downloadURL) => {
+                            updatedData.profilePic = downloadURL;
+                            updateProfile();
+                        })
+                        .catch((error) => {
+                            errorMessage.textContent = `Failed to upload profile picture: ${error.message}`;
+                            errorMessage.style.display = 'block';
+                        });
+                } else {
+                    updatedData.profilePic = currentUser.profilePic || '/assets/user.JPG';
+                    updateProfile();
                 }
             });
 
