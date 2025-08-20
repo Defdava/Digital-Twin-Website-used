@@ -561,19 +561,27 @@
           console.log('Deletion cancelled for slot:', slot);
           return;
         }
-        Promise.all([
-          firebase.database().ref(`slot_message_user/${slot}`).remove(),
-          firebase.database().ref(`slot_messages_users/${slot}`).remove()
-        ])
-          .then(() => {
-            console.log(`Successfully deleted message for slot: ${slot} from both slot_message_user and slot_messages_users`);
-            showError(`Message for ${slot.replace('_', ' ').toUpperCase()} deleted successfully`);
-            refreshMessages();
-          })
-          .catch((error) => {
-            console.error(`Failed to delete message for slot ${slot}:`, error);
-            showError(`Failed to delete message: ${error.message}`);
-          });
+        // Verify slot exists before attempting deletion
+        firebase.database().ref(`slot_message_user/${slot}`).once('value', (snapshot) => {
+          if (!snapshot.exists()) {
+            showError(`Message for ${slot.replace('_', ' ').toUpperCase()} does not exist in Firebase`);
+            console.warn(`No message found for slot: ${slot}`);
+            return;
+          }
+          Promise.all([
+            firebase.database().ref(`slot_message_user/${slot}`).remove(),
+            firebase.database().ref(`slot_messages_users/${slot}`).remove()
+          ])
+            .then(() => {
+              console.log(`Successfully deleted message for slot: ${slot} from both slot_message_user and slot_messages_users`);
+              showError(`Message for ${slot.replace('_', ' ').toUpperCase()} deleted successfully`);
+              refreshMessages();
+            })
+            .catch((error) => {
+              console.error(`Failed to delete message for slot ${slot}:`, error);
+              showError(`Failed to delete message: ${error.message}`);
+            });
+        });
       }
 
       function refreshMessages() {
