@@ -413,16 +413,22 @@
         errorElement.textContent = message;
         errorElement.style.display = 'block';
         setTimeout(() => { errorElement.style.display = 'none'; }, 5000);
+        console.error('Error:', message);
       }
 
       // Realtime Slot Status
       const slotStatusList = document.getElementById("slotStatusList");
       function updateSlotStatus(data) {
+        console.log('Slot Status Data:', data); // Debug log
         slotStatusList.innerHTML = '';
+        if (!data) {
+          showError('No slot status data available');
+          return;
+        }
         const slots = Object.keys(data);
         slots.sort((a, b) => {
-          const numA = parseInt(a.split('_')[1]);
-          const numB = parseInt(b.split('_')[1]);
+          const numA = parseInt(a.split('_')[1]) || 999; // Fallback for non-standard slot names
+          const numB = parseInt(b.split('_')[1]) || 999;
           return numA - numB;
         });
         slots.forEach((slot) => {
@@ -478,6 +484,7 @@
       }
 
       function saveMessage(slot) {
+        console.log('Saving message for slot:', slot); // Debug log
         const updatedMessage = {
           contactNumber: document.getElementById(`edit-contactNumber-${slot}`).value || null,
           idWorker: document.getElementById(`edit-idWorker-${slot}`).value || null,
@@ -488,7 +495,7 @@
           user: document.getElementById(`edit-user-${slot}`).value || null,
           date: document.getElementById(`edit-date-${slot}`).value || null
         };
-
+        console.log('Updated message:', updatedMessage); // Debug log
         firebase.database().ref(`slot_message_user/${slot}`).set(updatedMessage)
           .then(() => {
             firebase.database().ref(`slot_messages_users/${slot}`).set(updatedMessage)
@@ -506,6 +513,7 @@
       }
 
       function deleteMessage(slot) {
+        console.log('Deleting message for slot:', slot); // Debug log
         if (confirm('Are you sure you want to delete this message?')) {
           firebase.database().ref(`slot_message_user/${slot}`).remove()
             .then(() => {
@@ -525,25 +533,37 @@
 
       function updateCustomersMessage() {
         const sortOption = document.getElementById('sortFilter').value;
+        console.log('Sort option selected:', sortOption); // Debug log
         customersMessageList.innerHTML = '';
 
         if (!messagesData.length) {
           customersMessageList.innerHTML = '<div>No messages available</div>';
+          console.log('No messages in messagesData');
           return;
         }
 
         let sortedMessages = [...messagesData];
+        console.log('Messages before sorting:', sortedMessages); // Debug log
         if (sortOption === 'slot') {
           sortedMessages.sort((a, b) => {
-            const numA = parseInt(a.slot.split('_')[1]);
-            const numB = parseInt(b.slot.split('_')[1]);
+            const numA = parseInt(a.slot.split('_')[1]) || 999;
+            const numB = parseInt(b.slot.split('_')[1]) || 999;
             return numA - numB;
           });
         } else if (sortOption === 'newest') {
-          sortedMessages.sort((a, b) => new Date(b.message.date) - new Date(a.message.date));
+          sortedMessages.sort((a, b) => {
+            const dateA = a.message.date ? new Date(a.message.date) : new Date(0);
+            const dateB = b.message.date ? new Date(b.message.date) : new Date(0);
+            return isNaN(dateB) || isNaN(dateA) ? a.slot.localeCompare(b.slot) : dateB - dateA;
+          });
         } else if (sortOption === 'oldest') {
-          sortedMessages.sort((a, b) => new Date(a.message.date) - new Date(b.message.date));
+          sortedMessages.sort((a, b) => {
+            const dateA = a.message.date ? new Date(a.message.date) : new Date(0);
+            const dateB = b.message.date ? new Date(b.message.date) : new Date(0);
+            return isNaN(dateA) || isNaN(dateB) ? a.slot.localeCompare(b.slot) : dateA - dateB;
+          });
         }
+        console.log('Messages after sorting:', sortedMessages); // Debug log
 
         sortedMessages.forEach(({ slot, message }) => {
           const { contactNumber, idWorker, lastAction, parkingNotes, plate, timestamp, user, date } = message;
@@ -569,9 +589,13 @@
 
       firebase.database().ref("slot_message_user").on("value", (snapshot) => {
         const data = snapshot.val();
+        console.log('Customer Messages Data:', data); // Debug log
         messagesData = [];
         if (data) {
           for (const slot in data) {
+            if (data[slot].date && isNaN(new Date(data[slot].date))) {
+              console.warn(`Invalid date format for slot ${slot}: ${data[slot].date}`);
+            }
             messagesData.push({ slot, message: data[slot] });
           }
           updateCustomersMessage();
