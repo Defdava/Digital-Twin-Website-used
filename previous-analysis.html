@@ -166,6 +166,38 @@
       font-size: 16px; 
       font-weight: bold; 
     }
+    .sort-controls {
+      margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .sort-controls label {
+      font-size: 12px;
+      font-weight: bold;
+      color: #333;
+    }
+    .sort-controls select {
+      padding: 5px 8px;
+      font-size: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: white;
+    }
+    .sort-controls button {
+      padding: 5px 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: background-color 0.3s;
+    }
+    .sort-controls button:hover {
+      background-color: #0056b3;
+    }
     .history-list { 
       max-height: 200px; 
       overflow-y: auto; 
@@ -208,6 +240,12 @@
       align-items: flex-start; 
       gap: 5px; 
       font-size: 13px; 
+      position: relative;
+      border: 1px solid #e0e0e0;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      padding: 15px;
+      background: white;
     }
     .customer-item strong { 
       color: #333; 
@@ -217,6 +255,12 @@
     .customer-item span { 
       display: block; 
       color: #555; 
+      margin-bottom: 3px;
+    }
+    .customer-actions {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
     }
     .customer-item button.edit-btn {
       padding: 5px 10px;
@@ -226,7 +270,6 @@
       border-radius: 5px;
       cursor: pointer;
       font-size: 11px;
-      margin-top: 5px;
       transition: background-color 0.3s;
     }
     .customer-item button.edit-btn:hover {
@@ -240,8 +283,6 @@
       border-radius: 5px;
       cursor: pointer;
       font-size: 11px;
-      margin-top: 5px;
-      margin-left: 5px;
       transition: background-color 0.3s;
     }
     .customer-item button.delete-btn:hover {
@@ -256,7 +297,7 @@
       background: #f9f9f9;
       border: 1px solid #ccc;
       border-radius: 5px;
-      margin-top: 5px;
+      margin-top: 10px;
     }
     .edit-form input {
       padding: 5px;
@@ -285,31 +326,77 @@
     .edit-form button.cancel-btn:hover {
       background-color: #c82333;
     }
-    #error-message {
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255, 0, 0, 0.8);
-      color: white;
-      padding: 8px;
+    .delete-confirmation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    .delete-confirmation-box {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      max-width: 400px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .delete-confirmation-box h3 {
+      color: #dc3545;
+      margin-bottom: 15px;
+    }
+    .delete-confirmation-box p {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .delete-confirmation-box button {
+      padding: 8px 16px;
+      margin: 0 5px;
+      border: none;
       border-radius: 4px;
-      font-size: 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .delete-confirmation-box .confirm-delete {
+      background-color: #dc3545;
+      color: white;
+    }
+    .delete-confirmation-box .cancel-delete {
+      background-color: #6c757d;
+      color: white;
+    }
+    #error-message {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: rgba(255, 0, 0, 0.9);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 12px;
       z-index: 1001;
       display: none;
+      max-width: 300px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     #success-message {
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 128, 0, 0.8);
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: rgba(40, 167, 69, 0.9);
       color: white;
-      padding: 8px;
-      border-radius: 4px;
-      font-size: 10px;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 12px;
       z-index: 1001;
       display: none;
+      max-width: 300px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
   </style>
 
@@ -372,6 +459,22 @@
       </div>
       <div class="customers">
         <h2>Customers Message</h2>
+        <div class="sort-controls">
+          <label for="sortBy">Sort by:</label>
+          <select id="sortBy">
+            <option value="slot">Slot Number</option>
+            <option value="date">Date</option>
+            <option value="user">User</option>
+            <option value="plate">Plate</option>
+          </select>
+          <label for="sortOrder">Order:</label>
+          <select id="sortOrder">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+          <button onclick="applySorting()">Apply Sort</button>
+          <button onclick="resetSorting()">Reset</button>
+        </div>
         <div id="customersMessageList" class="history-list"></div>
         <div id="error-message"></div>
         <div id="success-message"></div>
@@ -379,7 +482,21 @@
     </div>
   </main>
 
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteConfirmation" class="delete-confirmation">
+    <div class="delete-confirmation-box">
+      <h3>Confirm Deletion</h3>
+      <p id="deleteMessage">Are you sure you want to delete this customer message?</p>
+      <button id="confirmDelete" class="confirm-delete">Delete</button>
+      <button id="cancelDelete" class="cancel-delete">Cancel</button>
+    </div>
+  </div>
+
   <script>
+    let messagesData = [];
+    let currentSortBy = 'slot';
+    let currentSortOrder = 'asc';
+
     document.addEventListener('DOMContentLoaded', () => {
       const currentUser = JSON.parse(localStorage.getItem('currentUser'));
       if (!currentUser) {
@@ -400,6 +517,10 @@
         document.getElementById('toolbar').classList.toggle('active');
         document.getElementById('mainContent').classList.toggle('with-toolbar');
       });
+
+      // Initialize sort controls
+      document.getElementById('sortBy').value = currentSortBy;
+      document.getElementById('sortOrder').value = currentSortOrder;
 
       function showError(message) {
         const errorElement = document.getElementById('error-message');
@@ -461,6 +582,7 @@
           `;
         });
       }
+
       firebase.database().ref("slot_parking").on("value", (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -474,7 +596,55 @@
 
       // Realtime Customers Message
       const customersMessageList = document.getElementById("customersMessageList");
-      let messagesData = [];
+
+      // Sorting functions
+      window.applySorting = function() {
+        currentSortBy = document.getElementById('sortBy').value;
+        currentSortOrder = document.getElementById('sortOrder').value;
+        updateCustomersMessage();
+      };
+
+      window.resetSorting = function() {
+        currentSortBy = 'slot';
+        currentSortOrder = 'asc';
+        document.getElementById('sortBy').value = currentSortBy;
+        document.getElementById('sortOrder').value = currentSortOrder;
+        updateCustomersMessage();
+      };
+
+      function sortMessages(messages) {
+        return messages.sort((a, b) => {
+          let valueA, valueB;
+          
+          switch (currentSortBy) {
+            case 'slot':
+              valueA = parseInt(a.slot.split('_')[1]) || 999;
+              valueB = parseInt(b.slot.split('_')[1]) || 999;
+              break;
+            case 'date':
+              valueA = parseDate(a.message.date);
+              valueB = parseDate(b.message.date);
+              break;
+            case 'user':
+              valueA = (a.message.user || '').toLowerCase();
+              valueB = (b.message.user || '').toLowerCase();
+              break;
+            case 'plate':
+              valueA = (a.message.plate || '').toLowerCase();
+              valueB = (b.message.plate || '').toLowerCase();
+              break;
+            default:
+              valueA = parseInt(a.slot.split('_')[1]) || 999;
+              valueB = parseInt(b.slot.split('_')[1]) || 999;
+          }
+          
+          if (currentSortOrder === 'desc') {
+            return valueA < valueB ? 1 : valueA > valueB ? -1 : 0;
+          } else {
+            return valueA > valueB ? 1 : valueA < valueB ? -1 : 0;
+          }
+        });
+      }
 
       function showEditForm(slot, message) {
         const formId = `edit-form-${slot}`;
@@ -496,17 +666,17 @@
           <input type="text" id="edit-parkingNotes-${slot}" value="${message.parkingNotes || ''}" placeholder="Parking Notes">
           <input type="text" id="edit-plate-${slot}" value="${message.plate || ''}" placeholder="Plate">
           <input type="text" id="edit-timestamp-${slot}" value="${message.timestamp || ''}" placeholder="Timestamp (HH:MM:SS)">
-          <input type="text" id="edit-user
-
--${slot}" value="${message.user || ''}" placeholder="User">
+          <input type="text" id="edit-user-${slot}" value="${message.user || ''}" placeholder="User">
           <input type="date" id="edit-date-${slot}" value="${dateValue}" placeholder="Date">
-          <button onclick="saveMessage('${slot}')">Save</button>
-          <button class="cancel-btn" onclick="document.getElementById('${formId}').style.display = 'none'">Cancel</button>
+          <div style="display: flex; gap: 5px; margin-top: 10px;">
+            <button onclick="saveMessage('${slot}')">Save</button>
+            <button class="cancel-btn" onclick="document.getElementById('${formId}').style.display = 'none'">Cancel</button>
+          </div>
         `;
         return form;
       }
 
-      function saveMessage(oldSlot) {
+      window.saveMessage = function(oldSlot) {
         console.log('Saving message for old slot:', oldSlot);
         const newSlot = document.getElementById(`edit-slot-${oldSlot}`).value.trim() || oldSlot;
         if (!newSlot.match(/^slot_\d+$/)) {
@@ -549,102 +719,34 @@
               showError(`Failed to update message: ${error.message}`);
             });
         });
-      }
+      };
 
-      function deleteMessage(slot) {
-        if (!confirm(`Are you sure you want to permanently delete the message for ${slot.replace('_', ' ').toUpperCase()}? This action cannot be undone.`)) {
+      // Enhanced delete functionality with confirmation modal
+      window.deleteMessage = function(slot) {
+        const deleteModal = document.getElementById('deleteConfirmation');
+        const deleteMessage = document.getElementById('deleteMessage');
+        const confirmButton = document.getElementById('confirmDelete');
+        const cancelButton = document.getElementById('cancelDelete');
+        
+        deleteMessage.textContent = `Are you sure you want to permanently delete the message for ${slot.replace('_', ' ').toUpperCase()}? This action cannot be undone.`;
+        deleteModal.style.display = 'flex';
+        
+        // Remove any existing event listeners
+        const newConfirmButton = confirmButton.cloneNode(true);
+        const newCancelButton = cancelButton.cloneNode(true);
+        confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+        cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
+        
+        // Add new event listeners
+        newConfirmButton.addEventListener('click', function() {
+          performDelete(slot);
+          deleteModal.style.display = 'none';
+        });
+        
+        newCancelButton.addEventListener('click', function() {
           console.log('Deletion cancelled for slot:', slot);
-          return;
-        }
-        firebase.database().ref(`slot_message_user/${slot}`).once('value', (snapshot) => {
-          if (!snapshot.exists()) {
-            showError(`Message for ${slot.replace('_', ' ').toUpperCase()} does not exist in Firebase`);
-            console.warn(`No message found for slot: ${slot}`);
-            return;
-          }
-          firebase.database().ref(`slot_message_user/${slot}`).remove()
-            .then(() => {
-              console.log(`Successfully deleted message for slot: ${slot}`);
-              showSuccess(`Message for ${slot.replace('_', ' ').toUpperCase()} deleted successfully`);
-            })
-            .catch((error) => {
-              console.error(`Failed to delete message for slot ${slot}:`, error);
-              showError(`Failed to delete message: ${error.message}`);
-            });
+          deleteModal.style.display = 'none';
         });
-      }
-
-      function refreshMessages() {
-        firebase.database().ref("slot_message_user").once("value", (snapshot) => {
-          const data = snapshot.val();
-          console.log('Customer Messages Data:', data);
-          messagesData = [];
-          if (data) {
-            for (const slot in data) {
-              messagesData.push({ slot, message: data[slot] });
-            }
-            updateCustomersMessage();
-          } else {
-            customersMessageList.innerHTML = '<div>No messages available</div>';
-            showError('No customer messages available');
-          }
-        }, (error) => {
-          showError(`Failed to fetch customer messages: ${error.message}`);
-        });
-      }
-
-      function updateCustomersMessage() {
-        customersMessageList.innerHTML = '';
-
-        if (!messagesData.length) {
-          customersMessageList.innerHTML = '<div>No messages available</div>';
-          console.log('No messages in messagesData');
-          return;
-        }
-
-        let sortedMessages = [...messagesData];
-        sortedMessages.sort((a, b) => {
-          const numA = parseInt(a.slot.split('_')[1]) || 999;
-          const numB = parseInt(b.slot.split('_')[1]) || 999;
-          return numA - numB;
-        });
-
-        sortedMessages.forEach(({ slot, message }) => {
-          const { contactNumber, idWorker, lastAction, parkingNotes, plate, timestamp, user, date } = message;
-          const itemDiv = document.createElement('div');
-          itemDiv.className = 'customer-item';
-          itemDiv.innerHTML = `
-            <strong>${slot.replace('_', ' ').toUpperCase()}</strong>
-            <span>Contact: ${contactNumber || 'N/A'}</span>
-            <span>ID Worker: ${idWorker || 'N/A'}</span>
-            <span>Last Action: ${lastAction || 'N/A'}</span>
-            <span>Parking Notes: ${parkingNotes || 'N/A'}</span>
-            <span>Plate: ${plate || 'N/A'}</span>
-            <span>Timestamp: ${timestamp || 'N/A'}</span>
-            <span>User: ${user || 'N/A'}</span>
-            <span>Date: ${date || 'N/A'}</span>
-            <button class="edit-btn" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'flex' : 'none'">Edit</button>
-            <button class="delete-btn" onclick="deleteMessage('${slot}')">Delete</button>
-          `;
-          itemDiv.appendChild(showEditForm(slot, message));
-          customersMessageList.appendChild(itemDiv);
-        });
-      }
-
-      firebase.database().ref("slot_message_user").on("value", (snapshot) => {
-        refreshMessages();
-      }, (error) => {
-        showError(`Failed to fetch customer messages: ${error.message}`);
-      });
-
-      document.addEventListener('keydown', (event) => {
-        if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
-          event.preventDefault();
-          event.stopPropagation();
-          console.log('Undo/Redo is disabled');
-        }
-      });
-    });
-  </script>
-</body>
-</html>
+        
+        // Close modal when clicking outside
+        deleteModal.
