@@ -336,7 +336,7 @@
             border-top: 2px solid #007bff;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto;
+            margin: 10px auto;
         }
 
         @keyframes spin {
@@ -344,6 +344,24 @@
             100% { transform: rotate(360deg); }
         }
     </style>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAef3SJwvVVTunr6CWki79aenfpXlgYc0s",
+            authDomain: "digitaltwinparkingbrin.firebaseapp.com",
+            databaseURL: "https://digitaltwinparkingbrin-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "digitaltwinparkingbrin",
+            storageBucket: "digitaltwinparkingbrin.firebasestorage.app",
+            messagingSenderId: "608462498913",
+            appId: "1:608462498913:web:73695d8c91f923e2db8e20",
+            measurementId: "G-F1TRY65RTG"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
 </head>
 <body>
     <video id="bg-video" autoplay muted loop>
@@ -554,12 +572,14 @@
                     // Validate file size (max 5MB)
                     if (file.size > 5 * 1024 * 1024) {
                         showError('File size must be less than 5MB!');
+                        profilePictureInput.value = ''; // Clear input
                         return;
                     }
 
                     // Validate file type
                     if (!file.type.startsWith('image/')) {
                         showError('Please select a valid image file!');
+                        profilePictureInput.value = ''; // Clear input
                         return;
                     }
 
@@ -568,33 +588,57 @@
                     reader.onload = (e) => {
                         const newProfilePic = e.target.result;
                         previewPic.src = newProfilePic;
-                        
-                        // Auto-save profile picture
-                        try {
-                            const updatedUser = auth.updateUser(currentUser.email, { 
-                                profilePic: newProfilePic 
-                            });
-                            
-                            // Update current user data
-                            currentUser.profilePic = newProfilePic;
-                            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-                            
-                            // Update UI
-                            profilePic.src = newProfilePic;
-                            
+
+                        // Extract file extension
+                        const extension = file.name.split('.').pop().toLowerCase();
+                        const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
+                        if (!validExtensions.includes(extension)) {
+                            showError('Unsupported image format! Use JPG, JPEG, PNG, GIF, WEBP, or BMP.');
                             hideLoading();
-                            showAutoSaveIndicator();
-                            showSuccess('Profile picture updated successfully!');
-                        } catch (error) {
-                            hideLoading();
-                            showError(error.message);
-                            // Revert preview
                             previewPic.src = currentUser.profilePic || '/assets/user.JPG';
+                            profilePictureInput.value = ''; // Clear input
+                            return;
                         }
+
+                        // Upload to Firebase Storage
+                        const storageRef = firebase.storage().ref(`profile_pictures/${currentUser.email}.${extension}`);
+                        storageRef.put(file)
+                            .then((snapshot) => snapshot.ref.getDownloadURL())
+                            .then((downloadURL) => {
+                                // Update local storage and UI
+                                const updatedData = { profilePic: downloadURL };
+                                const updatedUser = auth.updateUser(currentUser.email, updatedData);
+                                
+                                // Update Firebase Realtime Database
+                                firebase.database().ref(`users/${currentUser.email}`).update(updatedData)
+                                    .then(() => {
+                                        // Update current user data
+                                        currentUser.profilePic = downloadURL;
+                                        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                                        
+                                        // Update UI
+                                        profilePic.src = downloadURL;
+                                        
+                                        hideLoading();
+                                        showAutoSaveIndicator();
+                                        showSuccess('Profile picture updated successfully!');
+                                    })
+                                    .catch((error) => {
+                                        hideLoading();
+                                        showError(`Failed to save profile picture: ${error.message}`);
+                                        previewPic.src = currentUser.profilePic || '/assets/user.JPG';
+                                    });
+                            })
+                            .catch((error) => {
+                                hideLoading();
+                                showError(`Failed to upload profile picture: ${error.message}`);
+                                previewPic.src = currentUser.profilePic || '/assets/user.JPG';
+                            });
                     };
                     reader.onerror = () => {
                         hideLoading();
                         showError('Error reading file!');
+                        previewPic.src = currentUser.profilePic || '/assets/user.JPG';
                     };
                     reader.readAsDataURL(file);
                 }
@@ -606,29 +650,42 @@
                 if (newEmail && newEmail !== currentUser.email) {
                     if (!auth.validateEmail(newEmail)) {
                         showError('Please enter a valid email address!');
+                        emailInput.value = currentUser.email;
                         emailInput.focus();
                         return;
                     }
 
                     showLoading();
-                    try {
-                        const updatedUser = auth.updateUser(currentUser.email, { 
-                            email: newEmail 
-                        });
+                    firebase.database().ref(`users/${newEmail}`).once('value', (snapshot) => {
+                        if (snapshot.exists()) {
+                            hideLoading();
+                            showError('Email address already exists!');
+                            emailInput.value = currentUser.email;
+                            return;
+                        }
+
+                        // Update local storage and Firebase
+                        const updatedData = { email: newEmail };
+                        const updatedUser = auth.updateUser(currentUser.email, updatedData);
                         
-                        // Update current user data
-                        currentUser.email = newEmail;
-                        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-                        
-                        hideLoading();
-                        showAutoSaveIndicator();
-                        showSuccess('Email updated successfully!');
-                    } catch (error) {
-                        hideLoading();
-                        showError(error.message);
-                        // Revert email
-                        emailInput.value = currentUser.email;
-                    }
+                        // Move user data in Firebase
+                        firebase.database().ref(`users/${newEmail}`).set(updatedUser)
+                            .then(() => firebase.database().ref(`users/${currentUser.email}`).remove())
+                            .then(() => {
+                                // Update current user data
+                                currentUser.email = newEmail;
+                                localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                                
+                                hideLoading();
+                                showAutoSaveIndicator();
+                                showSuccess('Email updated successfully!');
+                            })
+                            .catch((error) => {
+                                hideLoading();
+                                showError(`Failed to update email: ${error.message}`);
+                                emailInput.value = currentUser.email;
+                            });
+                    });
                 }
             });
 
@@ -640,31 +697,33 @@
                     if (newUsername && newUsername !== currentUser.username) {
                         if (newUsername.length < 3) {
                             showError('Username must be at least 3 characters long!');
+                            usernameInput.value = currentUser.username;
                             return;
                         }
 
                         showLoading();
-                        try {
-                            const updatedUser = auth.updateUser(currentUser.email, { 
-                                username: newUsername 
+                        const updatedData = { username: newUsername };
+                        const updatedUser = auth.updateUser(currentUser.email, updatedData);
+                        
+                        // Update Firebase Realtime Database
+                        firebase.database().ref(`users/${currentUser.email}`).update(updatedData)
+                            .then(() => {
+                                // Update current user data
+                                currentUser.username = newUsername;
+                                localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                                
+                                // Update UI
+                                userName.textContent = newUsername;
+                                
+                                hideLoading();
+                                showAutoSaveIndicator();
+                                showSuccess('Username updated successfully!');
+                            })
+                            .catch((error) => {
+                                hideLoading();
+                                showError(`Failed to update username: ${error.message}`);
+                                usernameInput.value = currentUser.username;
                             });
-                            
-                            // Update current user data
-                            currentUser.username = newUsername;
-                            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-                            
-                            // Update UI
-                            userName.textContent = newUsername;
-                            
-                            hideLoading();
-                            showAutoSaveIndicator();
-                            showSuccess('Username updated successfully!');
-                        } catch (error) {
-                            hideLoading();
-                            showError(error.message);
-                            // Revert username
-                            usernameInput.value = currentUser.username;
-                        }
                     }
                 }, 1500); // 1.5 second debounce
             });
@@ -705,8 +764,15 @@
                 }
 
                 showLoading();
-                try {
-                    let updatedData = { 
+                firebase.database().ref(`users/${newEmail}`).once('value', (snapshot) => {
+                    if (snapshot.exists() && newEmail !== currentUser.email) {
+                        hideLoading();
+                        showError('Email address already exists!');
+                        emailInput.value = currentUser.email;
+                        return;
+                    }
+
+                    const updatedData = { 
                         username: newUsername,
                         email: newEmail
                     };
@@ -717,23 +783,33 @@
 
                     const updatedUser = auth.updateUser(currentUser.email, updatedData);
                     
-                    // Update current user data
-                    Object.assign(currentUser, updatedData);
-                    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-                    
-                    // Update UI
-                    userName.textContent = updatedUser.username;
-                    
-                    // Clear password fields
-                    passwordInput.value = '';
-                    confirmPasswordInput.value = '';
-                    
-                    hideLoading();
-                    showSuccess('All changes saved successfully!');
-                } catch (error) {
-                    hideLoading();
-                    showError(error.message);
-                }
+                    // Update Firebase Realtime Database
+                    firebase.database().ref(`users/${newEmail}`).set(updatedUser)
+                        .then(() => {
+                            if (newEmail !== currentUser.email) {
+                                return firebase.database().ref(`users/${currentUser.email}`).remove();
+                            }
+                        })
+                        .then(() => {
+                            // Update current user data
+                            Object.assign(currentUser, updatedData);
+                            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                            
+                            // Update UI
+                            userName.textContent = updatedUser.username;
+                            
+                            // Clear password fields
+                            passwordInput.value = '';
+                            confirmPasswordInput.value = '';
+                            
+                            hideLoading();
+                            showSuccess('All changes saved successfully!');
+                        })
+                        .catch((error) => {
+                            hideLoading();
+                            showError(`Failed to save changes: ${error.message}`);
+                        });
+                });
             });
 
             // Prevent Undo/Redo and Navigation
