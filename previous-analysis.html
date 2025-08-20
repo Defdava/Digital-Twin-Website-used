@@ -527,13 +527,11 @@
         };
         console.log('Updated message:', updatedMessage, 'New slot:', newSlot);
 
-        // Check if new slot already exists
         firebase.database().ref(`slot_message_user/${newSlot}`).once('value', (snapshot) => {
           if (snapshot.exists() && newSlot !== oldSlot) {
             showError(`Slot ${newSlot} already exists. Choose a different slot.`);
             return;
           }
-          // Update slot_message_user and slot_messages_users
           Promise.all([
             firebase.database().ref(`slot_message_user/${newSlot}`).set(updatedMessage),
             firebase.database().ref(`slot_messages_users/${newSlot}`).set(updatedMessage)
@@ -549,7 +547,6 @@
             .then(() => {
               showError(`Message ${newSlot === oldSlot ? 'updated' : 'moved to new slot'} successfully`);
               document.getElementById(`edit-form-${oldSlot}`).style.display = 'none';
-              // Manually refresh UI
               refreshMessages();
             })
             .catch((error) => {
@@ -559,20 +556,24 @@
       }
 
       function deleteMessage(slot) {
-        console.log('Deleting message for slot:', slot);
-        if (confirm('Are you sure you want to delete this message?')) {
-          Promise.all([
-            firebase.database().ref(`slot_message_user/${slot}`).remove(),
-            firebase.database().ref(`slot_messages_users/${slot}`).remove()
-          ])
-            .then(() => {
-              showError('Message deleted successfully');
-              refreshMessages();
-            })
-            .catch((error) => {
-              showError(`Failed to delete message: ${error.message}`);
-            });
+        console.log('Attempting to delete message for slot:', slot);
+        if (!confirm(`Are you sure you want to permanently delete the message for ${slot.replace('_', ' ').toUpperCase()}? This action cannot be undone.`)) {
+          console.log('Deletion cancelled for slot:', slot);
+          return;
         }
+        Promise.all([
+          firebase.database().ref(`slot_message_user/${slot}`).remove(),
+          firebase.database().ref(`slot_messages_users/${slot}`).remove()
+        ])
+          .then(() => {
+            console.log(`Successfully deleted message for slot: ${slot} from both slot_message_user and slot_messages_users`);
+            showError(`Message for ${slot.replace('_', ' ').toUpperCase()} deleted successfully`);
+            refreshMessages();
+          })
+          .catch((error) => {
+            console.error(`Failed to delete message for slot ${slot}:`, error);
+            showError(`Failed to delete message: ${error.message}`);
+          });
       }
 
       function refreshMessages() {
