@@ -505,7 +505,11 @@
 
       function saveMessage(oldSlot) {
         console.log('Saving message for old slot:', oldSlot);
-        const newSlot = document.getElementById(`edit-slot-${oldSlot}`).value || oldSlot;
+        const newSlot = document.getElementById(`edit-slot-${oldSlot}`).value.trim() || oldSlot;
+        if (!newSlot.match(/^slot_\d+$/)) {
+          showError('Invalid slot format. Use "slot_X" (e.g., slot_10)');
+          return;
+        }
         let dateInput = document.getElementById(`edit-date-${oldSlot}`).value;
         if (/^\d{2}-\d{2}-\d{4}$/.test(dateInput)) {
           const [day, month, year] = dateInput.split('-');
@@ -523,39 +527,35 @@
         };
         console.log('Updated message:', updatedMessage, 'New slot:', newSlot);
 
-        // Update slot_message_user
-        firebase.database().ref(`slot_message_user/${newSlot}`).set(updatedMessage)
-          .then(() => {
-            // Update slot_messages_users
-            return firebase.database().ref(`slot_messages_users/${newSlot}`).set(updatedMessage);
-          })
-          .then(() => {
-            if (newSlot !== oldSlot) {
-              // Remove old slot from both folders
-              return Promise.all([
-                firebase.database().ref(`slot_message_user/${oldSlot}`).remove(),
-                firebase.database().ref(`slot_messages_users/${oldSlot}`).remove()
-              ]);
-            }
-          })
-          .then(() => {
-            showError(`Message ${newSlot === oldSlot ? 'updated' : 'moved to new slot'} successfully`);
-            document.getElementById(`edit-form-${oldSlot}`).style.display = 'none';
-            // Manually fetch updated data to refresh UI
-            firebase.database().ref("slot_message_user").once("value", (snapshot) => {
-              const data = snapshot.val();
-              messagesData = [];
-              if (data) {
-                for (const slot in data) {
-                  messagesData.push({ slot, message: data[slot] });
-                }
+        // Check if new slot already exists
+        firebase.database().ref(`slot_message_user/${newSlot}`).once('value', (snapshot) => {
+          if (snapshot.exists() && newSlot !== oldSlot) {
+            showError(`Slot ${newSlot} already exists. Choose a different slot.`);
+            return;
+          }
+          // Update slot_message_user and slot_messages_users
+          Promise.all([
+            firebase.database().ref(`slot_message_user/${newSlot}`).set(updatedMessage),
+            firebase.database().ref(`slot_messages_users/${newSlot}`).set(updatedMessage)
+          ])
+            .then(() => {
+              if (newSlot !== oldSlot) {
+                return Promise.all([
+                  firebase.database().ref(`slot_message_user/${oldSlot}`).remove(),
+                  firebase.database().ref(`slot_messages_users/${oldSlot}`).remove()
+                ]);
               }
-              updateCustomersMessage();
+            })
+            .then(() => {
+              showError(`Message ${newSlot === oldSlot ? 'updated' : 'moved to new slot'} successfully`);
+              document.getElementById(`edit-form-${oldSlot}`).style.display = 'none';
+              // Manually refresh UI
+              refreshMessages();
+            })
+            .catch((error) => {
+              showError(`Failed to update message: ${error.message}`);
             });
-          })
-          .catch((error) => {
-            showError(`Failed to update message: ${error.message}`);
-          });
+        });
       }
 
       function deleteMessage(slot) {
@@ -567,24 +567,31 @@
           ])
             .then(() => {
               showError('Message deleted successfully');
-              // Manually fetch updated data to refresh UI
-              firebase.database().ref("slot_message_user").once("value", (snapshot) => {
-                const data = snapshot.val();
-                messagesData = [];
-                if (data) {
-                  for (const slot in data) {
-                    messagesData.push({ slot, message: data[slot] });
-                  }
-                } else {
-                  customersMessageList.innerHTML = '<div>No messages available</div>';
-                }
-                updateCustomersMessage();
-              });
+              refreshMessages();
             })
             .catch((error) => {
               showError(`Failed to delete message: ${error.message}`);
             });
         }
+      }
+
+      function refreshMessages() {
+        firebase.database().ref("slot_message_user").once("value", (snapshot) => {
+          const data = snapshot.val();
+          console.log('Customer Messages Data:', data);
+          messagesData = [];
+          if (data) {
+            for (const slot in data) {
+              messagesData.push({ slot, message: data[slot] });
+            }
+            updateCustomersMessage();
+          } else {
+            customersMessageList.innerHTML = '<div>No messages available</div>';
+            showError('No customer messages available');
+          }
+        }, (error) => {
+          showError(`Failed to fetch customer messages: ${error.message}`);
+        });
       }
 
       function updateCustomersMessage() {
@@ -648,21 +655,7 @@
       }
 
       firebase.database().ref("slot_message_user").on("value", (snapshot) => {
-        const data = snapshot.val();
-        console.log('Customer Messages Data:', data);
-        messagesData = [];
-        if (data) {
-          for (const slot in data) {
-            if (data[slot].date && isNaN(parseDate(data[slot].date))) {
-              console.warn(`Invalid date format for slot ${slot}: ${data[slot].date}`);
-            }
-            messagesData.push({ slot, message: data[slot] });
-          }
-          updateCustomersMessage();
-        } else {
-          customersMessageList.innerHTML = '<div>No messages available</div>';
-          showError('No customer messages available');
-        }
+        refreshMessages();
       }, (error) => {
         showError(`Failed to fetch customer messages: ${error.message}`);
       });
