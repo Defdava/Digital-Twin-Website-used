@@ -146,10 +146,11 @@
       border-radius: 8px; 
       border: 2px solid #dc3545; 
       margin-bottom: 20px; 
+      color: white; /* Set text color to white for overview section */
     }
     .overview h1 { 
       margin: 0 0 15px; 
-      color: #floralwhite; 
+      color: white; /* Ensure h1 is white */
       font-size: 20px; 
       font-weight: bold; 
     }
@@ -159,10 +160,11 @@
       border-radius: 8px; 
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
       margin-bottom: 20px; 
+      color: darkslategrey; /* Keep readable against white background */
     }
     .history h2, .customers h2 { 
       margin: 0 0 10px; 
-      color: #007bff; 
+      color: #007bff; /* Keep blue for headers in white background */
       font-size: 16px; 
       font-weight: bold; 
     }
@@ -172,11 +174,12 @@
       gap: 10px;
       align-items: center;
       flex-wrap: wrap;
+      color: white; /* White text for sort controls in overview */
     }
     .sort-controls label {
       font-size: 12px;
       font-weight: bold;
-      color: #333;
+      color: white; /* White text for labels */
     }
     .sort-controls select {
       padding: 5px 8px;
@@ -184,6 +187,7 @@
       border: 1px solid #ccc;
       border-radius: 4px;
       background-color: white;
+      color: darkslategrey; /* Dark text for select dropdown readability */
     }
     .sort-controls button {
       padding: 5px 10px;
@@ -205,6 +209,7 @@
       padding: 10px; 
       border-radius: 5px; 
       background: #f9f9f9; 
+      color: darkslategrey; /* Dark text for readability against light background */
     }
     .history-item, .customer-item { 
       display: flex; 
@@ -214,6 +219,7 @@
       font-size: 12px; 
       border-bottom: 1px solid #eee; 
       transition: background 0.2s; 
+      color: darkslategrey; /* Dark text for readability */
     }
     .history-item:last-child, .customer-item:last-child { 
       border-bottom: none; 
@@ -246,15 +252,16 @@
       border-radius: 5px;
       padding: 15px;
       background: white;
+      color: darkslategrey; /* Dark text for readability */
     }
     .customer-item strong { 
-      color: #333; 
+      color: darkslategrey; /* Dark text for strong elements */
       font-size: 14px; 
       margin-bottom: 5px; 
     }
     .customer-item span { 
       display: block; 
-      color: #555; 
+      color: darkslategrey; /* Dark text for span elements */
       margin-bottom: 3px;
     }
     .customer-actions {
@@ -298,6 +305,7 @@
       border: 1px solid #ccc;
       border-radius: 5px;
       margin-top: 10px;
+      color: darkslategrey; /* Dark text for edit form */
     }
     .edit-form input {
       padding: 5px;
@@ -306,6 +314,7 @@
       border: 1px solid #ccc;
       width: 100%;
       box-sizing: border-box;
+      color: darkslategrey; /* Dark text for inputs */
     }
     .edit-form button {
       padding: 5px 10px;
@@ -345,6 +354,7 @@
       text-align: center;
       max-width: 400px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      color: darkslategrey; /* Dark text for confirmation box */
     }
     .delete-confirmation-box h3 {
       color: #dc3545;
@@ -352,7 +362,7 @@
     }
     .delete-confirmation-box p {
       margin-bottom: 20px;
-      color: #333;
+      color: darkslategrey;
     }
     .delete-confirmation-box button {
       padding: 8px 16px;
@@ -798,7 +808,7 @@
             }
             updateCustomersMessage();
           } else {
-            customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No messages available</div>';
+            customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: darkslategrey;">No messages available</div>';
             console.log('No customer messages available');
           }
         }, (error) => {
@@ -810,7 +820,7 @@
         customersMessageList.innerHTML = '';
 
         if (!messagesData.length) {
-          customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No messages available</div>';
+          customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: darkslategrey;">No messages available</div>';
           console.log('No messages in messagesData');
           return;
         }
@@ -859,7 +869,7 @@
           }
           updateCustomersMessage();
         } else {
-          customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No messages available</div>';
+          customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: darkslategrey;">No messages available</div>';
         }
       }, (error) => {
         showError(`Failed to fetch customer messages: ${error.message}`);
