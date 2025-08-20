@@ -394,17 +394,22 @@
                 successMessage.style.display = 'none';
 
                 // Validation
-                if (!newUsername) {
+                if (!newUsername && !newEmail && !newPassword && !file) {
+                    errorMessage.textContent = 'No changes detected!';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+                if (newUsername && !newUsername) {
                     errorMessage.textContent = 'Username cannot be empty!';
                     errorMessage.style.display = 'block';
                     return;
                 }
-                if (!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+                if (newEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
                     errorMessage.textContent = 'Please enter a valid email!';
                     errorMessage.style.display = 'block';
                     return;
                 }
-                if (auth.checkEmailExists(newEmail, currentUser.email)) {
+                if (newEmail && auth.checkEmailExists(newEmail, currentUser.email)) {
                     errorMessage.textContent = 'Email is already in use!';
                     errorMessage.style.display = 'block';
                     return;
@@ -416,10 +421,13 @@
                 }
 
                 // Prepare updated data
-                const updatedData = {
-                    username: newUsername,
-                    email: newEmail
-                };
+                const updatedData = {};
+                if (newUsername && newUsername !== currentUser.username) {
+                    updatedData.username = newUsername;
+                }
+                if (newEmail && newEmail !== currentUser.email) {
+                    updatedData.email = newEmail;
+                }
                 if (newPassword) {
                     updatedData.password = newPassword;
                 }
@@ -429,9 +437,9 @@
                     try {
                         const updatedUser = auth.updateUser(currentUser.email, updatedData);
                         // Update Firebase Realtime Database
-                        firebase.database().ref(`users/${newEmail}`).set(updatedUser)
+                        firebase.database().ref(`users/${updatedData.email || currentUser.email}`).set(updatedUser)
                             .then(() => {
-                                if (newEmail !== currentUser.email) {
+                                if (updatedData.email && updatedData.email !== currentUser.email) {
                                     return firebase.database().ref(`users/${currentUser.email}`).remove();
                                 }
                             })
@@ -440,7 +448,10 @@
                                 userName.textContent = updatedUser.username;
                                 profilePic.src = updatedUser.profilePic || '/assets/user.JPG';
                                 previewPic.src = updatedUser.profilePic || '/assets/user.JPG';
+                                usernameInput.value = updatedUser.username;
                                 emailInput.value = updatedUser.email;
+                                passwordInput.value = '';
+                                confirmPasswordInput.value = '';
                                 successMessage.textContent = 'Profile updated successfully!';
                                 successMessage.style.display = 'block';
                             })
@@ -455,7 +466,7 @@
                 };
 
                 if (file) {
-                    const storageRef = firebase.storage().ref(`profile_pictures/${newEmail}.jpg`);
+                    const storageRef = firebase.storage().ref(`profile_pictures/${newEmail || currentUser.email}.jpg`);
                     storageRef.put(file)
                         .then((snapshot) => snapshot.ref.getDownloadURL())
                         .then((downloadURL) => {
