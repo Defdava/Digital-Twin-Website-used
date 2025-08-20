@@ -285,20 +285,6 @@
     .edit-form button.cancel-btn:hover {
       background-color: #c82333;
     }
-    .filter-container {
-      margin-bottom: 10px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .filter-container select {
-      padding: 5px;
-      font-size: 12px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      background-color: white;
-      cursor: pointer;
-    }
     #error-message {
       position: absolute;
       top: 10px;
@@ -373,13 +359,6 @@
       </div>
       <div class="customers">
         <h2>Customers Message</h2>
-        <div class="filter-container">
-          <select id="sortFilter" onchange="updateCustomersMessage()">
-            <option value="slot">Sort by Slot</option>
-            <option value="newest">Sort by Newest</option>
-            <option value="oldest">Sort by Oldest</option>
-          </select>
-        </div>
         <div id="customersMessageList" class="history-list"></div>
         <div id="error-message"></div>
       </div>
@@ -561,7 +540,6 @@
           console.log('Deletion cancelled for slot:', slot);
           return;
         }
-        // Verify slot exists before attempting deletion
         firebase.database().ref(`slot_message_user/${slot}`).once('value', (snapshot) => {
           if (!snapshot.exists()) {
             showError(`Message for ${slot.replace('_', ' ').toUpperCase()} does not exist in Firebase`);
@@ -604,8 +582,6 @@
       }
 
       function updateCustomersMessage() {
-        const sortOption = document.getElementById('sortFilter').value;
-        console.log('Sort option selected:', sortOption);
         customersMessageList.innerHTML = '';
 
         if (!messagesData.length) {
@@ -615,31 +591,11 @@
         }
 
         let sortedMessages = [...messagesData];
-        console.log('Messages before sorting:', sortedMessages);
-        if (sortOption === 'slot') {
-          sortedMessages.sort((a, b) => {
-            const numA = parseInt(a.slot.split('_')[1]) || 999;
-            const numB = parseInt(b.slot.split('_')[1]) || 999;
-            return numA - numB;
-          });
-        } else if (sortOption === 'newest') {
-          sortedMessages.sort((a, b) => {
-            const dateA = parseDate(a.message.date);
-            const dateB = parseDate(b.message.date);
-            return dateA.getTime() === dateB.getTime() 
-              ? (parseInt(a.slot.split('_')[1]) || 999) - (parseInt(b.slot.split('_')[1]) || 999)
-              : dateB - dateA;
-          });
-        } else if (sortOption === 'oldest') {
-          sortedMessages.sort((a, b) => {
-            const dateA = parseDate(a.message.date);
-            const dateB = parseDate(b.message.date);
-            return dateA.getTime() === dateB.getTime()
-              ? (parseInt(a.slot.split('_')[1]) || 999) - (parseInt(b.slot.split('_')[1]) || 999)
-              : dateA - dateB;
-          });
-        }
-        console.log('Messages after sorting:', sortedMessages);
+        sortedMessages.sort((a, b) => {
+          const numA = parseInt(a.slot.split('_')[1]) || 999;
+          const numB = parseInt(b.slot.split('_')[1]) || 999;
+          return numA - numB;
+        });
 
         sortedMessages.forEach(({ slot, message }) => {
           const { contactNumber, idWorker, lastAction, parkingNotes, plate, timestamp, user, date } = message;
@@ -669,7 +625,6 @@
         showError(`Failed to fetch customer messages: ${error.message}`);
       });
 
-      // Prevent Undo/Redo
       document.addEventListener('keydown', (event) => {
         if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
           event.preventDefault();
