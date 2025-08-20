@@ -214,6 +214,20 @@
       display: block; 
       color: #555; 
     }
+    .filter-container {
+      margin-bottom: 10px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .filter-container input {
+      padding: 5px;
+      font-size: 12px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      background-color: white;
+      width: 120px;
+    }
   </style>
 
   <!-- Firebase SDK -->
@@ -275,6 +289,11 @@
       </div>
       <div class="customers">
         <h2>Customers Message</h2>
+        <div class="filter-container">
+          <input type="text" id="slotFilter" placeholder="Filter by Slot (e.g., slot_1)" oninput="updateCustomersMessage()">
+          <input type="date" id="dateFilter" oninput="updateCustomersMessage()">
+          <input type="text" id="nameFilter" placeholder="Filter by Name" oninput="updateCustomersMessage()">
+        </div>
         <div id="customersMessageList" class="history-list"></div>
       </div>
     </div>
@@ -323,10 +342,40 @@
 
       // Realtime Customers Message
       const customersMessageList = document.getElementById("customersMessageList");
-      function updateCustomersMessage(data) {
+      let messagesData = [];
+
+      function updateCustomersMessage() {
+        const slotFilter = document.getElementById('slotFilter').value.toLowerCase();
+        const dateFilter = document.getElementById('dateFilter').value;
+        const nameFilter = document.getElementById('nameFilter').value.toLowerCase();
+
         customersMessageList.innerHTML = '';
-        for (const slot in data) {
-          const { contactNumber, idWorker, lastAction, parkingNotes, plate, timestamp, user, date } = data[slot];
+
+        const filteredMessages = messagesData.filter(({ slot, message }) => {
+          let matchesSlot = true;
+          let matchesDate = true;
+          let matchesName = true;
+
+          if (slotFilter) {
+            matchesSlot = slot.toLowerCase().includes(slotFilter);
+          }
+          if (dateFilter) {
+            matchesDate = message.date === dateFilter;
+          }
+          if (nameFilter) {
+            matchesName = message.user.toLowerCase().includes(nameFilter);
+          }
+
+          return matchesSlot && matchesDate && matchesName;
+        });
+
+        if (!filteredMessages.length) {
+          customersMessageList.innerHTML = '<div>No messages match the filter criteria</div>';
+          return;
+        }
+
+        filteredMessages.forEach(({ slot, message }) => {
+          const { contactNumber, idWorker, lastAction, parkingNotes, plate, timestamp, user, date } = message;
           customersMessageList.innerHTML += `
             <div class="customer-item">
               <strong>${slot.replace('_', ' ').toUpperCase()}</strong>
@@ -340,11 +389,18 @@
               <span>Date: ${date || 'N/A'}</span>
             </div>
           `;
-        }
+        });
       }
+
       firebase.database().ref("slot_message_user").on("value", (snapshot) => {
         const data = snapshot.val();
-        if (data) updateCustomersMessage(data);
+        messagesData = [];
+        if (data) {
+          for (const slot in data) {
+            messagesData.push({ slot, message: data[slot] });
+          }
+        }
+        updateCustomersMessage();
       });
 
       // Prevent Undo/Redo
