@@ -141,7 +141,7 @@
       color: black; 
     }
     .overview { 
-      background-color: lightgrey; 
+      background-image: linear-gradient(to bottom left, palevioletred, lightseagreen); 
       padding: 20px; 
       border-radius: 8px; 
       border: 2px solid #dc3545; 
@@ -419,7 +419,13 @@
       const slotStatusList = document.getElementById("slotStatusList");
       function updateSlotStatus(data) {
         slotStatusList.innerHTML = '';
-        for (const slot in data) {
+        const slots = Object.keys(data);
+        slots.sort((a, b) => {
+          const numA = parseInt(a.split('_')[1]);
+          const numB = parseInt(b.split('_')[1]);
+          return numA - numB;
+        });
+        slots.forEach((slot) => {
           const status = data[slot] ? 'Terisi' : 'Kosong';
           const statusClass = data[slot] ? 'status in' : 'status out';
           slotStatusList.innerHTML += `
@@ -428,7 +434,7 @@
               <span class="${statusClass}">${status}</span>
             </div>
           `;
-        }
+        });
       }
       firebase.database().ref("slot_parking").on("value", (snapshot) => {
         const data = snapshot.val();
@@ -528,7 +534,11 @@
 
         let sortedMessages = [...messagesData];
         if (sortOption === 'slot') {
-          sortedMessages.sort((a, b) => a.slot.localeCompare(b.slot));
+          sortedMessages.sort((a, b) => {
+            const numA = parseInt(a.slot.split('_')[1]);
+            const numB = parseInt(b.slot.split('_')[1]);
+            return numA - numB;
+          });
         } else if (sortOption === 'newest') {
           sortedMessages.sort((a, b) => new Date(b.message.date) - new Date(a.message.date));
         } else if (sortOption === 'oldest') {
