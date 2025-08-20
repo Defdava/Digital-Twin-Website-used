@@ -416,10 +416,28 @@
         console.error('Error:', message);
       }
 
+      // Function to parse mixed date formats (YYYY-MM-DD or DD-MM-YYYY)
+      function parseDate(dateStr) {
+        if (!dateStr) return new Date(0); // Fallback for missing dates
+        // Try YYYY-MM-DD
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+          const date = new Date(dateStr);
+          if (!isNaN(date)) return date;
+        }
+        // Try DD-MM-YYYY
+        if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+          const [day, month, year] = dateStr.split('-').map(Number);
+          const date = new Date(year, month - 1, day);
+          if (!isNaN(date)) return date;
+        }
+        console.warn(`Invalid date format: ${dateStr}`);
+        return new Date(0); // Fallback for invalid dates
+      }
+
       // Realtime Slot Status
       const slotStatusList = document.getElementById("slotStatusList");
       function updateSlotStatus(data) {
-        console.log('Slot Status Data:', data); // Debug log
+        console.log('Slot Status Data:', data);
         slotStatusList.innerHTML = '';
         if (!data) {
           showError('No slot status data available');
@@ -427,7 +445,7 @@
         }
         const slots = Object.keys(data);
         slots.sort((a, b) => {
-          const numA = parseInt(a.split('_')[1]) || 999; // Fallback for non-standard slot names
+          const numA = parseInt(a.split('_')[1]) || 999;
           const numB = parseInt(b.split('_')[1]) || 999;
           return numA - numB;
         });
@@ -468,6 +486,7 @@
         const form = document.createElement('div');
         form.className = 'edit-form';
         form.id = formId;
+        const dateValue = message.date ? (message.date.includes('-') && !message.date.startsWith('20') ? message.date : message.date.split('T')[0]) : '';
         form.innerHTML = `
           <input type="text" id="edit-contactNumber-${slot}" value="${message.contactNumber || ''}" placeholder="Contact Number">
           <input type="text" id="edit-idWorker-${slot}" value="${message.idWorker || ''}" placeholder="ID Worker">
@@ -476,7 +495,7 @@
           <input type="text" id="edit-plate-${slot}" value="${message.plate || ''}" placeholder="Plate">
           <input type="text" id="edit-timestamp-${slot}" value="${message.timestamp || ''}" placeholder="Timestamp (HH:MM:SS)">
           <input type="text" id="edit-user-${slot}" value="${message.user || ''}" placeholder="User">
-          <input type="date" id="edit-date-${slot}" value="${message.date ? message.date.split('T')[0] : ''}" placeholder="Date">
+          <input type="date" id="edit-date-${slot}" value="${dateValue}" placeholder="Date">
           <button onclick="saveMessage('${slot}')">Save</button>
           <button class="cancel-btn" onclick="document.getElementById('${formId}').style.display = 'none'">Cancel</button>
         `;
@@ -484,7 +503,13 @@
       }
 
       function saveMessage(slot) {
-        console.log('Saving message for slot:', slot); // Debug log
+        console.log('Saving message for slot:', slot);
+        let dateInput = document.getElementById(`edit-date-${slot}`).value;
+        // Convert DD-MM-YYYY to YYYY-MM-DD for Firebase consistency
+        if (/^\d{2}-\d{2}-\d{4}$/.test(dateInput)) {
+          const [day, month, year] = dateInput.split('-');
+          dateInput = `${year}-${month}-${day}`;
+        }
         const updatedMessage = {
           contactNumber: document.getElementById(`edit-contactNumber-${slot}`).value || null,
           idWorker: document.getElementById(`edit-idWorker-${slot}`).value || null,
@@ -493,9 +518,9 @@
           plate: document.getElementById(`edit-plate-${slot}`).value || null,
           timestamp: document.getElementById(`edit-timestamp-${slot}`).value || null,
           user: document.getElementById(`edit-user-${slot}`).value || null,
-          date: document.getElementById(`edit-date-${slot}`).value || null
+          date: dateInput || null
         };
-        console.log('Updated message:', updatedMessage); // Debug log
+        console.log('Updated message:', updatedMessage);
         firebase.database().ref(`slot_message_user/${slot}`).set(updatedMessage)
           .then(() => {
             firebase.database().ref(`slot_messages_users/${slot}`).set(updatedMessage)
@@ -513,7 +538,7 @@
       }
 
       function deleteMessage(slot) {
-        console.log('Deleting message for slot:', slot); // Debug log
+        console.log('Deleting message for slot:', slot);
         if (confirm('Are you sure you want to delete this message?')) {
           firebase.database().ref(`slot_message_user/${slot}`).remove()
             .then(() => {
@@ -533,7 +558,7 @@
 
       function updateCustomersMessage() {
         const sortOption = document.getElementById('sortFilter').value;
-        console.log('Sort option selected:', sortOption); // Debug log
+        console.log('Sort option selected:', sortOption);
         customersMessageList.innerHTML = '';
 
         if (!messagesData.length) {
@@ -543,7 +568,7 @@
         }
 
         let sortedMessages = [...messagesData];
-        console.log('Messages before sorting:', sortedMessages); // Debug log
+        console.log('Messages before sorting:', sortedMessages);
         if (sortOption === 'slot') {
           sortedMessages.sort((a, b) => {
             const numA = parseInt(a.slot.split('_')[1]) || 999;
@@ -552,18 +577,22 @@
           });
         } else if (sortOption === 'newest') {
           sortedMessages.sort((a, b) => {
-            const dateA = a.message.date ? new Date(a.message.date) : new Date(0);
-            const dateB = b.message.date ? new Date(b.message.date) : new Date(0);
-            return isNaN(dateB) || isNaN(dateA) ? a.slot.localeCompare(b.slot) : dateB - dateA;
+            const dateA = parseDate(a.message.date);
+            const dateB = parseDate(b.message.date);
+            return dateA.getTime() === dateB.getTime() 
+              ? (parseInt(a.slot.split('_')[1]) || 999) - (parseInt(b.slot.split('_')[1]) || 999)
+              : dateB - dateA;
           });
         } else if (sortOption === 'oldest') {
           sortedMessages.sort((a, b) => {
-            const dateA = a.message.date ? new Date(a.message.date) : new Date(0);
-            const dateB = b.message.date ? new Date(b.message.date) : new Date(0);
-            return isNaN(dateA) || isNaN(dateB) ? a.slot.localeCompare(b.slot) : dateA - dateB;
+            const dateA = parseDate(a.message.date);
+            const dateB = parseDate(b.message.date);
+            return dateA.getTime() === dateB.getTime()
+              ? (parseInt(a.slot.split('_')[1]) || 999) - (parseInt(b.slot.split('_')[1]) || 999)
+              : dateA - dateB;
           });
         }
-        console.log('Messages after sorting:', sortedMessages); // Debug log
+        console.log('Messages after sorting:', sortedMessages);
 
         sortedMessages.forEach(({ slot, message }) => {
           const { contactNumber, idWorker, lastAction, parkingNotes, plate, timestamp, user, date } = message;
@@ -589,11 +618,11 @@
 
       firebase.database().ref("slot_message_user").on("value", (snapshot) => {
         const data = snapshot.val();
-        console.log('Customer Messages Data:', data); // Debug log
+        console.log('Customer Messages Data:', data);
         messagesData = [];
         if (data) {
           for (const slot in data) {
-            if (data[slot].date && isNaN(new Date(data[slot].date))) {
+            if (data[slot].date && isNaN(parseDate(data[slot].date))) {
               console.warn(`Invalid date format for slot ${slot}: ${data[slot].date}`);
             }
             messagesData.push({ slot, message: data[slot] });
