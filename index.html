@@ -215,21 +215,25 @@
             font-size: 16px;
         }
 
-        .history-list {
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
             max-height: 100px;
             overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 8px;
-            border-radius: 5px;
+            display: block;
         }
 
-        .history-item {
-            display: grid;
-            grid-template-columns: 1fr 1fr 0.5fr 0.5fr;
-            padding: 6px 0;
+        .history-table th, .history-table td {
+            border: 1px solid #ccc;
+            padding: 6px;
+            text-align: left;
             font-size: 10px;
-            align-items: center;
-            gap: 5px;
+        }
+
+        .history-table th {
+            background-color: #e9ecef;
+            color: #555;
+            font-weight: bold;
         }
 
         .status.in {
@@ -542,7 +546,7 @@
             <button class="logout">Log Out</button>
         </div>
         <div class="feature-box">
-            <h3>Parking Management System</h3>
+            <h2>Parking Management System</h2>
             <button class="live-overview" onclick="window.location.href='/index.html'">Live Overview</button>
             <button class="prev-analysis" onclick="window.location.href='/previous-analysis.html'">Previous Analysis</button>
             <button class="export-data">Export Data</button>
@@ -584,7 +588,19 @@
             </div>
             <div class="history">
                 <h2>Slot History</h2>
-                <div class="history-list" id="slotHistoryList"></div>
+                <div class="history-table-container">
+                    <table class="history-table" id="slotHistoryTable">
+                        <thead>
+                            <tr>
+                                <th>Slot</th>
+                                <th>Timestamp</th>
+                                <th>Status</th>
+                                <th>Size</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
             <div class="park-condition">
                 <h2>Park Condition (3D)</h2>
@@ -1162,8 +1178,8 @@
             slotHistoryRef.on("value", (snapshot) => {
                 console.log("Firebase slot_history data:", snapshot.val());
                 const historyData = snapshot.val();
-                const slotHistoryList = document.getElementById("slotHistoryList");
-                slotHistoryList.innerHTML = "";
+                const slotHistoryTable = document.getElementById("slotHistoryTable").getElementsByTagName('tbody')[0];
+                slotHistoryTable.innerHTML = "";
 
                 if (!historyData) return;
 
@@ -1182,15 +1198,16 @@
                             const slotSize = ['slot_18', 'slot_19', 'slot_20'].includes(slotKey) ? 'none' : 
                                             (slotData[slotKey] && slotData[slotKey].size ? slotData[slotKey].size : 'none');
                             Object.entries(slotLogs).forEach(([timestamp, status]) => {
-                                const div = document.createElement("div");
-                                div.className = "history-item";
-                                div.innerHTML = `
-                                    <span><strong>Slot ${slotKey.split("_")[1]}</strong></span>
-                                    <span>${timestamp}</span>
-                                    <span class="status ${status === 'terisi' ? 'in' : 'out'}">${status}</span>
-                                    <span>${slotSize}</span>
-                                `;
-                                slotHistoryList.appendChild(div);
+                                const row = slotHistoryTable.insertRow();
+                                row.insertCell(0).textContent = slotKey.split("_")[1];
+                                row.insertCell(1).textContent = timestamp;
+                                row.insertCell(2).textContent = status;
+                                row.insertCell(3).textContent = slotSize;
+                                if (status === 'terisi') {
+                                    row.cells[2].className = 'status in';
+                                } else if (status === 'kosong') {
+                                    row.cells[2].className = 'status out';
+                                }
                             });
                         });
                 });
