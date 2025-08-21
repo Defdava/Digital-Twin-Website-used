@@ -284,7 +284,7 @@
         }
 
         .slot.occupied {
-            background-color: #FFA500; /* Orange for occupied slots */
+            background-color: yellow;
         }
 
         .slot span {
@@ -637,7 +637,7 @@
     </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/ajax/libs/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script>
         // Authentication System
         class User {
@@ -805,10 +805,9 @@
                 const slotKey = `slot_${slotData.slotNumber}`;
                 let carColor = 0x808080; // Default to gray
                 if (slotStatuses[slotKey]) {
-                    if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
-                        carColor = 0xFF69B4; // Pink for slots 18, 19, 20 if occupied
-                    } else if (slotSizes[slotKey] === 'none') {
-                        carColor = 0x808080; // Gray for size 'none'
+                    // Force slots 18, 19, 20 to gray, and any slot with size 'none'
+                    if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || slotSizes[slotKey] === 'none') {
+                        carColor = 0x808080; // Gray for slots 18, 19, 20 or size 'none'
                     } else {
                         switch (slotSizes[slotKey]?.toLowerCase()) {
                             case 'small':
@@ -1040,19 +1039,8 @@
                     slotStatuses[slotKey] = false; // Initialize
                     slotSizes[slotKey] = 'none'; // Initialize size
                     const slotEl = document.querySelector(`.slot[data-slot="${i}"]`);
-                    let newStatus = false;
-                    let newSize = 'none';
-
-                    if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
-                        // For slots 18, 19, 20, use occupied field directly
-                        newStatus = data[slotKey] && data[slotKey].occupied === true;
-                        newSize = data[slotKey]?.size ? data[slotKey].size.toLowerCase() : 'none';
-                    } else {
-                        // For other slots, use original logic
-                        newStatus = data[slotKey] && data[slotKey].occupied === true;
-                        newSize = data[slotKey]?.size ? data[slotKey].size.toLowerCase() : 'none';
-                    }
-
+                    let newStatus = data[slotKey] && data[slotKey].occupied === true;
+                    let newSize = (data[slotKey] && data[slotKey].size) ? data[slotKey].size.toLowerCase() : 'none';
                     slotStatuses[slotKey] = newStatus;
                     slotSizes[slotKey] = newSize;
 
@@ -1060,12 +1048,11 @@
                         if (newStatus) {
                             slotEl.classList.add("occupied");
                             slotEl.querySelector(".car").style.display = "block";
-                            // Set car color: pink for slots 18, 19, 20; otherwise based on size
+                            // Set car color to gray for slots 18, 19, 20 or size 'none'
                             slotEl.querySelector(".car").style.backgroundColor = 
-                                ['slot_18', 'slot_19', 'slot_20'].includes(slotKey) ? "#FF69B4" :
-                                newSize === 'none' ? "#808080" :
-                                newSize === 'small' ? "#0000FF" :
-                                newSize === 'medium' ? "#FFFF00" :
+                                ['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || newSize === 'none' ? "#808080" : 
+                                newSize === 'small' ? "#0000FF" : 
+                                newSize === 'medium' ? "#FFFF00" : 
                                 newSize === 'big' ? "#FF0000" : "#808080";
                             occupiedCount++;
                         } else {
@@ -1078,10 +1065,8 @@
                     if (cars[i-1]) {
                         let carColor = 0x808080; // Gray by default
                         if (newStatus) {
-                            if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
-                                carColor = 0xFF69B4; // Pink for slots 18, 19, 20
-                            } else if (newSize === 'none') {
-                                carColor = 0x808080; // Gray for size 'none'
+                            if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || newSize === 'none') {
+                                carColor = 0x808080; // Gray for slots 18, 19, 20 or size 'none'
                             } else {
                                 switch (newSize) {
                                     case 'small':
