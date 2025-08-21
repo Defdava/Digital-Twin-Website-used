@@ -477,6 +477,21 @@
             z-index: 102;
             display: none;
         }
+
+        #fullscreenBtn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 8px;
+            z-index: 101;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -756,32 +771,27 @@
             });
         }
 
-        // Create Cars with Size-Based Animation
+        // Create Cars with Animation and Size-Based Colors
         function createCars() {
             console.log("Creating cars...");
             const carGeometry = new THREE.BoxGeometry(2.5, 1, 1.5);
 
             allSlots.forEach((slotData, index) => {
                 const slotKey = `slot_${slotData.slotNumber}`;
-                let carColor = 0xFFC0CB; // Default to pink (none)
-                let carScale = 1; // Default scale
-                if (slotSizes[slotKey]) {
+                let carColor = 0x808080; // Default to gray for no size or none
+                if (slotSizes[slotKey] && slotStatuses[slotKey]) {
                     switch (slotSizes[slotKey].toLowerCase()) {
                         case 'small':
                             carColor = 0x0000FF; // Biru
-                            carScale = 0.8; // Smaller scale for small
                             break;
                         case 'medium':
                             carColor = 0xFFFF00; // Kuning
-                            carScale = 1.0; // Normal scale for medium
                             break;
                         case 'big':
                             carColor = 0xFF0000; // Merah
-                            carScale = 1.2; // Larger scale for big
                             break;
-                        case 'none':
-                            carColor = 0xFFC0CB; // Pink
-                            carScale = 0.5; // Small scale for none
+                        default:
+                            carColor = 0x808080; // Gray for none or unknown
                             break;
                     }
                 }
@@ -795,7 +805,7 @@
                 const car = new THREE.Mesh(carGeometry, carMaterial);
                 car.position.set(slotData.position.x, 0.5, slotData.position.z);
                 car.castShadow = true;
-                car.scale.set(slotStatuses[slotKey] ? carScale : 0, slotStatuses[slotKey] ? carScale : 0, slotStatuses[slotKey] ? carScale : 0);
+                car.scale.set(slotStatuses[slotKey] ? 1 : 0, slotStatuses[slotKey] ? 1 : 0, slotStatuses[slotKey] ? 1 : 0);
                 scene.add(car);
                 
                 cars.push({
@@ -804,13 +814,12 @@
                     slotIndex: slotData.slotNumber,
                     targetOpacity: slotStatuses[slotKey] ? 1 : 0,
                     currentOpacity: slotStatuses[slotKey] ? 1 : 0,
-                    targetScale: slotStatuses[slotKey] ? carScale : 0,
-                    currentScale: slotStatuses[slotKey] ? carScale : 0,
+                    targetScale: slotStatuses[slotKey] ? 1 : 0,
+                    currentScale: slotStatuses[slotKey] ? 1 : 0,
                     animationSpeed: 0.05,
                     isAnimating: false,
                     bobOffset: Math.random() * Math.PI * 2,
-                    originalY: car.position.y,
-                    baseScale: carScale
+                    originalY: car.position.y
                 });
             });
         }
@@ -822,8 +831,8 @@
                 if (slotStatuses[slotKey]) {
                     if (cars[i-1]) {
                         cars[i-1].targetOpacity = 1;
-                        cars[i-1].targetScale = cars[i-1].baseScale;
-                        if (cars[i-1].currentOpacity !== 1 || cars[i-1].currentScale !== cars[i-1].baseScale) {
+                        cars[i-1].targetScale = 1;
+                        if (cars[i-1].currentOpacity !== 1 || cars[i-1].currentScale !== 1) {
                             cars[i-1].isAnimating = true;
                         }
                     }
@@ -855,7 +864,7 @@
             console.log(`🔄 Stats updated: ${occupiedCount} occupied, ${emptyCount} empty`);
         }
 
-        // Animation Loop with Size-Based Movement
+        // Animation Loop
         function animate() {
             animationFrame = requestAnimationFrame(animate);
             
@@ -884,9 +893,8 @@
                 
                 if (car.currentOpacity > 0.1) {
                     visibleCars++;
-                    const bobAmount = 0.05 + (car.baseScale - 1) * 0.02; // Adjust bob based on size
+                    const bobAmount = 0.05;
                     car.mesh.position.y = car.originalY + Math.sin(time * 2 + car.bobOffset) * bobAmount;
-                    car.mesh.rotation.z = Math.sin(time * 0.5 + car.bobOffset) * 0.1; // Slight rotation for animation
                 }
             });
 
@@ -999,7 +1007,7 @@
                     slotStatuses[slotKey] = false; // Initialize
                     slotSizes[slotKey] = 'none'; // Initialize size
                     const slotEl = document.querySelector(`.slot[data-slot="${i}"]`);
-                    let newStatus = data[slotKey] && data[slotKey].occupied === true; // Changed to 'occupied'
+                    let newStatus = data[slotKey] && data[slotKey].occupied === true;
                     let newSize = (data[slotKey] && data[slotKey].size) ? data[slotKey].size.toLowerCase() : 'none';
                     slotStatuses[slotKey] = newStatus;
                     slotSizes[slotKey] = newSize;
@@ -1016,27 +1024,27 @@
                     }
 
                     if (cars[i-1]) {
-                        let carColor = 0xFFC0CB; // Default to pink (none)
-                        let carScale = 0.5; // Default scale for none
-                        switch (newSize) {
-                            case 'small':
-                                carColor = 0x0000FF; // Biru
-                                carScale = 0.8; // Smaller scale
-                                break;
-                            case 'medium':
-                                carColor = 0xFFFF00; // Kuning
-                                carScale = 1.0; // Normal scale
-                                break;
-                            case 'big':
-                                carColor = 0xFF0000; // Merah
-                                carScale = 1.2; // Larger scale
-                                break;
+                        let carColor = 0x808080; // Gray for no size or none
+                        if (newStatus) {
+                            switch (newSize) {
+                                case 'small':
+                                    carColor = 0x0000FF; // Biru
+                                    break;
+                                case 'medium':
+                                    carColor = 0xFFFF00; // Kuning
+                                    break;
+                                case 'big':
+                                    carColor = 0xFF0000; // Merah
+                                    break;
+                                case 'none':
+                                    carColor = 0x808080; // Gray for none
+                                    break;
+                            }
                         }
                         cars[i-1].material.color.set(carColor);
-                        cars[i-1].baseScale = carScale;
                         cars[i-1].targetOpacity = newStatus ? 1 : 0;
-                        cars[i-1].targetScale = newStatus ? carScale : 0;
-                        if (cars[i-1].currentOpacity !== (newStatus ? 1 : 0) || cars[i-1].currentScale !== (newStatus ? carScale : 0)) {
+                        cars[i-1].targetScale = newStatus ? 1 : 0;
+                        if (cars[i-1].currentOpacity !== (newStatus ? 1 : 0) || cars[i-1].currentScale !== (newStatus ? 1 : 0)) {
                             cars[i-1].isAnimating = true;
                         }
                         console.log(`🚗 Slot ${i}: ${newStatus ? 'OCCUPIED' : 'AVAILABLE'} - Size: ${newSize}, Color: #${carColor.toString(16)}, Target opacity=${cars[i-1].targetOpacity}, scale=${cars[i-1].targetScale}`);
@@ -1044,7 +1052,7 @@
                 }
 
                 const emptyCount = totalSlots - occupiedCount;
-                console.log(`📈 Final count: ${occupiedCount} occupied, ${emptyCount} available out of ${totalSlots}`);
+                console.log(`📈 Final count: ${occupiedCount} occupied, ${emptyCount} available out of ${totalSlots} total`);
                 
                 updateLiveOverview(occupiedCount, emptyCount, totalSlots);
             }, (error) => {
@@ -1149,6 +1157,7 @@
                     console.log("Expanding 3D view");
                     threeContainer.style.display = 'block';
                     document.getElementById('controls').style.display = 'block';
+                    document.getElementById('fullscreenBtn').style.display = 'block'; // Show full screen button
                     if (!scene) {
                         initThree();
                     } else {
@@ -1164,9 +1173,28 @@
                 } else {
                     console.log("Collapsing 3D view");
                     threeContainer.style.display = 'none';
+                    document.getElementById('fullscreenBtn').style.display = 'none'; // Hide full screen button
                     cleanupThree();
                 }
             });
+
+            // Full Screen Button
+            const fullscreenBtn = document.createElement('button');
+            fullscreenBtn.id = 'fullscreenBtn';
+            fullscreenBtn.textContent = 'Full Screen';
+            fullscreenBtn.onclick = toggleFullScreen;
+            document.getElementById('cameraContainer').appendChild(fullscreenBtn);
+
+            function toggleFullScreen() {
+                const threeContainer = document.getElementById('threeContainer');
+                if (!document.fullscreenElement) {
+                    threeContainer.requestFullscreen().catch(err => {
+                        alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            }
 
             // Handle Window Resize
             window.addEventListener('resize', () => {
