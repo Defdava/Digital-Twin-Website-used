@@ -215,25 +215,34 @@
             font-size: 16px;
         }
 
+        .history-table-container {
+            max-height: 200px;
+            overflow-y: auto;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
         .history-table {
             width: 100%;
             border-collapse: collapse;
-            max-height: 100px;
-            overflow-y: auto;
             display: block;
         }
 
         .history-table th, .history-table td {
             border: 1px solid #ccc;
-            padding: 6px;
+            padding: 10px;
             text-align: left;
-            font-size: 10px;
+            font-size: 14px;
         }
 
         .history-table th {
             background-color: #e9ecef;
             color: #555;
             font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         .status.in {
@@ -489,10 +498,10 @@
             background-color: #007bff;
             color: white;
             border: none;
-            padding: 4px 8px;
+            padding: 8px 12px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 8px;
+            font-size: 12px;
             z-index: 101;
             display: none;
         }
@@ -617,7 +626,7 @@
                     <div id="loading">Loading parking data...</div>
                     <div id="error-message"></div>
                     <button id="fullscreenBtn">Full Screen</button>
-                    <button id="collapseBtn">Collapse</button>
+                    <button id="collapseBtn">Click to Collapse</button>
                 </div>
             </div>
             <div class="park-condition-2d">
@@ -1195,7 +1204,6 @@
                     .forEach((slotKey) => {
                         const slotLogs = historyData[slotKey];
                         Object.entries(slotLogs).forEach(([timestamp, entry]) => {
-                            // Ensure status is correctly interpreted as 'terisi' or 'kosong'
                             const status = entry.status === true || entry.status === 'terisi' ? 'terisi' : 'kosong';
                             const row = slotHistoryTable.insertRow();
                             row.insertCell(0).textContent = slotKey.split("_")[1];
@@ -1287,6 +1295,13 @@
                     document.getElementById('collapseBtn').style.display = 'block';
                 } else {
                     document.getElementById('collapseBtn').style.display = 'none';
+                    if (isExpanded) {
+                        isExpanded = false;
+                        toggleCameraBtn.textContent = 'Click to Expand';
+                        threeContainer.style.display = 'none';
+                        document.getElementById('fullscreenBtn').style.display = 'none';
+                        cleanupThree();
+                    }
                 }
             });
 
