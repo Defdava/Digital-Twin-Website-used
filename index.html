@@ -492,6 +492,29 @@
             z-index: 101;
             display: none;
         }
+
+        #collapseBtn {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            z-index: 101;
+            display: none;
+        }
+
+        #collapseBtn:hover {
+            background-color: #c82333;
+        }
+
+        :fullscreen #collapseBtn {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -577,6 +600,8 @@
                     </div>
                     <div id="loading">Loading parking data...</div>
                     <div id="error-message"></div>
+                    <button id="fullscreenBtn">Full Screen</button>
+                    <button id="collapseBtn">Collapse</button>
                 </div>
             </div>
             <div class="park-condition-2d">
@@ -778,21 +803,26 @@
 
             allSlots.forEach((slotData, index) => {
                 const slotKey = `slot_${slotData.slotNumber}`;
-                let carColor = 0x808080; // Default to gray for no size or none
-                if (slotSizes[slotKey] && slotStatuses[slotKey]) {
-                    switch (slotSizes[slotKey].toLowerCase()) {
-                        case 'small':
-                            carColor = 0x0000FF; // Biru
-                            break;
-                        case 'medium':
-                            carColor = 0xFFFF00; // Kuning
-                            break;
-                        case 'big':
-                            carColor = 0xFF0000; // Merah
-                            break;
-                        default:
-                            carColor = 0x808080; // Gray for none or unknown
-                            break;
+                let carColor = 0x808080; // Default to gray
+                if (slotStatuses[slotKey]) {
+                    // Force slots 18, 19, 20 to gray, and any slot with size 'none'
+                    if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || slotSizes[slotKey] === 'none') {
+                        carColor = 0x808080; // Gray for slots 18, 19, 20 or size 'none'
+                    } else {
+                        switch (slotSizes[slotKey]?.toLowerCase()) {
+                            case 'small':
+                                carColor = 0x0000FF; // Blue
+                                break;
+                            case 'medium':
+                                carColor = 0xFFFF00; // Yellow
+                                break;
+                            case 'big':
+                                carColor = 0xFF0000; // Red
+                                break;
+                            default:
+                                carColor = 0x808080; // Gray for unknown sizes
+                                break;
+                        }
                     }
                 }
 
@@ -986,11 +1016,13 @@
                         if (slotEl) {
                             slotEl.classList.remove("occupied");
                             slotEl.querySelector(".car").style.display = "none";
+                            slotEl.querySelector(".car").style.backgroundColor = "#808080";
                         }
                         if (cars[i-1]) {
                             cars[i-1].targetOpacity = 0;
                             cars[i-1].targetScale = 0;
                             cars[i-1].isAnimating = true;
+                            cars[i-1].material.color.set(0x808080);
                         }
                     }
                     updateLiveOverview(0, 20, 20);
@@ -1016,29 +1048,37 @@
                         if (newStatus) {
                             slotEl.classList.add("occupied");
                             slotEl.querySelector(".car").style.display = "block";
+                            // Set car color to gray for slots 18, 19, 20 or size 'none'
+                            slotEl.querySelector(".car").style.backgroundColor = 
+                                ['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || newSize === 'none' ? "#808080" : 
+                                newSize === 'small' ? "#0000FF" : 
+                                newSize === 'medium' ? "#FFFF00" : 
+                                newSize === 'big' ? "#FF0000" : "#808080";
                             occupiedCount++;
                         } else {
                             slotEl.classList.remove("occupied");
                             slotEl.querySelector(".car").style.display = "none";
+                            slotEl.querySelector(".car").style.backgroundColor = "#808080";
                         }
                     }
 
                     if (cars[i-1]) {
-                        let carColor = 0x808080; // Gray for no size or none
+                        let carColor = 0x808080; // Gray by default
                         if (newStatus) {
-                            switch (newSize) {
-                                case 'small':
-                                    carColor = 0x0000FF; // Biru
-                                    break;
-                                case 'medium':
-                                    carColor = 0xFFFF00; // Kuning
-                                    break;
-                                case 'big':
-                                    carColor = 0xFF0000; // Merah
-                                    break;
-                                case 'none':
-                                    carColor = 0x808080; // Gray for none
-                                    break;
+                            if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || newSize === 'none') {
+                                carColor = 0x808080; // Gray for slots 18, 19, 20 or size 'none'
+                            } else {
+                                switch (newSize) {
+                                    case 'small':
+                                        carColor = 0x0000FF; // Blue
+                                        break;
+                                    case 'medium':
+                                        carColor = 0xFFFF00; // Yellow
+                                        break;
+                                    case 'big':
+                                        carColor = 0xFF0000; // Red
+                                        break;
+                                }
                             }
                         }
                         cars[i-1].material.color.set(carColor);
@@ -1157,7 +1197,7 @@
                     console.log("Expanding 3D view");
                     threeContainer.style.display = 'block';
                     document.getElementById('controls').style.display = 'block';
-                    document.getElementById('fullscreenBtn').style.display = 'block'; // Show full screen button
+                    document.getElementById('fullscreenBtn').style.display = 'block';
                     if (!scene) {
                         initThree();
                     } else {
@@ -1173,17 +1213,15 @@
                 } else {
                     console.log("Collapsing 3D view");
                     threeContainer.style.display = 'none';
-                    document.getElementById('fullscreenBtn').style.display = 'none'; // Hide full screen button
+                    document.getElementById('fullscreenBtn').style.display = 'none';
+                    document.getElementById('collapseBtn').style.display = 'none';
                     cleanupThree();
                 }
             });
 
-            // Full Screen Button
-            const fullscreenBtn = document.createElement('button');
-            fullscreenBtn.id = 'fullscreenBtn';
-            fullscreenBtn.textContent = 'Full Screen';
-            fullscreenBtn.onclick = toggleFullScreen;
-            document.getElementById('cameraContainer').appendChild(fullscreenBtn);
+            // Full Screen and Collapse Button
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const collapseBtn = document.getElementById('collapseBtn');
 
             function toggleFullScreen() {
                 const threeContainer = document.getElementById('threeContainer');
@@ -1195,6 +1233,32 @@
                     document.exitFullscreen();
                 }
             }
+
+            function handleCollapse() {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                }
+                if (isExpanded) {
+                    isExpanded = false;
+                    toggleCameraBtn.textContent = 'Click to Expand';
+                    threeContainer.style.display = 'none';
+                    document.getElementById('fullscreenBtn').style.display = 'none';
+                    document.getElementById('collapseBtn').style.display = 'none';
+                    cleanupThree();
+                }
+            }
+
+            fullscreenBtn.addEventListener('click', toggleFullScreen);
+            collapseBtn.addEventListener('click', handleCollapse);
+
+            // Fullscreen change event to manage collapse button visibility
+            document.addEventListener('fullscreenchange', () => {
+                if (document.fullscreenElement) {
+                    document.getElementById('collapseBtn').style.display = 'block';
+                } else {
+                    document.getElementById('collapseBtn').style.display = 'none';
+                }
+            });
 
             // Handle Window Resize
             window.addEventListener('resize', () => {
