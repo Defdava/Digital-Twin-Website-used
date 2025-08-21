@@ -39,31 +39,6 @@
             opacity: 0.4;
         }
 
-        /* Tambahan: Header Baru di Atas */
-        .top-bar {
-            background-color: #8B0000; /* Warna merah gelap seperti pada gambar */
-            color: #D3D3D3; /* Warna teks abu-abu seperti pada gambar */
-            padding: 5px 20px;
-            display: flex;
-            align-items: center;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 2000; /* Pastikan di atas header lainnya */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .top-bar img {
-            height: 20px; /* Ukuran ikon sesuai kebutuhan */
-            margin-right: 10px;
-            vertical-align: middle;
-        }
-
-        .top-bar span {
-            font-size: 14px;
-            font-weight: bold;
-        }
-
         header {
             background-image: linear-gradient(to right, lightseagreen, palevioletred);
             color: white;
@@ -73,7 +48,7 @@
             align-items: center;
             position: fixed;
             width: 100%;
-            top: 40px; /* Geser ke bawah agar tidak bertabrakan dengan top-bar */
+            top: 0;
             z-index: 1000;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
@@ -107,7 +82,7 @@
 
         .main-content {
             margin-left: 0;
-            padding: 120px 20px 20px; /* Tambah padding atas agar konten tidak tertutup top-bar */
+            padding: 80px 20px 20px;
             min-height: 100vh;
         }
 
@@ -120,7 +95,7 @@
 
         .toolbar {
             position: fixed;
-            top: 100px; /* Geser ke bawah sesuai dengan top-bar dan header */
+            top: 60px;
             left: -400px;
             width: 200px;
             height: 100%;
@@ -509,14 +484,9 @@
         <source src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/wave.mp4?raw=true" type="video/mp4">
         Your browser does not support the video tag.
     </video>
-    <!-- Tambahan: Top Bar dengan Logo BRIN -->
-    <div class="top-bar">
-        <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/8ca93c89e6856d49a8ddd4271cd52f6de76cfef2/106-3.png?raw=true" alt="BRIN Logo">
-        <span>BRIN Digital Twin Parkir User</span>
-    </div>
     <header>
         <div class="logo" id="toggleToolbar">
-            <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/8ca93c89e6856d49a8ddd4271cd52f6de76cfef2/106-3.png?raw=true" alt="BRIN Logo">
+            <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true" alt="BRIN Logo">
             <span>BRIN</span>
             <span>Badan Riset Nasional</span>
         </div>
