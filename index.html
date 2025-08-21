@@ -637,7 +637,7 @@
     </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/ajax/libs/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script>
         // Authentication System
         class User {
@@ -805,9 +805,8 @@
                 const slotKey = `slot_${slotData.slotNumber}`;
                 let carColor = 0x808080; // Default to gray
                 if (slotStatuses[slotKey]) {
-                    // Slots 18, 19, 20 are pink if occupied
                     if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
-                        carColor = 0xFF69B4; // Pink
+                        carColor = 0xFF69B4; // Pink for slots 18, 19, 20 if occupied
                     } else if (slotSizes[slotKey] === 'none') {
                         carColor = 0x808080; // Gray for size 'none'
                     } else {
@@ -1041,8 +1040,19 @@
                     slotStatuses[slotKey] = false; // Initialize
                     slotSizes[slotKey] = 'none'; // Initialize size
                     const slotEl = document.querySelector(`.slot[data-slot="${i}"]`);
-                    let newStatus = data[slotKey] === true; // Check if slot is true (occupied)
-                    let newSize = data[slotKey]?.size ? data[slotKey].size.toLowerCase() : 'none';
+                    let newStatus = false;
+                    let newSize = 'none';
+
+                    if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
+                        // For slots 18, 19, 20, use occupied field directly
+                        newStatus = data[slotKey] && data[slotKey].occupied === true;
+                        newSize = data[slotKey]?.size ? data[slotKey].size.toLowerCase() : 'none';
+                    } else {
+                        // For other slots, use original logic
+                        newStatus = data[slotKey] && data[slotKey].occupied === true;
+                        newSize = data[slotKey]?.size ? data[slotKey].size.toLowerCase() : 'none';
+                    }
+
                     slotStatuses[slotKey] = newStatus;
                     slotSizes[slotKey] = newSize;
 
