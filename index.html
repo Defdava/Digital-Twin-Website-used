@@ -747,24 +747,19 @@
         const connectionStatus = document.getElementById('connectionStatus');
         const threeContainer = document.getElementById('threeContainer');
 
-        // Vehicle type colors and sizes
-        const vehicleConfig = {
-            'small': { 
-                color: 0x0066FF,    // Blue
-                width: 2.0, height: 0.8, length: 1.2 
-            },
-            'medium': { 
-                color: 0xFFD700,    // Yellow/Gold
-                width: 2.5, height: 1.0, length: 1.5 
-            },
-            'big': { 
-                color: 0xFF0000,    // Red
-                width: 3.0, height: 1.2, length: 1.8 
-            },
-            'none': { 
-                color: 0x808080,    // Gray
-                width: 2.5, height: 1.0, length: 1.5 
-            }
+        // Vehicle type colors mapping (sesuai permintaan)
+        const vehicleColors = {
+            'small': 0x0066FF,    // Biru
+            'medium': 0xFFD700,   // Kuning
+            'big': 0xFF0000,      // Merah
+            'none': 0xFF69B4      // Pink
+        };
+
+        // Vehicle size (ukuran standar untuk semua)
+        const standardVehicleSize = {
+            width: 4.0,
+            height: 1.5,
+            length: 2.0
         };
 
         // Show/Hide Loading
@@ -801,7 +796,7 @@
                 scene = new THREE.Scene();
                 scene.background = new THREE.Color(0x87CEEB); // Sky blue background
                 
-                // Camera setup
+                // Camera setup - POV seperti awal
                 const containerWidth = threeContainer.clientWidth || 400;
                 const containerHeight = threeContainer.clientHeight || 300;
                 camera = new THREE.PerspectiveCamera(75, containerWidth / containerHeight, 0.1, 1000);
@@ -813,27 +808,28 @@
                 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
                 threeContainer.appendChild(renderer.domElement);
 
-                // Lighting
-                const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+                // Lighting setup
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
                 scene.add(ambientLight);
                 
-                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-                directionalLight.position.set(50, 50, 25);
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+                directionalLight.position.set(10, 20, 10);
                 directionalLight.castShadow = true;
-                directionalLight.shadow.mapSize.width = 2048;
-                directionalLight.shadow.mapSize.height = 2048;
                 scene.add(directionalLight);
 
                 // Ground
-                const groundGeometry = new THREE.PlaneGeometry(200, 50);
-                const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
+                const groundGeometry = new THREE.PlaneGeometry(80, 30);
+                const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x555555 });
                 const ground = new THREE.Mesh(groundGeometry, groundMaterial);
                 ground.rotation.x = -Math.PI / 2;
                 ground.receiveShadow = true;
                 scene.add(ground);
 
                 createParkingSlots();
-                resetCamera();
+                
+                // Set camera position seperti awal
+                camera.position.set(0, 15, 25);
+                camera.lookAt(0, 0, 0);
                 
                 console.log("Scene initialized successfully");
                 return true;
@@ -848,13 +844,13 @@
         function createParkingSlots() {
             console.log("Creating parking slots...");
             
-            const slotMaterial = new THREE.MeshLambertMaterial({ color: 0x808080 });
-            const slotGeometry = new THREE.BoxGeometry(5, 0.2, 2.5);
+            const slotMaterial = new THREE.MeshLambertMaterial({ color: 0x888888 });
+            const slotGeometry = new THREE.BoxGeometry(4.5, 0.1, 2.2);
 
-            // Bottom row (slots 1-11)
+            // Row 1: Slots 1-11 (bottom row)
             for (let i = 0; i < 11; i++) {
                 const slot = new THREE.Mesh(slotGeometry, slotMaterial);
-                slot.position.set((10 - i) * 6 - 30, 0.1, 5);
+                slot.position.set((i - 5) * 5, 0.05, 4);
                 slot.receiveShadow = true;
                 scene.add(slot);
                 
@@ -865,10 +861,10 @@
                 });
             }
 
-            // Top row (slots 12-20)
+            // Row 2: Slots 12-20 (top row)  
             for (let i = 0; i < 9; i++) {
                 const slot = new THREE.Mesh(slotGeometry, slotMaterial);
-                slot.position.set((8 - i) * 6 - 24, 0.1, -5);
+                slot.position.set((i - 4) * 5, 0.05, -4);
                 slot.receiveShadow = true;
                 scene.add(slot);
                 
@@ -890,28 +886,28 @@
             allSlots.forEach((slotData) => {
                 const canvas = document.createElement('canvas');
                 const context = canvas.getContext('2d');
-                canvas.width = 128;
-                canvas.height = 64;
+                canvas.width = 64;
+                canvas.height = 32;
                 
-                context.font = 'bold 40px Arial';
+                context.font = 'bold 20px Arial';
                 context.fillStyle = 'white';
                 context.strokeStyle = 'black';
-                context.lineWidth = 2;
+                context.lineWidth = 1;
                 context.textAlign = 'center';
-                context.strokeText(slotData.slotNumber.toString(), 64, 45);
-                context.fillText(slotData.slotNumber.toString(), 64, 45);
+                context.strokeText(slotData.slotNumber.toString(), 32, 22);
+                context.fillText(slotData.slotNumber.toString(), 32, 22);
                 
                 const texture = new THREE.CanvasTexture(canvas);
                 const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
                 const sprite = new THREE.Sprite(spriteMaterial);
                 
-                sprite.position.set(slotData.position.x, 2, slotData.position.z);
-                sprite.scale.set(2, 1, 1);
+                sprite.position.set(slotData.position.x, 1.5, slotData.position.z);
+                sprite.scale.set(1.5, 0.8, 1);
                 scene.add(sprite);
             });
         }
 
-        // Create Vehicle with Animation
+        // Create Vehicle with Simple Animation
         function createVehicle(slotNumber, vehicleData) {
             const slotData = allSlots.find(slot => slot.slotNumber === slotNumber);
             if (!slotData) {
@@ -923,98 +919,95 @@
             removeVehicle(slotNumber);
 
             const vehicleType = vehicleData.size || 'none';
-            const config = vehicleConfig[vehicleType] || vehicleConfig['none'];
+            const color = vehicleColors[vehicleType] || vehicleColors['none'];
             
-            // Create vehicle geometry
-            const vehicleGeometry = new THREE.BoxGeometry(config.width, config.height, config.length);
-            const vehicleMaterial = new THREE.MeshLambertMaterial({ color: config.color });
+            // Create vehicle with standard size
+            const vehicleGeometry = new THREE.BoxGeometry(
+                standardVehicleSize.width, 
+                standardVehicleSize.height, 
+                standardVehicleSize.length
+            );
+            const vehicleMaterial = new THREE.MeshLambertMaterial({ color: color });
             const vehicleMesh = new THREE.Mesh(vehicleGeometry, vehicleMaterial);
             
             // Position vehicle on slot
             vehicleMesh.position.set(
                 slotData.position.x,
-                slotData.position.y + config.height/2 + 0.1,
+                slotData.position.y + standardVehicleSize.height/2 + 0.1,
                 slotData.position.z
             );
             vehicleMesh.castShadow = true;
             vehicleMesh.receiveShadow = true;
             
-            // Add entrance animation
-            vehicleMesh.scale.set(0, 0, 0);
             scene.add(vehicleMesh);
             
             // Store vehicle reference
             vehicles[slotNumber] = {
                 mesh: vehicleMesh,
-                type: vehicleType,
-                animating: true
+                type: vehicleType
             };
 
-            // Animate vehicle entrance
-            animateVehicleEntrance(vehicleMesh, slotNumber);
+            // Simple entrance animation
+            vehicleMesh.scale.set(0.1, 0.1, 0.1);
+            animateVehicleEntrance(vehicleMesh);
             
-            console.log(`Created ${vehicleType} vehicle in slot ${slotNumber}`);
+            console.log(`Created ${vehicleType} vehicle (${getColorName(color)}) in slot ${slotNumber}`);
         }
 
-        // Remove Vehicle with Animation
+        // Get color name for logging
+        function getColorName(colorCode) {
+            switch(colorCode) {
+                case 0x0066FF: return 'Blue';
+                case 0xFFD700: return 'Yellow'; 
+                case 0xFF0000: return 'Red';
+                case 0xFF69B4: return 'Pink';
+                default: return 'Unknown';
+            }
+        }
+
+        // Remove Vehicle with Simple Animation
         function removeVehicle(slotNumber) {
             const vehicle = vehicles[slotNumber];
             if (vehicle && vehicle.mesh) {
-                vehicle.animating = true;
                 animateVehicleExit(vehicle.mesh, slotNumber);
             }
         }
 
-        // Animate Vehicle Entrance
-        function animateVehicleEntrance(vehicleMesh, slotNumber) {
+        // Simple Animate Vehicle Entrance
+        function animateVehicleEntrance(vehicleMesh) {
             const startTime = Date.now();
-            const duration = 800; // 0.8 seconds
+            const duration = 500; // 0.5 seconds
             
             function animate() {
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
                 
-                // Easing function for smooth animation
-                const easeProgress = 1 - Math.pow(1 - progress, 3);
-                
-                vehicleMesh.scale.set(easeProgress, easeProgress, easeProgress);
-                vehicleMesh.rotation.y = (1 - easeProgress) * Math.PI * 2;
+                const scale = 0.1 + (0.9 * progress);
+                vehicleMesh.scale.set(scale, scale, scale);
                 
                 if (progress < 1) {
                     requestAnimationFrame(animate);
-                } else {
-                    // Animation complete
-                    if (vehicles[slotNumber]) {
-                        vehicles[slotNumber].animating = false;
-                    }
-                    vehicleMesh.rotation.y = 0;
                 }
             }
             
             animate();
         }
 
-        // Animate Vehicle Exit
+        // Simple Animate Vehicle Exit
         function animateVehicleExit(vehicleMesh, slotNumber) {
             const startTime = Date.now();
-            const duration = 600; // 0.6 seconds
+            const duration = 400; // 0.4 seconds
             
             function animate() {
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
                 
-                // Easing function for smooth animation
-                const easeProgress = Math.pow(progress, 2);
-                
-                const scale = 1 - easeProgress;
+                const scale = 1 - progress;
                 vehicleMesh.scale.set(scale, scale, scale);
-                vehicleMesh.rotation.y = easeProgress * Math.PI * 2;
-                vehicleMesh.position.y += easeProgress * 2;
                 
                 if (progress < 1) {
                     requestAnimationFrame(animate);
                 } else {
-                    // Animation complete - remove from scene
                     scene.remove(vehicleMesh);
                     delete vehicles[slotNumber];
                 }
