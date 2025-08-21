@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>BRIN Previous Analysis</title>
-  <link rel="icon" type="image/x-icon" href="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true">
+  <link rel="icon" type="image/x-icon" href="https://github.com/Defdava/Digital-Twin-Website-used/blob/8ca93c89e6856d49a8ddd4271cd52f6de76cfef2/106-3.png?raw=true">
 
   <style>
     body { 
@@ -161,7 +161,7 @@
       border-radius: 8px; 
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
       margin-bottom: 20px; 
-      color: white; /* Ubah teks menjadi putih */
+      color: darkgray; /* Ubah teks menjadi abu-abu */
     }
     .history h2, .customers h2 { 
       margin: 0 0 10px; 
@@ -210,7 +210,7 @@
       padding: 10px; 
       border-radius: 5px; 
       background: #f9f9f9; 
-      color: white; /* Ubah teks menjadi putih */
+      color: darkgray; /* Ubah teks menjadi abu-abu */
     }
     .history-item, .customer-item { 
       display: flex; 
@@ -220,7 +220,7 @@
       font-size: 12px; 
       border-bottom: 1px solid #eee; 
       transition: background 0.2s; 
-      color: white; /* Ubah teks menjadi putih */
+      color: darkgray; /* Ubah teks menjadi abu-abu */
     }
     .history-item:last-child, .customer-item:last-child { 
       border-bottom: none; 
@@ -253,16 +253,16 @@
       border-radius: 5px;
       padding: 15px;
       background: white;
-      color: white; /* Ubah teks menjadi putih */
+      color: darkgray; /* Ubah teks menjadi abu-abu */
     }
     .customer-item strong { 
-      color: white; /* Ubah teks menjadi putih */
+      color: darkgray; /* Ubah teks menjadi abu-abu */
       font-size: 14px; 
       margin-bottom: 5px; 
     }
     .customer-item span { 
       display: block; 
-      color: white; /* Ubah teks menjadi putih */
+      color: darkgray; /* Ubah teks menjadi abu-abu */
       margin-bottom: 3px;
     }
     .customer-actions {
@@ -809,7 +809,7 @@
             }
             updateCustomersMessage();
           } else {
-            customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: white;">No messages available</div>';
+            customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: darkgray;">No messages available</div>';
             console.log('No customer messages available');
           }
         }, (error) => {
@@ -821,7 +821,7 @@
         customersMessageList.innerHTML = '';
 
         if (!messagesData.length) {
-          customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: white;">No messages available</div>';
+          customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: darkgray;">No messages available</div>';
           console.log('No messages in messagesData');
           return;
         }
@@ -870,7 +870,7 @@
           }
           updateCustomersMessage();
         } else {
-          customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: white;">No messages available</div>';
+          customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: darkgray;">No messages available</div>';
         }
       }, (error) => {
         showError(`Failed to fetch customer messages: ${error.message}`);
