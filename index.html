@@ -411,16 +411,92 @@
 
         #cameraContainer.expanded {
             position: fixed;
-            top: 80px;
-            left: 20px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2000;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1e3c72 100%);
+            border-radius: 0;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            min-height: 100vh;
+        }
+
+        #cameraContainer.expanded #toggleCameraBtn {
+            position: fixed;
+            top: 20px;
             right: 20px;
-            bottom: 20px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            z-index: 2001;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        #cameraContainer.expanded #toggleCameraBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        #cameraContainer.expanded #threeContainer {
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+        }
+
+        #cameraContainer.expanded #controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 2001;
             backdrop-filter: blur(10px);
-            min-height: calc(100vh - 120px);
+        }
+
+        #cameraContainer.expanded #controls button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            margin: 3px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        #cameraContainer.expanded #controls button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+
+        /* Fullscreen overlay background */
+        .fullscreen-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1999;
+        }
+
+        .fullscreen-overlay.active {
+            display: block;
         }
 
         #threeContainer {
@@ -611,6 +687,9 @@
             </div>
         </div>
     </main>
+    
+    <!-- Fullscreen overlay for 3D viewer -->
+    <div class="fullscreen-overlay" id="fullscreenOverlay"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -1169,47 +1248,132 @@
             const toggleCameraBtn = document.getElementById('toggleCameraBtn');
             const threeContainer = document.getElementById('threeContainer');
             const cameraContainer = document.getElementById('cameraContainer');
+            const fullscreenOverlay = document.getElementById('fullscreenOverlay');
+            const mainContent = document.querySelector('.main-content');
+            const header = document.querySelector('header');
             let isExpanded = false;
+            let originalParent = null;
+            let originalNextSibling = null;
+
+            // Store original position in DOM
+            originalParent = cameraContainer.parentNode;
+            originalNextSibling = cameraContainer.nextSibling;
 
             toggleCameraBtn.addEventListener('click', () => {
                 console.log("Toggling 3D visualization, isExpanded:", isExpanded);
                 isExpanded = !isExpanded;
-                toggleCameraBtn.textContent = isExpanded ? 'Click to Collapse' : 'Click to Expand';
                 
                 if (isExpanded) {
-                    console.log("Expanding 3D view");
+                    console.log("Expanding to fullscreen 3D view");
+                    
+                    // Show fullscreen overlay
+                    fullscreenOverlay.classList.add('active');
+                    
+                    // Move camera container to fullscreen
                     cameraContainer.classList.add('expanded');
+                    document.body.appendChild(cameraContainer);
+                    
+                    // Update button text and show 3D container
+                    toggleCameraBtn.textContent = 'Exit Fullscreen';
                     threeContainer.style.display = 'block';
                     document.getElementById('controls').style.display = 'block';
                     
+                    // Hide main content and header
+                    mainContent.style.display = 'none';
+                    header.style.display = 'none';
+                    
+                    // Initialize or restart 3D scene
                     if (!scene) {
                         initThree();
                     } else {
-                        // Reinitialize renderer and restore scene
-                        const threeContainer = document.getElementById('threeContainer');
+                        // Reinitialize renderer for fullscreen
+                        if (renderer && renderer.domElement) {
+                            renderer.domElement.remove();
+                        }
+                        
                         renderer = new THREE.WebGLRenderer({ antialias: true });
-                        renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
+                        renderer.setSize(window.innerWidth, window.innerHeight);
                         renderer.shadowMap.enabled = true;
                         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
                         threeContainer.appendChild(renderer.domElement);
+                        
+                        // Update camera aspect ratio for fullscreen
+                        camera.aspect = window.innerWidth / window.innerHeight;
+                        camera.updateProjectionMatrix();
+                        
                         animate();
                     }
+                    
+                    // Disable body scroll
+                    document.body.style.overflow = 'hidden';
+                    
                 } else {
-                    console.log("Collapsing 3D view");
+                    console.log("Collapsing from fullscreen to original view");
+                    
+                    // Hide fullscreen overlay
+                    fullscreenOverlay.classList.remove('active');
+                    
+                    // Remove expanded class
                     cameraContainer.classList.remove('expanded');
+                    
+                    // Return camera container to original position
+                    if (originalNextSibling) {
+                        originalParent.insertBefore(cameraContainer, originalNextSibling);
+                    } else {
+                        originalParent.appendChild(cameraContainer);
+                    }
+                    
+                    // Update button text and hide 3D container
+                    toggleCameraBtn.textContent = 'Click to Expand';
                     threeContainer.style.display = 'none';
+                    
+                    // Show main content and header
+                    mainContent.style.display = 'block';
+                    header.style.display = 'flex';
+                    
+                    // Cleanup 3D scene
                     cleanupThree();
+                    
+                    // Re-enable body scroll
+                    document.body.style.overflow = 'auto';
+                }
+            });
+
+            // Close fullscreen when clicking overlay
+            fullscreenOverlay.addEventListener('click', (event) => {
+                if (event.target === fullscreenOverlay && isExpanded) {
+                    toggleCameraBtn.click();
+                }
+            });
+
+            // Handle escape key to exit fullscreen
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && isExpanded) {
+                    toggleCameraBtn.click();
+                    event.preventDefault();
                 }
             });
 
             // Handle Window Resize
             window.addEventListener('resize', () => {
-                if (scene && renderer) {
-                    const threeContainer = document.getElementById('threeContainer');
-                    camera.aspect = threeContainer.clientWidth / (threeContainer.clientHeight || 300);
+                if (scene && renderer && camera) {
+                    let width, height;
+                    
+                    if (isExpanded) {
+                        // Fullscreen mode
+                        width = window.innerWidth;
+                        height = window.innerHeight;
+                    } else {
+                        // Normal mode
+                        const container = document.getElementById('threeContainer');
+                        width = container.clientWidth;
+                        height = container.clientHeight || 300;
+                    }
+                    
+                    camera.aspect = width / height;
                     camera.updateProjectionMatrix();
-                    renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
-                    console.log("Resized renderer:", threeContainer.clientWidth, threeContainer.clientHeight);
+                    renderer.setSize(width, height);
+                    console.log("Resized renderer:", width, height, isExpanded ? "(fullscreen)" : "(normal)");
                 }
             });
 
