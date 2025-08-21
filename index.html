@@ -225,7 +225,7 @@
 
         .history-item {
             display: grid;
-            grid-template-columns: 1fr 1fr 0.5fr;
+            grid-template-columns: 1fr 1fr 0.5fr 0.5fr;
             padding: 6px 0;
             font-size: 10px;
             align-items: center;
@@ -814,7 +814,7 @@
                                 carColor = 0x0000FF; // Blue
                                 break;
                             case 'medium':
-                                carColor = 0xFFFF00; // Yellow
+                                carColor = 0xFFA500; // Orange
                                 break;
                             case 'big':
                                 carColor = 0xFF0000; // Red
@@ -1041,6 +1041,10 @@
                     const slotEl = document.querySelector(`.slot[data-slot="${i}"]`);
                     let newStatus = data[slotKey] && data[slotKey].occupied === true;
                     let newSize = (data[slotKey] && data[slotKey].size) ? data[slotKey].size.toLowerCase() : 'none';
+                    // Force slots 18, 19, 20 to have size 'none' if no size is specified
+                    if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
+                        newSize = 'none';
+                    }
                     slotStatuses[slotKey] = newStatus;
                     slotSizes[slotKey] = newSize;
 
@@ -1052,7 +1056,7 @@
                             slotEl.querySelector(".car").style.backgroundColor = 
                                 ['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || newSize === 'none' ? "#808080" : 
                                 newSize === 'small' ? "#0000FF" : 
-                                newSize === 'medium' ? "#FFFF00" : 
+                                newSize === 'medium' ? "#FFA500" : 
                                 newSize === 'big' ? "#FF0000" : "#808080";
                             occupiedCount++;
                         } else {
@@ -1073,7 +1077,7 @@
                                         carColor = 0x0000FF; // Blue
                                         break;
                                     case 'medium':
-                                        carColor = 0xFFFF00; // Yellow
+                                        carColor = 0xFFA500; // Orange
                                         break;
                                     case 'big':
                                         carColor = 0xFF0000; // Red
@@ -1163,25 +1167,33 @@
 
                 if (!historyData) return;
 
-                Object.keys(historyData)
-                    .sort((a, b) => {
-                        const aNum = parseInt(a.split("_")[1]);
-                        const bNum = parseInt(b.split("_")[1]);
-                        return aNum - bNum;
-                    })
-                    .forEach((slotKey) => {
-                        const slotLogs = historyData[slotKey];
-                        Object.entries(slotLogs).forEach(([timestamp, status]) => {
-                            const div = document.createElement("div");
-                            div.className = "history-item";
-                            div.innerHTML = `
-                                <span><strong>Slot ${slotKey.split("_")[1]}</strong></span>
-                                <span>${timestamp}</span>
-                                <span class="status ${status === 'terisi' ? 'in' : 'out'}">${status}</span>
-                            `;
-                            slotHistoryList.appendChild(div);
+                // Fetch current slot sizes from slot_parking
+                dbRef.once("value").then((snapshot) => {
+                    const slotData = snapshot.val() || {};
+                    Object.keys(historyData)
+                        .sort((a, b) => {
+                            const aNum = parseInt(a.split("_")[1]);
+                            const bNum = parseInt(b.split("_")[1]);
+                            return aNum - bNum;
+                        })
+                        .forEach((slotKey) => {
+                            const slotLogs = historyData[slotKey];
+                            // Get size for the slot, default to 'none' for slots 18, 19, 20 or if no size
+                            const slotSize = ['slot_18', 'slot_19', 'slot_20'].includes(slotKey) ? 'none' : 
+                                            (slotData[slotKey] && slotData[slotKey].size ? slotData[slotKey].size : 'none');
+                            Object.entries(slotLogs).forEach(([timestamp, status]) => {
+                                const div = document.createElement("div");
+                                div.className = "history-item";
+                                div.innerHTML = `
+                                    <span><strong>Slot ${slotKey.split("_")[1]}</strong></span>
+                                    <span>${timestamp}</span>
+                                    <span class="status ${status === 'terisi' ? 'in' : 'out'}">${status}</span>
+                                    <span>${slotSize}</span>
+                                `;
+                                slotHistoryList.appendChild(div);
+                            });
                         });
-                    });
+                });
             });
 
             // 3D Visualization Toggle
