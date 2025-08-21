@@ -1181,36 +1181,37 @@
                 const slotHistoryTable = document.getElementById("slotHistoryTable").getElementsByTagName('tbody')[0];
                 slotHistoryTable.innerHTML = "";
 
-                if (!historyData) return;
+                if (!historyData) {
+                    console.warn("No slot history data available.");
+                    return;
+                }
 
-                // Fetch current slot sizes from slot_parking
-                dbRef.once("value").then((snapshot) => {
-                    const slotData = snapshot.val() || {};
-                    Object.keys(historyData)
-                        .sort((a, b) => {
-                            const aNum = parseInt(a.split("_")[1]);
-                            const bNum = parseInt(b.split("_")[1]);
-                            return aNum - bNum;
-                        })
-                        .forEach((slotKey) => {
-                            const slotLogs = historyData[slotKey];
-                            // Get size for the slot, default to 'none' for slots 18, 19, 20 or if no size
-                            const slotSize = ['slot_18', 'slot_19', 'slot_20'].includes(slotKey) ? 'none' : 
-                                            (slotData[slotKey] && slotData[slotKey].size ? slotData[slotKey].size : 'none');
-                            Object.entries(slotLogs).forEach(([timestamp, status]) => {
-                                const row = slotHistoryTable.insertRow();
-                                row.insertCell(0).textContent = slotKey.split("_")[1];
-                                row.insertCell(1).textContent = timestamp;
-                                row.insertCell(2).textContent = status;
-                                row.insertCell(3).textContent = slotSize;
-                                if (status === 'terisi') {
-                                    row.cells[2].className = 'status in';
-                                } else if (status === 'kosong') {
-                                    row.cells[2].className = 'status out';
-                                }
-                            });
+                Object.keys(historyData)
+                    .sort((a, b) => {
+                        const aNum = parseInt(a.split("_")[1]);
+                        const bNum = parseInt(b.split("_")[1]);
+                        return aNum - bNum;
+                    })
+                    .forEach((slotKey) => {
+                        const slotLogs = historyData[slotKey];
+                        Object.entries(slotLogs).forEach(([timestamp, entry]) => {
+                            // Ensure status is correctly interpreted as 'terisi' or 'kosong'
+                            const status = entry.status === true || entry.status === 'terisi' ? 'terisi' : 'kosong';
+                            const row = slotHistoryTable.insertRow();
+                            row.insertCell(0).textContent = slotKey.split("_")[1];
+                            row.insertCell(1).textContent = timestamp;
+                            row.insertCell(2).textContent = status;
+                            row.insertCell(3).textContent = entry.size || 'none';
+                            if (status === 'terisi') {
+                                row.cells[2].className = 'status in';
+                            } else if (status === 'kosong') {
+                                row.cells[2].className = 'status out';
+                            }
                         });
-                });
+                    });
+            }, (error) => {
+                console.error("Error fetching slot history:", error);
+                showError("Failed to fetch slot history data.");
             });
 
             // 3D Visualization Toggle
