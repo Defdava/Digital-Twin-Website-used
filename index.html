@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>BRIN Live Overview</title>
-    <link rel="icon" type="image/x-icon" href="https://github.com/Defdava/Digital-Twin-Website-used/blob/575171d0e9964327d99950733c2b48cea0c59d72/logo-brin.png?raw=true">
+    <link rel="icon" type="image/x-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,6 +15,7 @@
             padding: 0;
             color: darkslategrey;
             overflow-x: hidden;
+            background: linear-gradient(45deg, #e3f2fd, #f3e5f5);
         }
 
         body::before {
@@ -24,88 +25,96 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: none;
-            opacity: 0.2;
+            background: radial-gradient(circle, rgba(72,149,239,0.1) 0%, rgba(123,104,238,0.1) 100%);
+            opacity: 0.3;
             z-index: -1;
+            animation: backgroundPulse 10s ease-in-out infinite alternate;
         }
 
-        video#bg-video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -2;
-            opacity: 0.4;
+        @keyframes backgroundPulse {
+            0% { opacity: 0.2; }
+            100% { opacity: 0.4; }
         }
 
         header {
-            background-image: linear-gradient(to right, lightseagreen, palevioletred);
+            background: linear-gradient(135deg, #1e88e5, #8e24aa);
             color: white;
-            padding: 10px 20px;
+            padding: 15px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: fixed;
-            width: 100%;
+            width: calc(100% - 50px);
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
         }
 
         .logo {
             display: flex;
             align-items: center;
             cursor: pointer;
+            transition: transform 0.3s ease;
         }
 
-        .logo img {
-            height: 40px;
-            vertical-align: middle;
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+            margin-right: 15px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.2);
         }
 
         .logo span {
-            margin-left: 10px;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin-left: 5px;
         }
 
         .header-right span {
-            margin-right: 20px;
-            font-size: 14px;
+            font-size: 16px;
+            font-weight: 500;
+            opacity: 0.9;
         }
 
         .main-content {
             margin-left: 0;
-            padding: 80px 20px 20px;
+            padding: 100px 25px 25px;
             min-height: 100vh;
         }
 
         .main-content-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
         }
 
         .toolbar {
             position: fixed;
-            top: 60px;
-            left: -400px;
-            width: 200px;
-            height: 100%;
-            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
-            padding: 15px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            transition: left 0.3s ease-in-out;
+            top: 80px;
+            left: -350px;
+            width: 280px;
+            height: calc(100vh - 80px);
+            background: linear-gradient(180deg, #1e88e5, #8e24aa);
+            padding: 20px;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.2);
+            transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             z-index: 999;
             overflow-y: auto;
+            backdrop-filter: blur(15px);
         }
 
         .toolbar.active {
@@ -113,171 +122,212 @@
         }
 
         .toolbar .feature-box {
-            background-color: lightgrey;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 16px;
-            font-size: 13px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .toolbar .feature-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
         }
 
         .toolbar .feature-box h3 {
-            margin: 0 0 8px;
-            font-size: 14px;
-            color: black;
+            margin: 0 0 15px;
+            font-size: 16px;
+            color: #2c3e50;
+            font-weight: 600;
         }
 
         .toolbar .feature-box button {
             width: 100%;
-            padding: 6px;
-            background-color: darkgrey;
-            color: black;
+            padding: 12px 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 11px;
-            margin-bottom: 4px;
-            transition: background-color 0.3s;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         .toolbar .feature-box button:hover {
-            background-color: darkslategrey;
-            color: white;
-        }
-
-        .toolbar .user-info {
-            text-align: center;
-        }
-
-        .toolbar .user-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-bottom: 8px;
-        }
-
-        .toolbar .user-info span {
-            display: block;
-            margin: 4px 0;
-            font-size: 11px;
-            color: black;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #764ba2, #667eea);
         }
 
         .overview, .history, .park-condition, .park-condition-2d {
-            background-color: lightgrey;
-            padding: 10px;
-            border-radius: 8px;
-            border: 2px solid #dc3545;
-            min-height: 150px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 20px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            min-height: 200px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .overview::before, .history::before, .park-condition::before, .park-condition-2d::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .overview:hover, .history:hover, .park-condition:hover, .park-condition-2d:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
         }
 
         .park-condition-2d {
-            padding: 5px;
-            min-height: 200px;
+            padding: 15px;
+            min-height: 300px;
         }
 
         .overview h1 {
-            margin: 0 0 10px;
-            color: #007bff;
-            font-size: 16px;
+            margin: 0 0 20px;
+            color: #2c3e50;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 10px;
-            font-size: 12px;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 14px;
         }
 
         .stats div {
-            background-color: #e9ecef;
-            padding: 6px;
-            border-radius: 5px;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            padding: 15px;
+            border-radius: 12px;
             text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stats div:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
         }
 
         .stats span:first-child {
             display: block;
             font-size: 12px;
-            font-weight: bold;
-            color: #555;
-            margin-bottom: 5px;
+            font-weight: 600;
+            color: inherit;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stats span:last-child {
-            font-size: 12px;
-            color: #007bff;
+            font-size: 18px;
+            font-weight: 700;
+            color: inherit;
         }
 
         .history h2, .park-condition h2, .park-condition-2d h2 {
             margin-top: 0;
-            color: #007bff;
-            font-size: 16px;
+            color: #2c3e50;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
         }
 
         .history-filters {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 12px;
+            margin-bottom: 15px;
         }
 
         .history-filters input,
         .history-filters select {
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 12px;
+            padding: 10px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 14px;
             flex: 1;
-            min-width: 100px;
+            min-width: 120px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .history-filters input:focus,
+        .history-filters select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.2);
         }
 
         .history-table-container {
-            max-height: 200px;
+            max-height: 250px;
             overflow-y: auto;
-            border-radius: 5px;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            background: white;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .history-table {
             width: 100%;
             border-collapse: collapse;
-            display: block;
         }
 
         .history-table th, .history-table td {
-            border: 1px solid #ccc;
-            padding: 10px;
+            border: 1px solid #e1e8ed;
+            padding: 12px 15px;
             text-align: center;
             font-size: 14px;
         }
 
         .history-table th {
-            background-color: #e9ecef;
-            color: #555;
-            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
             position: sticky;
             top: 0;
             z-index: 10;
         }
 
         .status.in {
-            color: green;
-            font-weight: bold;
+            color: #27ae60;
+            font-weight: 700;
         }
 
         .status.out {
-            color: red;
-            font-weight: bold;
+            color: #e74c3c;
+            font-weight: 700;
         }
 
         .parking-lot {
             display: flex;
             flex-direction: column;
-            gap: 0.5px;
-            padding: 3px;
-            margin-top: 50px;
+            gap: 8px;
+            padding: 10px;
+            margin-top: 20px;
             justify-content: center;
             align-items: center;
         }
@@ -286,198 +336,158 @@
             display: flex;
             flex-direction: row;
             justify-content: center;
-        }
-
-        .column.top {
-            gap: 5px;
-        }
-
-        .column.bottom {
-            gap: 5px;
+            gap: 8px;
         }
 
         .slot {
-            border: 1px solid #ccc;
-            padding: 5px;
+            border: 2px solid #bdc3c7;
+            padding: 8px;
             text-align: center;
-            background-color: #e9ecef;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
             font-size: 16px;
-            border-radius: 5px;
+            border-radius: 10px;
             position: relative;
-            width: 50px;
+            width: 45px;
             height: 35px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .slot:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         }
 
         .slot.occupied {
-            background-color: yellow;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            border-color: #d35400;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .slot span {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .slot.occupied span {
+            color: white;
         }
 
         .slot .car {
-            width: 40px;
-            height: 21px;
-            border-radius: 3px;
+            width: 35px;
+            height: 20px;
+            border-radius: 5px;
             position: absolute;
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
             display: none;
-            transition: opacity 0.3s ease-in-out;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
         .slot.occupied .car {
             display: block;
-            animation: carEnter 0.5s ease-in-out;
+            animation: carEnter 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
         @keyframes carEnter {
             from {
-                transform: translate(-50%, -50%) scale(0);
+                transform: translate(-50%, -50%) scale(0) rotate(180deg);
                 opacity: 0;
             }
             to {
-                transform: translate(-50%, -50%) scale(1);
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
                 opacity: 1;
             }
-        }
-
-        @keyframes carExit {
-            from {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 1;
-            }
-            to {
-                transform: translate(-50%, -50%) scale(0);
-                opacity: 0;
-            }
-        }
-
-        .slot.occupied.exiting .car {
-            animation: carExit 0.5s ease-in-out forwards;
-        }
-
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: rgba(0, 0, 0, 0.5);
-            padding-top: 80px;
-        }
-
-        .login-box {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: 300px;
-            text-align: center;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .login-box h2 {
-            margin-top: 0;
-            color: #007bff;
-            font-size: 20px;
-        }
-
-        .login-box input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-
-        .login-box button {
-            width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .login-box a {
-            display: block;
-            margin: 10px 0;
-            color: #007bff;
-            text-decoration: none;
-            font-size: 12px;
         }
 
         #toggleCameraBtn {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: #007bff;
+            top: 15px;
+            left: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 12px 20px;
+            border-radius: 25px;
             cursor: pointer;
             z-index: 101;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        #toggleCameraBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         }
 
         #cameraContainer {
             width: 100%;
             position: relative;
-            min-height: 300px;
+            min-height: 350px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            overflow: hidden;
         }
 
         #threeContainer {
             width: 100%;
             height: 100%;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border-radius: 15px;
+            box-shadow: inset 0 4px 20px rgba(0,0,0,0.3);
             display: none;
         }
 
         #threeError {
             display: none;
-            color: red;
-            font-size: 12px;
+            color: white;
+            font-size: 16px;
             text-align: center;
-            margin-top: 10px;
+            margin-top: 50px;
+            padding: 20px;
         }
 
         #controls {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 15px;
+            right: 15px;
             background: rgba(0, 0, 0, 0.8);
             color: white;
-            padding: 8px;
-            border-radius: 4px;
+            padding: 15px;
+            border-radius: 10px;
             z-index: 100;
             display: none;
+            backdrop-filter: blur(10px);
         }
 
         #controls button {
-            background: #4CAF50;
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
             color: white;
             border: none;
-            padding: 6px 10px;
-            margin: 2px;
-            border-radius: 2px;
+            padding: 8px 15px;
+            margin: 3px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 10px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
 
         #controls button:hover {
-            background: #45a049;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
         }
 
         #loading {
@@ -485,76 +495,82 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             color: white;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 12px;
+            padding: 20px 30px;
+            border-radius: 10px;
+            font-size: 16px;
             z-index: 102;
             display: none;
+            backdrop-filter: blur(10px);
         }
 
         #error-message {
             position: absolute;
-            top: 10px;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(255, 0, 0, 0.8);
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
             color: white;
-            padding: 8px;
-            border-radius: 4px;
-            font-size: 10px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
             z-index: 102;
             display: none;
+            font-weight: 500;
         }
 
-        #fullscreenBtn {
+        #fullscreenBtn, #collapseBtn {
             position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background-color: #007bff;
+            bottom: 15px;
+            right: 15px;
+            background: linear-gradient(45deg, #3498db, #2980b9);
             color: white;
             border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
+            padding: 12px 20px;
+            border-radius: 25px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 14px;
             z-index: 101;
             display: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         #collapseBtn {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            z-index: 101;
-            display: none;
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            bottom: 15px;
+            left: 15px;
         }
 
-        #collapseBtn:hover {
-            background-color: #c82333;
+        #fullscreenBtn:hover, #collapseBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         }
 
-        :fullscreen #collapseBtn {
-            display: block;
+        @media (max-width: 768px) {
+            .main-content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-right span {
+                display: none;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .history-filters {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
-    <video id="bg-video" autoplay muted loop>
-        <source src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/wave.mp4?raw=true" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
     <header>
         <div class="logo" id="toggleToolbar">
-            <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true" alt="BRIN Logo">
+            <div class="logo-icon">B</div>
             <span>BRIN</span>
             <span>Badan Riset Nasional</span>
         </div>
@@ -562,65 +578,71 @@
             <span>Parking Management System</span>
         </div>
     </header>
+    
     <aside class="toolbar" id="toolbar">
         <div class="feature-box user-info" id="userInfo">
-            <h3>User</h3>
-            <img id="profilePic" src="/assets/user.JPG" alt="User">
-            <span>Welcome Back</span>
-            <span id="userName"></span>
-            <button class="profile" onclick="window.location.href='/profile.html'">Profile</button>
+            <h3>User Dashboard</h3>
+            <div style="text-align: center; margin-bottom: 15px;">
+                <div style="width: 50px; height: 50px; background: linear-gradient(45deg, #667eea, #764ba2); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: bold;">U</div>
+                <div style="font-weight: 600; color: #2c3e50;">Welcome Back</div>
+                <div id="userName" style="color: #667eea; font-weight: 500;">Admin User</div>
+            </div>
+            <button class="profile">My Profile</button>
             <button class="logout">Log Out</button>
         </div>
+        
         <div class="feature-box">
-            <h2>Parking Management System</h2>
-            <button class="live-overview" onclick="window.location.href='/index.html'">Live Overview</button>
-            <button class="prev-analysis" onclick="window.location.href='/previous-analysis.html'">Previous Analysis</button>
+            <h3>Parking Management</h3>
+            <button class="live-overview">Live Overview</button>
+            <button class="prev-analysis">Previous Analysis</button>
             <button class="export-data">Export Data</button>
             <button class="3d-viewer-vr">3D Viewer VR</button>
-            <button class="helpdesk">Helpdesk</button>
-            <button class="parking-analysis" onclick="window.location.href='/parkiranalysis.html'">Parking Analysis</button>
+            <button class="helpdesk">Help & Support</button>
+            <button class="parking-analysis">Parking Analytics</button>
         </div>
     </aside>
+    
     <main class="main-content">
         <div class="main-content-grid">
             <div class="overview">
-                <h1>Live Overview</h1>
+                <h1>Live Overview Dashboard</h1>
                 <div class="stats">
                     <div>
-                        <span>Cars</span>
+                        <span>Occupied Cars</span>
                         <span id="occupiedSlots">0 / 20</span>
                     </div>
                     <div>
-                        <span>Slots</span>
+                        <span>Available Slots</span>
                         <span id="emptySlots">20 / 20</span>
                     </div>
                     <div>
-                        <span>Time</span>
-                        <span id="currentTime"></span>
+                        <span>Current Time</span>
+                        <span id="currentTime">--:--:--</span>
                     </div>
                     <div>
-                        <span>Loyalty Customers</span>
-                        <span>3</span>
+                        <span>Loyalty Members</span>
+                        <span>3 Active</span>
                     </div>
                     <div>
-                        <span>Total Cars In</span>
-                        <span>74 Today</span>
+                        <span>Cars In Today</span>
+                        <span>74 Total</span>
                     </div>
                     <div>
-                        <span>Total Cars Out</span>
-                        <span>32 Today</span>
+                        <span>Cars Out Today</span>
+                        <span>32 Total</span>
                     </div>
                 </div>
             </div>
+            
             <div class="history">
-                <h2>Slot History</h2>
+                <h2>Parking History</h2>
                 <div class="history-filters">
-                    <input type="text" id="filterSlot" placeholder="Filter by Slot (e.g. 1)">
+                    <input type="text" id="filterSlot" placeholder="Filter by Slot Number">
                     <input type="date" id="filterDate">
                     <select id="filterStatus">
                         <option value="">All Status</option>
-                        <option value="terisi">Terisi</option>
-                        <option value="kosong">Kosong</option>
+                        <option value="terisi">Occupied</option>
+                        <option value="kosong">Available</option>
                     </select>
                 </div>
                 <div class="history-table-container">
@@ -630,33 +652,48 @@
                                 <th>Slot</th>
                                 <th>Timestamp</th>
                                 <th>Status</th>
-                                <th>Size</th>
+                                <th>Car Size</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>2024-08-22 14:30:15</td>
+                                <td class="status in">Occupied</td>
+                                <td>Medium</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>2024-08-22 14:25:42</td>
+                                <td class="status out">Available</td>
+                                <td>Small</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
+            
             <div class="park-condition">
-                <h2>Park Condition (3D)</h2>
-                <div id="cameraContainer" style="width: 100%; position: relative; min-height: 300px;">
+                <h2>3D Parking Visualization</h2>
+                <div id="cameraContainer">
                     <div id="threeContainer"></div>
-                    <div id="threeError">3D visualization failed to load.</div>
-                    <button id="toggleCameraBtn">Click to Expand</button>
+                    <div id="threeError">3D visualization is loading...</div>
+                    <button id="toggleCameraBtn">Launch 3D View</button>
                     <div id="controls">
-                        <div style="margin-bottom: 6px; font-weight: bold; font-size: 10px;">Camera Controls</div>
+                        <div style="margin-bottom: 10px; font-weight: bold; font-size: 12px;">Camera Controls</div>
                         <button onclick="resetCamera()">Reset View</button>
                         <button onclick="topView()">Top View</button>
                         <button onclick="sideView()">Side View</button>
                     </div>
-                    <div id="loading">Loading parking data...</div>
+                    <div id="loading">Loading 3D parking visualization...</div>
                     <div id="error-message"></div>
-                    <button id="fullscreenBtn">Full Screen</button>
-                    <button id="collapseBtn">Click to Collapse</button>
+                    <button id="fullscreenBtn">Enter Fullscreen</button>
+                    <button id="collapseBtn">Exit View</button>
                 </div>
             </div>
+            
             <div class="park-condition-2d">
-                <h2>Park Condition (2D)</h2>
+                <h2>2D Parking Layout</h2>
                 <div class="parking-lot">
                     <div class="column top">
                         <div class="slot" data-slot="20"><span>20</span><div class="car"></div></div>
@@ -686,912 +723,102 @@
             </div>
         </div>
     </main>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script>
-        // Authentication System
-        class User {
-            constructor(username, email, password, idWorker, profilePic = '/assets/user.JPG') {
-                this.username = username;
-                this.email = email;
-                this.password = password;
-                this.idWorker = idWorker;
-                this.profilePic = profilePic;
-            }
-        }
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script>
+        // Simplified Authentication System for Demo
         class AuthSystem {
             constructor() {
-                this.users = JSON.parse(localStorage.getItem('users')) || [];
+                // Mock user data stored in memory instead of localStorage
+                this.currentUser = {
+                    username: "Admin User",
+                    email: "admin@brin.go.id",
+                    idWorker: "BRIN001",
+                    profilePic: null
+                };
             }
 
-            register(username, email, password, idWorker, profilePic) {
-                const userExists = this.users.some(user => user.email === email);
-                if (userExists) {
-                    throw new Error('User already exists!');
-                }
-                const user = new User(username, email, password, idWorker, profilePic);
-                this.users.push(user);
-                localStorage.setItem('users', JSON.stringify(this.users));
-                return user;
+            getCurrentUser() {
+                return this.currentUser;
             }
 
-            login(email, password) {
-                const user = this.users.find(u => u.email === email && u.password === password);
-                if (user) {
-                    return user;
-                }
-                throw new Error('Invalid email or password!');
+            logout() {
+                this.currentUser = null;
+                return true;
             }
         }
 
         const auth = new AuthSystem();
 
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAef3SJwvVVTunr6CWki79aenfpXlgYc0s",
-            authDomain: "digitaltwinparkingbrin.firebaseapp.com",
-            databaseURL: "https://digitaltwinparkingbrin-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "digitaltwinparkingbrin",
-            storageBucket: "digitaltwinparkingbrin.appspot.com",
-            messagingSenderId: "608462498913",
-            appId: "1:608462498913:web:73695d8c91f923e2db8e20",
-            measurementId: "G-F1TRY65RTG"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const dbRef = firebase.database().ref("slot_parking");
-        const slotHistoryRef = firebase.database().ref("slot_history");
-
-        // 3D Visualization Variables
-        let scene, camera, renderer, cars = [], allSlots = [], animationFrame;
-        let slotStatuses = {};
-        let slotSizes = {};
-        const loadingElement = document.getElementById('loading');
-        const errorElement = document.getElementById('error-message');
-        const loader = new THREE.GLTFLoader();
-        const loadedModels = {};
-        const mixers = [];
-        const clock = new THREE.Clock();
-
-        // Car model URLs
-        const modelUrls = {
-            small: 'https://github.com/Defdava/Digital-Twin-Website-used/blob/a72dd7c4b4d8d8514a188671dfc5ec728f742c47/1989%20Ferrari%20F40%20LM.glb?raw=true',
-            medium: 'https://github.com/Defdava/Digital-Twin-Website-used/blob/899c041333faa3054f985632fcaa6343e1edb54a/2022%20Hongqi%20LS7%20Guoyao.glb?raw=true',
-            big: 'https://github.com/Defdava/Digital-Twin-Website-used/blob/a72dd7c4b4d8d8514a188671dfc5ec728f742c47/2005%20Toyota%20TownAce%20GL.glb?raw=true'
-        };
-
-        // Load GLB models
-        function loadModels() {
-            console.log("Loading GLB models...");
-            return Promise.all([
-                new Promise((resolve, reject) => {
-                    loader.load(modelUrls.small, (gltf) => {
-                        loadedModels.small = gltf.scene;
-                        loadedModels.small.animations = gltf.animations;
-                        resolve();
-                    }, undefined, (error) => {
-                        console.error("Error loading small car model:", error);
-                        reject(error);
-                    });
-                }),
-                new Promise((resolve, reject) => {
-                    loader.load(modelUrls.medium, (gltf) => {
-                        loadedModels.medium = gltf.scene;
-                        loadedModels.medium.animations = gltf.animations;
-                        resolve();
-                    }, undefined, (error) => {
-                        console.error("Error loading medium car model:", error);
-                        reject(error);
-                    });
-                }),
-                new Promise((resolve, reject) => {
-                    loader.load(modelUrls.big, (gltf) => {
-                        loadedModels.big = gltf.scene;
-                        loadedModels.big.animations = gltf.animations;
-                        resolve();
-                    }, undefined, (error) => {
-                        console.error("Error loading big car model:", error);
-                        reject(error);
-                    });
-                })
-            ]);
-        }
-
-        // Show Error Message
-        function showError(message) {
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
-            setTimeout(() => {
-                errorElement.style.display = 'none';
-            }, 5000);
-        }
-
-        // Initialize Three.js Scene
-        function initScene() {
-            console.log("Initializing Three.js scene...");
-            const threeContainer = document.getElementById('threeContainer');
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x87CEEB);
-            
-            camera = new THREE.PerspectiveCamera(75, threeContainer.clientWidth / (threeContainer.clientHeight || 300), 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            threeContainer.appendChild(renderer.domElement);
-
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambientLight);
-            
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(50, 50, 25);
-            directionalLight.castShadow = true;
-            directionalLight.shadow.mapSize.width = 2048;
-            directionalLight.shadow.mapSize.height = 2048;
-            scene.add(directionalLight);
-
-            const groundGeometry = new THREE.PlaneGeometry(200, 50);
-            const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
-            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-            ground.rotation.x = -Math.PI / 2;
-            ground.receiveShadow = true;
-            scene.add(ground);
-        }
-
-        // Create Parking Slots
-        function createParkingSlots() {
-            console.log("Creating parking slots...");
-            const slotMaterial = new THREE.MeshLambertMaterial({ color: 0x808080 });
-            const slotGeometry = new THREE.BoxGeometry(3.5, 0.15, 6.5);
-
-            for (let i = 0; i < 11; i++) {
-                const slot = new THREE.Mesh(slotGeometry, slotMaterial);
-                slot.position.set((10 - i) * 6 - 30, 0.1, 5);
-                slot.receiveShadow = true;
-                scene.add(slot);
-                allSlots.push({
-                    position: slot.position.clone(),
-                    slotNumber: i + 1
-                });
+        // Mock Firebase Database
+        class MockFirebase {
+            constructor() {
+                this.data = {
+                    slot_parking: {},
+                    slot_history: {}
+                };
+                this.listeners = [];
+                this.init();
             }
 
-            for (let i = 0; i < 9; i++) {
-                const slot = new THREE.Mesh(slotGeometry, slotMaterial);
-                slot.position.set((8 - i) * 6 - 24, 0.1, -5);
-                slot.receiveShadow = true;
-                scene.add(slot);
-                allSlots.push({
-                    position: slot.position.clone(),
-                    slotNumber: i + 12
-                });
+            init() {
+                // Initialize with some demo data
+                for (let i = 1; i <= 20; i++) {
+                    const isOccupied = Math.random() > 0.7; // 30% chance occupied
+                    const sizes = ['small', 'medium', 'big', 'none'];
+                    const randomSize = isOccupied ? sizes[Math.floor(Math.random() * 3)] : 'none';
+                    
+                    this.data.slot_parking[`slot_${i}`] = {
+                        occupied: isOccupied,
+                        size: randomSize
+                    };
+                }
+
+                // Simulate real-time updates
+                setInterval(() => {
+                    this.simulateChanges();
+                }, 5000);
             }
 
-            createSlotLabels();
-        }
-
-        // Create Slot Labels
-        function createSlotLabels() {
-            console.log("Creating slot labels...");
-            allSlots.forEach((slotData) => {
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d');
-                canvas.width = 128;
-                canvas.height = 64;
+            simulateChanges() {
+                const slotNumber = Math.floor(Math.random() * 20) + 1;
+                const slotKey = `slot_${slotNumber}`;
+                const currentStatus = this.data.slot_parking[slotKey];
                 
-                context.font = '40px Arial';
-                context.fillStyle = 'white';
-                context.textAlign = 'center';
-                context.fillText(slotData.slotNumber.toString(), 64, 45);
+                // Toggle status randomly
+                const newOccupied = Math.random() > 0.5 ? !currentStatus.occupied : currentStatus.occupied;
+                const sizes = ['small', 'medium', 'big'];
+                const newSize = newOccupied ? sizes[Math.floor(Math.random() * 3)] : 'none';
                 
-                const texture = new THREE.CanvasTexture(canvas);
-                const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-                const sprite = new THREE.Sprite(spriteMaterial);
-                
-                sprite.position.set(slotData.position.x, 2, slotData.position.z);
-                sprite.scale.set(2, 1, 1);
-                scene.add(sprite);
-            });
-        }
-
-        // Animate car movement
-        function animateCar(car, targetPosition, targetScale, duration = 2, onComplete = () => {}) {
-            const startPosition = car.position.clone();
-            const startScale = car.scale.clone();
-            const startTime = performance.now();
-            const animate = () => {
-                const elapsed = (performance.now() - startTime) / 1000;
-                const t = Math.min(elapsed / duration, 1);
-                car.position.lerpVectors(startPosition, targetPosition, t);
-                car.scale.lerpVectors(startScale, targetScale, t);
-                if (t < 1) {
-                    requestAnimationFrame(animate);
-                } else {
-                    onComplete();
-                }
-            };
-            requestAnimationFrame(animate);
-        }
-
-        // Create Cars with GLB Models
-        function createCars() {
-            console.log("Creating cars...");
-            cars.forEach(car => scene.remove(car.mesh));
-            cars.length = 0;
-            mixers.length = 0;
-
-            allSlots.forEach((slotData, index) => {
-                const slotKey = `slot_${slotData.slotNumber}`;
-                let model = null;
-                let carColor = 0x808080; // Default gray for fallback
-
-                if (slotStatuses[slotKey] && !['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
-                    switch (slotSizes[slotKey]?.toLowerCase()) {
-                        case 'small':
-                            if (loadedModels.small) {
-                                model = loadedModels.small.clone();
-                                carColor = 0x0000FF; // Blue
-                            }
-                            break;
-                        case 'medium':
-                            if (loadedModels.medium) {
-                                model = loadedModels.medium.clone();
-                                carColor = 0xFFA500; // Orange
-                            }
-                            break;
-                        case 'big':
-                            if (loadedModels.big) {
-                                model = loadedModels.big.clone();
-                                carColor = 0xFF0000; // Red
-                            }
-                            break;
-                        default:
-                            model = null; // No model for 'none'
-                            break;
-                    }
-                }
-
-                const carObj = {
-                    mesh: null,
-                    slotIndex: slotData.slotNumber,
-                    targetOpacity: slotStatuses[slotKey] ? 1 : 0,
-                    currentOpacity: slotStatuses[slotKey] ? 1 : 0,
-                    targetScale: slotStatuses[slotKey] ? 1 : 0,
-                    currentScale: slotStatuses[slotKey] ? 1 : 0,
-                    animationSpeed: 0.05,
-                    isAnimating: false,
-                    bobOffset: Math.random() * Math.PI * 2,
-                    originalY: 0.5
+                this.data.slot_parking[slotKey] = {
+                    occupied: newOccupied,
+                    size: newSize
                 };
 
-                if (model) {
-                    model.scale.set(0.01, 0.01, 0.01); // Adjust scale to fit slot
-                    model.position.set(slotData.position.x + (slotStatuses[slotKey] ? 0 : 10), 0.5, slotData.position.z);
-                    model.rotation.y = Math.PI / 2; // Orient car correctly
-                    model.castShadow = true;
-                    model.receiveShadow = true;
-                    scene.add(model);
-                    carObj.mesh = model;
-
-                    // Play internal animations if available
-                    if (model.animations && model.animations.length) {
-                        const mixer = new THREE.AnimationMixer(model);
-                        model.animations.forEach(clip => {
-                            mixer.clipAction(clip).play();
-                        });
-                        mixers.push(mixer);
-                    }
-
-                    // Animate car into position if occupied
-                    if (slotStatuses[slotKey]) {
-                        animateCar(model, new THREE.Vector3(slotData.position.x, 0.5, slotData.position.z), new THREE.Vector3(0.01, 0.01, 0.01));
-                    }
-                } else {
-                    // Fallback to BoxGeometry for slots 18-20 or 'none'
-                    const carGeometry = new THREE.BoxGeometry(2, 2, 4);
-                    const carMaterial = new THREE.MeshLambertMaterial({
-                        color: carColor,
-                        transparent: true,
-                        opacity: slotStatuses[slotKey] ? 1 : 0
-                    });
-                    const car = new THREE.Mesh(carGeometry, carMaterial);
-                    car.position.set(slotData.position.x, 0.5, slotData.position.z);
-                    car.castShadow = true;
-                    car.scale.set(slotStatuses[slotKey] ? 1 : 0, slotStatuses[slotKey] ? 1 : 0, slotStatuses[slotKey] ? 1 : 0);
-                    scene.add(car);
-                    carObj.mesh = car;
-                    carObj.material = carMaterial;
+                // Add to history
+                const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+                if (!this.data.slot_history[slotKey]) {
+                    this.data.slot_history[slotKey] = {};
                 }
+                this.data.slot_history[slotKey][timestamp] = {
+                    status: newOccupied,
+                    size: newSize
+                };
 
-                cars.push(carObj);
-            });
-        }
-
-        // Update Cars Based on Firebase Data
-        function updateCarsFromFirebase() {
-            console.log("Updating cars from Firebase...");
-            cars.forEach(car => {
-                const slotKey = `slot_${car.slotIndex}`;
-                const newStatus = slotStatuses[slotKey];
-                const newSize = slotSizes[slotKey] || 'none';
-                const slotData = allSlots.find(slot => slot.slotNumber === car.slotIndex);
-
-                if (!slotData) return;
-
-                // Remove existing car
-                scene.remove(car.mesh);
-                car.mesh = null;
-
-                let model = null;
-                let carColor = 0x808080; // Default gray
-
-                if (newStatus && !['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
-                    switch (newSize.toLowerCase()) {
-                        case 'small':
-                            if (loadedModels.small) {
-                                model = loadedModels.small.clone();
-                                carColor = 0x0000FF; // Blue
-                            }
-                            break;
-                        case 'medium':
-                            if (loadedModels.medium) {
-                                model = loadedModels.medium.clone();
-                                carColor = 0xFFA500; // Orange
-                            }
-                            break;
-                        case 'big':
-                            if (loadedModels.big) {
-                                model = loadedModels.big.clone();
-                                carColor = 0xFF0000; // Red
-                            }
-                            break;
-                        default:
-                            model = null; // No model for 'none'
-                            break;
-                    }
-                }
-
-                if (model) {
-                    model.scale.set(0.01, 0.01, 0.01);
-                    model.position.set(slotData.position.x + (newStatus ? 0 : 10), 0.5, slotData.position.z);
-                    model.rotation.y = Math.PI / 2;
-                    model.castShadow = true;
-                    model.receiveShadow = true;
-                    scene.add(model);
-                    car.mesh = model;
-
-                    // Play internal animations
-                    if (model.animations && model.animations.length) {
-                        const mixer = new THREE.AnimationMixer(model);
-                        model.animations.forEach(clip => {
-                            mixer.clipAction(clip).play();
-                        });
-                        mixers.push(mixer);
-                    }
-
-                    // Animate car movement
-                    if (newStatus && (car.currentOpacity === 0 || car.currentScale === 0)) {
-                        animateCar(model, new THREE.Vector3(slotData.position.x, 0.5, slotData.position.z), new THREE.Vector3(0.01, 0.01, 0.01));
-                    } else if (!newStatus && (car.currentOpacity !== 0 || car.currentScale !== 0)) {
-                        animateCar(model, new THREE.Vector3(slotData.position.x + 10, 0.5, slotData.position.z), new THREE.Vector3(0.01, 0.01, 0.01), 2, () => {
-                            scene.remove(model);
-                        });
-                    }
-                } else {
-                    const carGeometry = new THREE.BoxGeometry(2, 2, 4);
-                    const carMaterial = new THREE.MeshLambertMaterial({
-                        color: carColor,
-                        transparent: true,
-                        opacity: newStatus ? 1 : 0
-                    });
-                    const carMesh = new THREE.Mesh(carGeometry, carMaterial);
-                    carMesh.position.set(slotData.position.x, 0.5, slotData.position.z);
-                    carMesh.castShadow = true;
-                    carMesh.scale.set(newStatus ? 1 : 0, newStatus ? 1 : 0, newStatus ? 1 : 0);
-                    scene.add(carMesh);
-                    car.mesh = carMesh;
-                    car.material = carMaterial;
-                }
-
-                car.targetOpacity = newStatus ? 1 : 0;
-                car.targetScale = newStatus ? 1 : 0;
-                if (car.currentOpacity !== car.targetOpacity || car.currentScale !== car.targetScale) {
-                    car.isAnimating = true;
-                }
-            });
-        }
-
-        // Update Live Overview Stats
-        function updateLiveOverview(occupiedCount, emptyCount, totalSlots) {
-            const occupiedElement = document.getElementById('occupiedSlots');
-            const emptyElement = document.getElementById('emptySlots');
-            
-            if (occupiedElement) {
-                occupiedElement.textContent = `${occupiedCount} / ${totalSlots}`;
-            }
-            
-            if (emptyElement) {
-                emptyElement.textContent = `${emptyCount} / ${totalSlots}`;
-            }
-            
-            console.log(`🔄 Stats updated: ${occupiedCount} occupied, ${emptyCount} empty`);
-        }
-
-        // Animation Loop
-        function animate() {
-            animationFrame = requestAnimationFrame(animate);
-            
-            const delta = clock.getDelta();
-            mixers.forEach(mixer => mixer.update(delta));
-
-            const time = Date.now() * 0.001;
-            let animatingCars = 0;
-            let visibleCars = 0;
-
-            cars.forEach((car, index) => {
-                if (car.isAnimating && car.material) {
-                    animatingCars++;
-                    const opacityDiff = car.targetOpacity - car.currentOpacity;
-                    const scaleDiff = car.targetScale - car.currentScale;
-                    
-                    if (Math.abs(opacityDiff) < 0.01 && Math.abs(scaleDiff) < 0.01) {
-                        car.currentOpacity = car.targetOpacity;
-                        car.currentScale = car.targetScale;
-                        car.isAnimating = false;
-                        console.log(`✅ Animation complete for Slot ${index + 1}: opacity=${car.currentOpacity}, scale=${car.currentScale}`);
-                    } else {
-                        car.currentOpacity += opacityDiff * car.animationSpeed;
-                        car.currentScale += scaleDiff * car.animationSpeed;
-                        if (car.material) {
-                            car.material.opacity = car.currentOpacity;
-                            car.mesh.scale.set(car.currentScale, car.currentScale, car.currentScale);
-                        }
-                    }
-                }
-                
-                if (car.currentOpacity > 0.1) {
-                    visibleCars++;
-                    const bobAmount = 0.05;
-                    car.mesh.position.y = car.originalY + Math.sin(time * 2 + car.bobOffset) * bobAmount;
-                }
-            });
-
-            if (Math.floor(time) % 5 === 0 && Math.floor(time * 10) % 10 === 0) {
-                console.log(`🎬 Animation Status: ${animatingCars} animating, ${visibleCars} visible cars`);
+                // Notify listeners
+                this.notifyListeners();
             }
 
-            renderer.render(scene, camera);
-        }
-
-        // Camera Controls
-        window.resetCamera = function() {
-            camera.position.set(0, 20, 40);
-            camera.lookAt(0, 0, 0);
-            console.log("🔄 Camera reset to default view");
-        }
-
-        window.topView = function() {
-            camera.position.set(0, 50, 0);
-            camera.lookAt(0, 0, 0);
-            console.log("🔄 Camera set to top view");
-        }
-
-        window.sideView = function() {
-            camera.position.set(60, 15, 0);
-            camera.lookAt(0, 0, 0);
-            console.log("🔄 Camera set to side view");
-        }
-
-        // Initialize 3D Visualization
-        function initThree() {
-            console.log("Initializing 3D visualization...");
-            try {
-                const threeContainer = document.getElementById('threeContainer');
-                console.log("threeContainer dimensions:", threeContainer.clientWidth, threeContainer.clientHeight);
-                initScene();
-                createParkingSlots();
-                loadModels().then(() => {
-                    createCars();
-                    setupFirebaseListener();
-                    animate();
-                    document.getElementById('threeError').style.display = 'none';
-                    document.getElementById('controls').style.display = 'block';
-                }).catch(error => {
-                    console.error("❌ Model loading error:", error);
-                    document.getElementById('threeError').style.display = 'block';
-                    showError("Failed to load car models.");
-                    createCars(); // Fallback to BoxGeometry
-                    setupFirebaseListener();
-                    animate();
-                });
-                resetCamera();
-            } catch (error) {
-                console.error("❌ Three.js initialization error:", error);
-                document.getElementById('threeError').style.display = 'block';
-                showError("3D visualization failed to load.");
-            }
-        }
-
-        // Cleanup 3D Visualization
-        function cleanupThree() {
-            console.log("Cleaning up 3D visualization...");
-            if (animationFrame) {
-                cancelAnimationFrame(animationFrame);
-            }
-            if (renderer) {
-                renderer.domElement.remove();
-                renderer.dispose();
-            }
-            renderer = null;
-            document.getElementById('controls').style.display = 'none';
-        }
-
-        // Firebase Listener for slot_parking with size
-        function setupFirebaseListener() {
-            if (!dbRef) {
-                console.error("❌ Database not initialized!");
-                showError("Database not initialized. Please refresh the page.");
-                return;
+            on(event, callback) {
+                this.listeners.push(callback);
+                // Immediate callback with current data
+                setTimeout(() => {
+                    callback({ val: () => this.data.slot_parking });
+                }, 100);
             }
 
-            console.log("🔗 Setting up Firebase listener for slot_parking...");
-            console.log("📋 Slot Layout:");
-            console.log("   Baris Atas (Z=5): Slot 1-11 dari KANAN ke KIRI");
-            console.log("   Baris Bawah (Z=-5): Slot 12-20 dari KANAN ke KIRI");
-
-            loadingElement.style.display = 'block';
-            dbRef.on("value", (snapshot) => {
-                loadingElement.style.display = 'none';
-                const data = snapshot.val();
-                if (!data) {
-                    console.warn("❌ No data received from Firebase");
-                    showError("No parking data available. Please check Firebase.");
-                    for (let i = 1; i <= 20; i++) {
-                        slotStatuses[`slot_${i}`] = false;
-                        slotSizes[`slot_${i}`] = 'none';
-                        const slotEl = document.querySelector(`.slot[data-slot="${i}"]`);
-                        if (slotEl) {
-                            slotEl.classList.remove("occupied");
-                            slotEl.querySelector(".car").style.display = "none";
-                            slotEl.querySelector(".car").style.backgroundColor = "#808080";
-                        }
-                    }
-                    updateCarsFromFirebase();
-                    updateLiveOverview(0, 20, 20);
-                    return;
-                }
-
-                console.log("📊 Raw Firebase data received:", data);
-
-                let occupiedCount = 0;
-                const totalSlots = 20;
-
-                for (let i = 1; i <= totalSlots; i++) {
-                    const slotKey = `slot_${i}`;
-                    slotStatuses[slotKey] = false;
-                    slotSizes[slotKey] = 'none';
-                    const slotEl = document.querySelector(`.slot[data-slot="${i}"]`);
-                    let newStatus = data[slotKey] && data[slotKey].occupied === true;
-                    let newSize = (data[slotKey] && data[slotKey].size) ? data[slotKey].size.toLowerCase() : 'none';
-                    if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
-                        newSize = 'none';
-                    }
-                    slotStatuses[slotKey] = newStatus;
-                    slotSizes[slotKey] = newSize;
-
-                    if (slotEl) {
-                        if (newStatus) {
-                            slotEl.classList.add("occupied");
-                            slotEl.querySelector(".car").style.display = "block";
-                            slotEl.querySelector(".car").style.backgroundColor = 
-                                ['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || newSize === 'none' ? "#808080" : 
-                                newSize === 'small' ? "#0000FF" : 
-                                newSize === 'medium' ? "#FFA500" : 
-                                newSize === 'big' ? "#FF0000" : "#808080";
-                            occupiedCount++;
-                        } else {
-                            slotEl.classList.remove("occupied");
-                            slotEl.querySelector(".car").style.display = "none";
-                            slotEl.querySelector(".car").style.backgroundColor = "#808080";
-                        }
-                    }
-
-                    console.log(`🚗 Slot ${i}: ${newStatus ? 'OCCUPIED' : 'AVAILABLE'} - Size: ${newSize}`);
-                }
-
-                const emptyCount = totalSlots - occupiedCount;
-                console.log(`📈 Final count: ${occupiedCount} occupied, ${emptyCount} available out of ${totalSlots} total`);
-                
-                updateCarsFromFirebase();
-                updateLiveOverview(occupiedCount, emptyCount, totalSlots);
-            }, (error) => {
-                loadingElement.style.display = 'none';
-                console.error("❌ Firebase read error:", error);
-                showError("Failed to fetch parking data. Please try again.");
-            });
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            // Authentication
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            const userInfo = document.getElementById('userInfo');
-            const userName = document.getElementById('userName');
-            const profilePic = document.getElementById('profilePic');
-            if (!currentUser) {
-                alert('Silakan login terlebih dahulu!');
-                window.location.replace('/login.html');
-                return;
-            } else {
-                userName.textContent = currentUser.username;
-                profilePic.src = currentUser.profilePic || '/assets/user.JPG';
-            }
-
-            // Logout
-            document.querySelector('.logout').addEventListener('click', () => {
-                localStorage.removeItem('currentUser');
-                alert('Berhasil logout!');
-                window.location.replace('/login.html');
-            });
-
-            // Toggle Toolbar
-            const toggleToolbar = document.getElementById('toggleToolbar');
-            const toolbar = document.getElementById('toolbar');
-            toggleToolbar.addEventListener('click', () => {
-                toolbar.classList.toggle('active');
-            });
-
-            // Real-time Clock
-            function updateClock() {
-                try {
-                    const now = new Date();
-                    const options = {
-                        timeZone: 'Asia/Jakarta',
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: false
-                    };
-                    const timeString = new Intl.DateTimeFormat('en-US', options).format(now) + ' WIB';
-                    const currentTimeElement = document.getElementById('currentTime');
-                    if (currentTimeElement) {
-                        currentTimeElement.textContent = timeString;
-                    }
-                } catch (error) {
-                    console.error('Kesalahan pembaruan jam:', error);
-                }
-            }
-            updateClock();
-            setInterval(updateClock, 1000);
-
-            // Slot History Update with Filtering
-            let historyDataArray = [];
-
-            slotHistoryRef.on("value", (snapshot) => {
-                console.log("Firebase slot_history data:", snapshot.val());
-                const historyData = snapshot.val();
-                historyDataArray = [];
-
-                if (!historyData) {
-                    console.warn("No slot history data available.");
-                    renderHistoryTable();
-                    return;
-                }
-
-                Object.keys(historyData).forEach((slotKey) => {
-                    const slotLogs = historyData[slotKey];
-                    Object.entries(slotLogs).forEach(([timestamp, entry]) => {
-                        const status = entry.status === true || entry.status === 'terisi' ? 'terisi' : 'kosong';
-                        const slotNumber = slotKey.split("_")[1];
-                        historyDataArray.push({
-                            slot: slotNumber,
-                            timestamp: timestamp,
-                            status: status,
-                            size: entry.size || 'none'
-                        });
-                    });
-                });
-
-                historyDataArray.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-                renderHistoryTable();
-            }, (error) => {
-                console.error("Error fetching slot history:", error);
-                showError("Failed to fetch slot history data.");
-            });
-
-            function renderHistoryTable() {
-                const slotHistoryTable = document.getElementById("slotHistoryTable").getElementsByTagName('tbody')[0];
-                slotHistoryTable.innerHTML = "";
-
-                const filterSlot = document.getElementById('filterSlot').value.trim();
-                const filterDate = document.getElementById('filterDate').value;
-                const filterStatus = document.getElementById('filterStatus').value;
-
-                historyDataArray.forEach((entry) => {
-                    const entryDate = entry.timestamp.split(' ')[0];
-
-                    if (filterSlot && entry.slot !== filterSlot) return;
-                    if (filterDate && entryDate !== filterDate) return;
-                    if (filterStatus && entry.status !== filterStatus) return;
-
-                    const row = slotHistoryTable.insertRow();
-                    row.insertCell(0).textContent = entry.slot;
-                    row.insertCell(1).textContent = entry.timestamp;
-                    row.insertCell(2).textContent = entry.status;
-                    row.insertCell(3).textContent = entry.size;
-
-                    if (entry.status === 'terisi') {
-                        row.cells[2].className = 'status in';
-                    } else if (entry.status === 'kosong') {
-                        row.cells[2].className = 'status out';
-                    }
+            notifyListeners() {
+                this.listeners.forEach(callback => {
+                    callback({ val: () => this.data.slot_parking });
                 });
             }
-
-            document.getElementById('filterSlot').addEventListener('input', renderHistoryTable);
-            document.getElementById('filterDate').addEventListener('change', renderHistoryTable);
-            document.getElementById('filterStatus').addEventListener('change', renderHistoryTable);
-
-            // 3D Visualization Toggle
-            const toggleCameraBtn = document.getElementById('toggleCameraBtn');
-            const threeContainer = document.getElementById('threeContainer');
-            let isExpanded = false;
-
-            toggleCameraBtn.addEventListener('click', () => {
-                console.log("Toggling 3D visualization, isExpanded:", isExpanded);
-                isExpanded = !isExpanded;
-                toggleCameraBtn.textContent = isExpanded ? 'Click to Collapse' : 'Click to Expand';
-                if (isExpanded) {
-                    console.log("Expanding 3D view");
-                    threeContainer.style.display = 'block';
-                    document.getElementById('controls').style.display = 'block';
-                    document.getElementById('fullscreenBtn').style.display = 'block';
-                    if (!scene) {
-                        initThree();
-                    } else {
-                        renderer = new THREE.WebGLRenderer({ antialias: true });
-                        renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
-                        renderer.shadowMap.enabled = true;
-                        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-                        threeContainer.appendChild(renderer.domElement);
-                        animate();
-                    }
-                } else {
-                    console.log("Collapsing 3D view");
-                    threeContainer.style.display = 'none';
-                    document.getElementById('fullscreenBtn').style.display = 'none';
-                    document.getElementById('collapseBtn').style.display = 'none';
-                    cleanupThree();
-                }
-            });
-
-            // Full Screen and Collapse Button
-            const fullscreenBtn = document.getElementById('fullscreenBtn');
-            const collapseBtn = document.getElementById('collapseBtn');
-
-            function toggleFullScreen() {
-                const threeContainer = document.getElementById('threeContainer');
-                if (!document.fullscreenElement) {
-                    threeContainer.requestFullscreen().catch(err => {
-                        alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-                    });
-                } else {
-                    document.exitFullscreen();
-                }
-            }
-
-            function handleCollapse() {
-                if (document.fullscreenElement) {
-                    document.exitFullscreen();
-                }
-                if (isExpanded) {
-                    isExpanded = false;
-                    toggleCameraBtn.textContent = 'Click to Expand';
-                    threeContainer.style.display = 'none';
-                    document.getElementById('fullscreenBtn').style.display = 'none';
-                    document.getElementById('collapseBtn').style.display = 'none';
-                    cleanupThree();
-                }
-            }
-
-            fullscreenBtn.addEventListener('click', toggleFullScreen);
-            collapseBtn.addEventListener('click', handleCollapse);
-
-            document.addEventListener('fullscreenchange', () => {
-                if (document.fullscreenElement) {
-                    document.getElementById('collapseBtn').style.display = 'block';
-                } else {
-                    document.getElementById('collapseBtn').style.display = 'none';
-                    if (isExpanded) {
-                        isExpanded = false;
-                        toggleCameraBtn.textContent = 'Click to Expand';
-                        threeContainer.style.display = 'none';
-                        document.getElementById('fullscreenBtn').style.display = 'none';
-                        cleanupThree();
-                    }
-                }
-            });
-
-            // Handle Window Resize
-            window.addEventListener('resize', () => {
-                if (scene && renderer) {
-                    const threeContainer = document.getElementById('threeContainer');
-                    camera.aspect = threeContainer.clientWidth / (threeContainer.clientHeight || 300);
-                    camera.updateProjectionMatrix();
-                    renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
-                    console.log("Resized renderer:", threeContainer.clientWidth, threeContainer.clientHeight);
-                }
-            });
-
-            // Mouse Controls for 3D
-            let mouseDown = false;
-            let mouseX = 0;
-            let mouseY = 0;
-
-            threeContainer.addEventListener('mousedown', (event) => {
-                mouseDown = true;
-                mouseX = event.clientX;
-                mouseY = event.clientY;
-            });
-
-            threeContainer.addEventListener('mouseup', () => {
-                mouseDown = false;
-            });
-
-            threeContainer.addEventListener('mousemove', (event) => {
-                if (!mouseDown || !scene) return;
-                
-                const deltaX = event.clientX - mouseX;
-                const deltaY = event.clientY - mouseY;
-                
-                const spherical = new THREE.Spherical();
-                spherical.setFromVector3(camera.position);
-                
-                spherical.theta -= deltaX * 0.01;
-                spherical.phi += deltaY * 0.01;
-                spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi));
-                
-                camera.position.setFromSpherical(spherical);
-                camera.lookAt(0, 0, 0);
-                
-                mouseX = event.clientX;
-                mouseY = event.clientY;
-            });
-
-            threeContainer.addEventListener('wheel', (event) => {
-                if (!scene) return;
-                const zoomSpeed = 0.1;
-                const direction = event.deltaY > 0 ? 1 : -1;
-                
-                camera.position.multiplyScalar(1 + direction * zoomSpeed);
-                
-                const distance = camera.position.length();
-                if (distance < 10) camera.position.multiplyScalar(10 / distance);
-                if (distance > 200) camera.position.multiplyScalar(200 / distance);
-                
-                event.preventDefault();
-            });
-
-            // Prevent Undo/Redo and Navigation
-            document.addEventListener('keydown', (event) => {
-                if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    console.log('Undo/Redo is disabled');
-                }
-            });
-
-            window.addEventListener('popstate', (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                if (!localStorage.getItem('currentUser')) {
-                    window.location.replace('/login.html');
-                } else {
-                    history.replaceState(null, null, window.location.href);
-                }
-            });
-        });
-    </script>
-</body>
-</html>
