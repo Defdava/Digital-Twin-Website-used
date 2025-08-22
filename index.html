@@ -796,7 +796,7 @@
         function createParkingSlots() {
             console.log("Creating parking slots...");
             const slotMaterial = new THREE.MeshLambertMaterial({ color: 0x808080 });
-            const slotGeometry = new THREE.BoxGeometry(5, 0.2, 2.5);
+            const slotGeometry = new THREE.BoxGeometry(3.5, 0.2, 7);
 
             for (let i = 0; i < 11; i++) {
                 const slot = new THREE.Mesh(slotGeometry, slotMaterial);
