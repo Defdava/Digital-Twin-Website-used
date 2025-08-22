@@ -858,13 +858,13 @@
                 // Define car dimensions based on size
                 if (slotStatuses[slotKey]) {
                     if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || slotSizes[slotKey] === 'none') {
-                        carColor = 0x808080; // Gray for slots 18, 19, 20 or size 'none'
-                        carGeometry = new THREE.BoxGeometry(2, 2, 4); // Default size
+                        carColor = 0x808080; // Gray
+                        carGeometry = new THREE.BoxGeometry(2.0, 2.0, 4.0); // Default (medium) size
                     } else {
                         switch (slotSizes[slotKey]?.toLowerCase()) {
                             case 'small':
                                 carColor = 0x0000FF; // Blue
-                                carGeometry = new THREE.BoxGeometry(1.8, 1.8, 3.6); // Smaller size
+                                carGeometry = new THREE.BoxGeometry(1.5, 1.5, 3.0); // Small size
                                 break;
                             case 'medium':
                                 carColor = 0xFFA500; // Orange
@@ -872,16 +872,16 @@
                                 break;
                             case 'big':
                                 carColor = 0xFF0000; // Red
-                                carGeometry = new THREE.BoxGeometry(2.2, 2.2, 4.4); // Larger size
+                                carGeometry = new THREE.BoxGeometry(2.5, 2.5, 5.0); // Big size
                                 break;
                             default:
-                                carColor = 0x808080; // Gray for unknown sizes
-                                carGeometry = new THREE.BoxGeometry(2, 2, 4); // Default size
+                                carColor = 0x808080; // Gray
+                                carGeometry = new THREE.BoxGeometry(2.0, 2.0, 4.0); // Default (medium) size
                                 break;
                         }
                     }
                 } else {
-                    carGeometry = new THREE.BoxGeometry(2, 2, 4); // Default size for unoccupied slots
+                    carGeometry = new THREE.BoxGeometry(2.0, 2.0, 4.0); // Default (medium) size for unoccupied
                 }
 
                 const carMaterial = new THREE.MeshLambertMaterial({ 
@@ -936,12 +936,12 @@
                 if (newStatus) {
                     if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || newSize === 'none') {
                         carColor = 0x808080; // Gray
-                        carGeometry = new THREE.BoxGeometry(2, 2, 4); // Default size
+                        carGeometry = new THREE.BoxGeometry(2.0, 2.0, 4.0); // Default (medium) size
                     } else {
                         switch (newSize) {
                             case 'small':
                                 carColor = 0x0000FF; // Blue
-                                carGeometry = new THREE.BoxGeometry(1.8, 1.8, 3.6); // Smaller size
+                                carGeometry = new THREE.BoxGeometry(1.5, 1.5, 3.0); // Small size
                                 break;
                             case 'medium':
                                 carColor = 0xFFA500; // Orange
@@ -949,16 +949,16 @@
                                 break;
                             case 'big':
                                 carColor = 0xFF0000; // Red
-                                carGeometry = new THREE.BoxGeometry(2.2, 2.2, 4.4); // Larger size
+                                carGeometry = new THREE.BoxGeometry(2.5, 2.5, 5.0); // Big size
                                 break;
                             default:
                                 carColor = 0x808080; // Gray
-                                carGeometry = new THREE.BoxGeometry(2, 2, 4); // Default size
+                                carGeometry = new THREE.BoxGeometry(2.0, 2.0, 4.0); // Default (medium) size
                                 break;
                         }
                     }
                 } else {
-                    carGeometry = new THREE.BoxGeometry(2, 2, 4); // Default size for unoccupied
+                    carGeometry = new THREE.BoxGeometry(2.0, 2.0, 4.0); // Default (medium) size for unoccupied
                 }
 
                 // Update geometry if size changed
@@ -1118,7 +1118,7 @@
                             cars[i-1].material.color.set(0x808080);
                             cars[i-1].size = 'none';
                             cars[i-1].mesh.geometry.dispose();
-                            cars[i-1].mesh.geometry = new THREE.BoxGeometry(2, 2, 4);
+                            cars[i-1].mesh.geometry = new THREE.BoxGeometry(2.0, 2.0, 4.0);
                         }
                     }
                     updateLiveOverview(0, 20, 20);
@@ -1137,7 +1137,7 @@
                     const slotEl = document.querySelector(`.slot[data-slot="${i}"]`);
                     let newStatus = data[slotKey] && data[slotKey].occupied === true;
                     let newSize = (data[slotKey] && data[slotKey].size) ? data[slotKey].size.toLowerCase() : 'none';
-                    // Force slots 18, 19, 20 to have size 'none' if no size is specified
+                    // Force slots 18, 19, 20 to have size 'none'
                     if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
                         newSize = 'none';
                     }
@@ -1148,7 +1148,6 @@
                         if (newStatus) {
                             slotEl.classList.add("occupied");
                             slotEl.querySelector(".car").style.display = "block";
-                            // Set car color to gray for slots 18, 19, 20 or size 'none'
                             slotEl.querySelector(".car").style.backgroundColor = 
                                 ['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || newSize === 'none' ? "#808080" : 
                                 newSize === 'small' ? "#0000FF" : 
@@ -1228,12 +1227,12 @@
             setInterval(updateClock, 1000);
 
             // Slot History Update with Filtering
-            let historyDataArray = []; // Array to store all history entries for filtering
+            let historyDataArray = [];
 
             slotHistoryRef.on("value", (snapshot) => {
                 console.log("Firebase slot_history data:", snapshot.val());
                 const historyData = snapshot.val();
-                historyDataArray = []; // Clear and rebuild array
+                historyDataArray = [];
 
                 if (!historyData) {
                     console.warn("No slot history data available.");
@@ -1241,7 +1240,6 @@
                     return;
                 }
 
-                // Collect all entries into an array and sort by timestamp descending
                 Object.keys(historyData).forEach((slotKey) => {
                     const slotLogs = historyData[slotKey];
                     Object.entries(slotLogs).forEach(([timestamp, entry]) => {
@@ -1256,16 +1254,13 @@
                     });
                 });
 
-                // Sort by timestamp descending
                 historyDataArray.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-
                 renderHistoryTable();
             }, (error) => {
                 console.error("Error fetching slot history:", error);
                 showError("Failed to fetch slot history data.");
             });
 
-            // Function to render the table based on current filters
             function renderHistoryTable() {
                 const slotHistoryTable = document.getElementById("slotHistoryTable").getElementsByTagName('tbody')[0];
                 slotHistoryTable.innerHTML = "";
@@ -1295,7 +1290,6 @@
                 });
             }
 
-            // Add event listeners for filters
             document.getElementById('filterSlot').addEventListener('input', renderHistoryTable);
             document.getElementById('filterDate').addEventListener('change', renderHistoryTable);
             document.getElementById('filterStatus').addEventListener('change', renderHistoryTable);
@@ -1317,7 +1311,6 @@
                     if (!scene) {
                         initThree();
                     } else {
-                        // Reinitialize renderer and restore scene
                         const threeContainer = document.getElementById('threeContainer');
                         renderer = new THREE.WebGLRenderer({ antialias: true });
                         renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
@@ -1367,7 +1360,6 @@
             fullscreenBtn.addEventListener('click', toggleFullScreen);
             collapseBtn.addEventListener('click', handleCollapse);
 
-            // Fullscreen change event to manage collapse button visibility
             document.addEventListener('fullscreenchange', () => {
                 if (document.fullscreenElement) {
                     document.getElementById('collapseBtn').style.display = 'block';
