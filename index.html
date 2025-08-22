@@ -215,6 +215,23 @@
             font-size: 16px;
         }
 
+        .history-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .history-filters input,
+        .history-filters select {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 12px;
+            flex: 1;
+            min-width: 100px;
+        }
+
         .history-table-container {
             max-height: 200px;
             overflow-y: auto;
@@ -232,7 +249,7 @@
         .history-table th, .history-table td {
             border: 1px solid #ccc;
             padding: 10px;
-            text-align: left;
+            text-align: center; /* Align all cells to center for better alignment */
             font-size: 14px;
         }
 
@@ -597,6 +614,15 @@
             </div>
             <div class="history">
                 <h2>Slot History</h2>
+                <div class="history-filters">
+                    <input type="text" id="filterSlot" placeholder="Filter by Slot (e.g. 1)">
+                    <input type="date" id="filterDate">
+                    <select id="filterStatus">
+                        <option value="">All Status</option>
+                        <option value="terisi">Terisi</option>
+                        <option value="kosong">Kosong</option>
+                    </select>
+                </div>
                 <div class="history-table-container">
                     <table class="history-table" id="slotHistoryTable">
                         <thead>
@@ -1183,44 +1209,78 @@
             updateClock();
             setInterval(updateClock, 1000);
 
-            // Slot History Update
+            // Slot History Update with Filtering
+            let historyDataArray = []; // Array to store all history entries for filtering
+
             slotHistoryRef.on("value", (snapshot) => {
                 console.log("Firebase slot_history data:", snapshot.val());
                 const historyData = snapshot.val();
-                const slotHistoryTable = document.getElementById("slotHistoryTable").getElementsByTagName('tbody')[0];
-                slotHistoryTable.innerHTML = "";
+                historyDataArray = []; // Clear and rebuild array
 
                 if (!historyData) {
                     console.warn("No slot history data available.");
+                    renderHistoryTable();
                     return;
                 }
 
-                Object.keys(historyData)
-                    .sort((a, b) => {
-                        const aNum = parseInt(a.split("_")[1]);
-                        const bNum = parseInt(b.split("_")[1]);
-                        return aNum - bNum;
-                    })
-                    .forEach((slotKey) => {
-                        const slotLogs = historyData[slotKey];
-                        Object.entries(slotLogs).forEach(([timestamp, entry]) => {
-                            const status = entry.status === true || entry.status === 'terisi' ? 'terisi' : 'kosong';
-                            const row = slotHistoryTable.insertRow();
-                            row.insertCell(0).textContent = slotKey.split("_")[1];
-                            row.insertCell(1).textContent = timestamp;
-                            row.insertCell(2).textContent = status;
-                            row.insertCell(3).textContent = entry.size || 'none';
-                            if (status === 'terisi') {
-                                row.cells[2].className = 'status in';
-                            } else if (status === 'kosong') {
-                                row.cells[2].className = 'status out';
-                            }
+                // Collect all entries into an array and sort by timestamp descending
+                Object.keys(historyData).forEach((slotKey) => {
+                    const slotLogs = historyData[slotKey];
+                    Object.entries(slotLogs).forEach(([timestamp, entry]) => {
+                        const status = entry.status === true || entry.status === 'terisi' ? 'terisi' : 'kosong';
+                        const slotNumber = slotKey.split("_")[1];
+                        historyDataArray.push({
+                            slot: slotNumber,
+                            timestamp: timestamp,
+                            status: status,
+                            size: entry.size || 'none'
                         });
                     });
+                });
+
+                // Sort by timestamp descending (assuming timestamp format allows string comparison, e.g., YYYY-MM-DD HH:MM:SS)
+                historyDataArray.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+
+                renderHistoryTable();
             }, (error) => {
                 console.error("Error fetching slot history:", error);
                 showError("Failed to fetch slot history data.");
             });
+
+            // Function to render the table based on current filters
+            function renderHistoryTable() {
+                const slotHistoryTable = document.getElementById("slotHistoryTable").getElementsByTagName('tbody')[0];
+                slotHistoryTable.innerHTML = "";
+
+                const filterSlot = document.getElementById('filterSlot').value.trim();
+                const filterDate = document.getElementById('filterDate').value; // YYYY-MM-DD
+                const filterStatus = document.getElementById('filterStatus').value;
+
+                historyDataArray.forEach((entry) => {
+                    const entryDate = entry.timestamp.split(' ')[0]; // Extract date from timestamp
+
+                    if (filterSlot && entry.slot !== filterSlot) return;
+                    if (filterDate && entryDate !== filterDate) return;
+                    if (filterStatus && entry.status !== filterStatus) return;
+
+                    const row = slotHistoryTable.insertRow();
+                    row.insertCell(0).textContent = entry.slot;
+                    row.insertCell(1).textContent = entry.timestamp;
+                    row.insertCell(2).textContent = entry.status;
+                    row.insertCell(3).textContent = entry.size;
+
+                    if (entry.status === 'terisi') {
+                        row.cells[2].className = 'status in';
+                    } else if (entry.status === 'kosong') {
+                        row.cells[2].className = 'status out';
+                    }
+                });
+            }
+
+            // Add event listeners for filters
+            document.getElementById('filterSlot').addEventListener('input', renderHistoryTable);
+            document.getElementById('filterDate').addEventListener('change', renderHistoryTable);
+            document.getElementById('filterStatus').addEventListener('change', renderHistoryTable);
 
             // 3D Visualization Toggle
             const toggleCameraBtn = document.getElementById('toggleCameraBtn');
