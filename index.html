@@ -331,39 +331,12 @@
             top: 50%;
             transform: translate(-50%, -50%);
             display: none;
-            transition: opacity 0.3s ease-in-out, width 0.3s ease-in-out, height 0.3s ease-in-out;
+            transition: opacity 0.3s ease-in-out;
         }
 
         .slot.occupied .car {
             display: block;
             animation: carEnter 0.5s ease-in-out;
-        }
-
-        .slot .car.small {
-            width: 30px;
-            height: 16px;
-            background-color: #0000FF;
-        }
-
-        .slot .car.medium {
-            width: 40px;
-            height: 21px;
-            background-color: #FFFF00;
-        }
-
-        .slot .car.big {
-            width: 48px;
-            height: 25px;
-            background-color: #FF0000;
-        }
-
-        .slot .car.none,
-        .slot[data-slot="18"] .car,
-        .slot[data-slot="19"] .car,
-        .slot[data-slot="20"] .car {
-            width: 40px;
-            height: 21px;
-            background-color: #808080;
         }
 
         @keyframes carEnter {
@@ -874,51 +847,43 @@
             });
         }
 
-        // Create Cars with Size-Based Geometry and Colors
+        // Create Cars with Size-Based Dimensions and Fixed Colors
         function createCars() {
             console.log("Creating cars...");
-            
             allSlots.forEach((slotData, index) => {
                 const slotKey = `slot_${slotData.slotNumber}`;
-                let carColor = 0x808080;
-                let carWidth = 2;
-                let carHeight = 2;
-                let carLength = 4;
+                let carColor = 0x808080; // Default to gray
+                let carGeometry;
 
+                // Define car dimensions based on size
                 if (slotStatuses[slotKey]) {
                     if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || slotSizes[slotKey] === 'none') {
-                        carColor = 0x808080;
-                        carWidth = 2;
-                        carHeight = 2;
-                        carLength = 4;
+                        carColor = 0x808080; // Gray
+                        carGeometry = new THREE.BoxGeometry(2.0, 2.0, 4.0); // Default (medium) size
                     } else {
                         switch (slotSizes[slotKey]?.toLowerCase()) {
                             case 'small':
-                                carColor = 0x0000FF;
-                                carWidth = 1.5;
-                                carHeight = 1.5;
-                                carLength = 3;
+                                carColor = 0x0000FF; // Blue
+                                carGeometry = new THREE.BoxGeometry(1.2, 1.2, 2.4); // Small size
                                 break;
                             case 'medium':
-                                carColor = 0xFFFF00;
-                                carWidth = 2;
-                                carHeight = 2;
-                                carLength = 4;
+                                carColor = 0xFFA500; // Orange
+                                carGeometry = new THREE.BoxGeometry(2.0, 2.0, 4.0); // Medium size
                                 break;
                             case 'big':
-                                carColor = 0xFF0000;
-                                carWidth = 2.5;
-                                carHeight = 2.5;
-                                carLength = 5;
+                                carColor = 0xFF0000; // Red
+                                carGeometry = new THREE.BoxGeometry(2.8, 2.8, 5.6); // Big size
                                 break;
                             default:
-                                carColor = 0x808080;
+                                carColor = 0x808080; // Gray
+                                carGeometry = new THREE.BoxGeometry(2.0, 2.0, 4.0); // Default (medium) size
                                 break;
                         }
                     }
+                } else {
+                    carGeometry = new THREE.BoxGeometry(2.0, 2.0, 4.0); // Default (medium) size for unoccupied
                 }
 
-                const carGeometry = new THREE.BoxGeometry(carWidth, carHeight, carLength);
                 const carMaterial = new THREE.MeshLambertMaterial({ 
                     color: carColor,
                     transparent: true,
@@ -956,56 +921,52 @@
                 if (!car) continue;
 
                 const newStatus = slotStatuses[slotKey];
-                const newSize = slotSizes[slotKey] || 'none';
+                const newSize = slotSizes[slotKey]?.toLowerCase() || 'none';
 
+                // Update opacity and scale
                 car.targetOpacity = newStatus ? 1 : 0;
                 car.targetScale = newStatus ? 1 : 0;
+                if (car.currentOpacity !== (newStatus ? 1 : 0) || car.currentScale !== (newStatus ? 1 : 0)) {
+                    car.isAnimating = true;
+                }
 
-                let carColor = 0x808080;
-                let carWidth = 2;
-                let carHeight = 2;
-                let carLength = 4;
-
+                // Update car size and color
+                let carColor = 0x808080; // Default to gray
+                let carGeometry;
                 if (newStatus) {
                     if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || newSize === 'none') {
-                        carColor = 0x808080;
-                        carWidth = 2;
-                        carHeight = 2;
-                        carLength = 4;
+                        carColor = 0x808080; // Gray
+                        carGeometry = new THREE.BoxGeometry(2.0, 2.0, 4.0); // Default (medium) size
                     } else {
-                        switch (newSize.toLowerCase()) {
+                        switch (newSize) {
                             case 'small':
-                                carColor = 0x0000FF;
-                                carWidth = 1.5;
-                                carHeight = 1.5;
-                                carLength = 3;
+                                carColor = 0x0000FF; // Blue
+                                carGeometry = new THREE.BoxGeometry(1.2, 1.2, 2.4); // Small size
                                 break;
                             case 'medium':
-                                carColor = 0xFFFF00;
-                                carWidth = 2;
-                                carHeight = 2;
-                                carLength = 4;
+                                carColor = 0xFFA500; // Orange
+                                carGeometry = new THREE.BoxGeometry(2.0, 2.0, 4.0); // Medium size
                                 break;
                             case 'big':
-                                carColor = 0xFF0000;
-                                carWidth = 2.5;
-                                carHeight = 2.5;
-                                carLength = 5;
+                                carColor = 0xFF0000; // Red
+                                carGeometry = new THREE.BoxGeometry(2.8, 2.8, 5.6); // Big size
+                                break;
+                            default:
+                                carColor = 0x808080; // Gray
+                                carGeometry = new THREE.BoxGeometry(2.0, 2.0, 4.0); // Default (medium) size
                                 break;
                         }
                     }
+                } else {
+                    carGeometry = new THREE.BoxGeometry(2.0, 2.0, 4.0); // Default (medium) size for unoccupied
                 }
 
-                car.material.color.set(carColor);
+                // Update geometry if size changed
                 if (car.size !== newSize) {
                     car.size = newSize;
-                    const newGeometry = new THREE.BoxGeometry(carWidth, carHeight, carLength);
                     car.mesh.geometry.dispose();
-                    car.mesh.geometry = newGeometry;
-                }
-
-                if (car.currentOpacity !== car.targetOpacity || car.currentScale !== car.targetScale) {
-                    car.isAnimating = true;
+                    car.mesh.geometry = carGeometry;
+                    car.material.color.set(carColor);
                 }
             }
         }
@@ -1121,7 +1082,7 @@
             document.getElementById('controls').style.display = 'none';
         }
 
-        // Firebase Listener for slot_parking
+        // Firebase Listener for slot_parking with size
         function setupFirebaseListener() {
             if (!dbRef) {
                 console.error("❌ Database not initialized!");
@@ -1146,15 +1107,18 @@
                         slotSizes[`slot_${i}`] = 'none';
                         const slotEl = document.querySelector(`.slot[data-slot="${i}"]`);
                         if (slotEl) {
-                            slotEl.classList.remove("occupied", "small", "medium", "big", "none");
+                            slotEl.classList.remove("occupied");
                             slotEl.querySelector(".car").style.display = "none";
-                            slotEl.querySelector(".car").className = "car";
+                            slotEl.querySelector(".car").style.backgroundColor = "#808080";
                         }
                         if (cars[i-1]) {
                             cars[i-1].targetOpacity = 0;
                             cars[i-1].targetScale = 0;
                             cars[i-1].isAnimating = true;
                             cars[i-1].material.color.set(0x808080);
+                            cars[i-1].size = 'none';
+                            cars[i-1].mesh.geometry.dispose();
+                            cars[i-1].mesh.geometry = new THREE.BoxGeometry(2.0, 2.0, 4.0);
                         }
                     }
                     updateLiveOverview(0, 20, 20);
@@ -1168,90 +1132,39 @@
 
                 for (let i = 1; i <= totalSlots; i++) {
                     const slotKey = `slot_${i}`;
-                    slotStatuses[slotKey] = false;
-                    slotSizes[slotKey] = 'none';
+                    slotStatuses[slotKey] = false; // Initialize
+                    slotSizes[slotKey] = 'none'; // Initialize size
                     const slotEl = document.querySelector(`.slot[data-slot="${i}"]`);
                     let newStatus = data[slotKey] && data[slotKey].occupied === true;
                     let newSize = (data[slotKey] && data[slotKey].size) ? data[slotKey].size.toLowerCase() : 'none';
-                    
+                    // Force slots 18, 19, 20 to have size 'none'
                     if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
                         newSize = 'none';
                     }
-                    
                     slotStatuses[slotKey] = newStatus;
                     slotSizes[slotKey] = newSize;
 
                     if (slotEl) {
-                        slotEl.classList.remove("small", "medium", "big", "none");
-                        slotEl.querySelector(".car").className = "car";
-                        
                         if (newStatus) {
                             slotEl.classList.add("occupied");
-                            slotEl.classList.add(newSize);
-                            slotEl.querySelector(".car").className = `car ${newSize}`;
                             slotEl.querySelector(".car").style.display = "block";
+                            slotEl.querySelector(".car").style.backgroundColor = 
+                                ['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || newSize === 'none' ? "#808080" : 
+                                newSize === 'small' ? "#0000FF" : 
+                                newSize === 'medium' ? "#FFA500" : 
+                                newSize === 'big' ? "#FF0000" : "#808080";
                             occupiedCount++;
                         } else {
                             slotEl.classList.remove("occupied");
                             slotEl.querySelector(".car").style.display = "none";
+                            slotEl.querySelector(".car").style.backgroundColor = "#808080";
                         }
-                    }
-
-                    if (cars[i-1]) {
-                        let carColor = 0x808080;
-                        let carWidth = 2;
-                        let carHeight = 2;
-                        let carLength = 4;
-
-                        if (newStatus) {
-                            if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || newSize === 'none') {
-                                carColor = 0x808080;
-                                carWidth = 2;
-                                carHeight = 2;
-                                carLength = 4;
-                            } else {
-                                switch (newSize) {
-                                    case 'small':
-                                        carColor = 0x0000FF;
-                                        carWidth = 1.5;
-                                        carHeight = 1.5;
-                                        carLength = 3;
-                                        break;
-                                    case 'medium':
-                                        carColor = 0xFFFF00;
-                                        carWidth = 2;
-                                        carHeight = 2;
-                                        carLength = 4;
-                                        break;
-                                    case 'big':
-                                        carColor = 0xFF0000;
-                                        carWidth = 2.5;
-                                        carHeight = 2.5;
-                                        carLength = 5;
-                                        break;
-                                }
-                            }
-                        }
-
-                        cars[i-1].material.color.set(carColor);
-                        if (cars[i-1].size !== newSize) {
-                            cars[i-1].size = newSize;
-                            const newGeometry = new THREE.BoxGeometry(carWidth, carHeight, carLength);
-                            cars[i-1].mesh.geometry.dispose();
-                            cars[i-1].mesh.geometry = newGeometry;
-                        }
-
-                        cars[i-1].targetOpacity = newStatus ? 1 : 0;
-                        cars[i-1].targetScale = newStatus ? 1 : 0;
-                        if (cars[i-1].currentOpacity !== (newStatus ? 1 : 0) || cars[i-1].currentScale !== (newStatus ? 1 : 0)) {
-                            cars[i-1].isAnimating = true;
-                        }
-                        console.log(`🚗 Slot ${i}: ${newStatus ? 'OCCUPIED' : 'AVAILABLE'} - Size: ${newSize}, Color: #${carColor.toString(16)}, Target opacity=${cars[i-1].targetOpacity}, scale=${cars[i-1].targetScale}`);
                     }
                 }
 
+                updateCarsFromFirebase();
                 const emptyCount = totalSlots - occupiedCount;
-                console.log(`📈 Final count: ${occupiedCount} occupied, ${emptyCount} available out of ${totalSlots}`);
+                console.log(`📈 Final count: ${occupiedCount} occupied, ${emptyCount} available out of ${totalSlots} total`);
                 
                 updateLiveOverview(occupiedCount, emptyCount, totalSlots);
             }, (error) => {
