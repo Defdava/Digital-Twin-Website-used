@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>BRIN Live Overview</title>
-    <link rel="icon" type="image/x-icon" href="/logo-brin.png">
+    <link rel="icon" type="image/x-icon" href="https://github.com/Defdava/Digital-Twin-Website-used/raw/main/logo-brin.png">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -549,12 +549,12 @@
 </head>
 <body>
     <video id="bg-video" autoplay muted loop>
-        <source src="/wave.mp4" type="video/mp4">
+        <source src="https://github.com/Defdava/Digital-Twin-Website-used/raw/main/wave.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
     <header>
         <div class="logo" id="toggleToolbar">
-            <img src="/logo-brin.png" alt="BRIN Logo">
+            <img src="https://github.com/Defdava/Digital-Twin-Website-used/raw/main/Logo_BRIN.png" alt="BRIN Logo">
             <span>BRIN</span>
             <span>Badan Riset Nasional</span>
         </div>
@@ -565,20 +565,20 @@
     <aside class="toolbar" id="toolbar">
         <div class="feature-box user-info" id="userInfo">
             <h3>User</h3>
-            <img id="profilePic" src="/user.JPG" alt="User">
+            <img id="profilePic" src="/assets/user.JPG" alt="User">
             <span>Welcome Back</span>
             <span id="userName"></span>
-            <button class="profile" onclick="window.location.href='/profile'">Profile</button>
+            <button class="profile" onclick="window.location.href='/profile.html'">Profile</button>
             <button class="logout">Log Out</button>
         </div>
         <div class="feature-box">
             <h2>Parking Management System</h2>
-            <button class="live-overview" onclick="window.location.href='/live-overview'">Live Overview</button>
-            <button class="prev-analysis" onclick="window.location.href='/previous-analysis'">Previous Analysis</button>
+            <button class="live-overview" onclick="window.location.href='/index.html'">Live Overview</button>
+            <button class="prev-analysis" onclick="window.location.href='/previous-analysis.html'">Previous Analysis</button>
             <button class="export-data">Export Data</button>
             <button class="3d-viewer-vr">3D Viewer VR</button>
             <button class="helpdesk">Helpdesk</button>
-            <button class="parking-analysis" onclick="window.location.href='/parking-analysis'">Parking Analysis</button>
+            <button class="parking-analysis" onclick="window.location.href='/parkiranalysis.html'">Parking Analysis</button>
         </div>
     </aside>
     <main class="main-content">
@@ -693,7 +693,7 @@
     <script>
         // Authentication System
         class User {
-            constructor(username, email, password, idWorker, profilePic = '/user.JPG') {
+            constructor(username, email, password, idWorker, profilePic = '/assets/user.JPG') {
                 this.username = username;
                 this.email = email;
                 this.password = password;
@@ -756,50 +756,36 @@
         const mixers = [];
         const clock = new THREE.Clock();
 
-        // Car model URLs (Use Vercel-hosted paths or switch to Firebase Storage if CORS issues persist)
+        // Car model URLs (Update with Firebase Storage URLs if CORS issues occur)
         const modelUrls = {
-            small: '/models/1989 Ferrari F40 LM.glb',
-            medium: '/models/2022 Hongqi LS7 Guoyao.glb',
-            big: '/models/2005 Toyota TownAce GL.glb'
+            small: 'https://github.com/Defdava/Digital-Twin-Website-used/raw/main/1989%20Ferrari%20F40%20LM.glb?raw=true',
+            medium: 'https://github.com/Defdava/Digital-Twin-Website-used/blob/2267fa97bdf3227271619ebac80b4125fd9f3d76/2022%20Hongqi%20LS7%20Guoyao.glb?raw=true',
+            big: 'https://github.com/Defdava/Digital-Twin-Website-used/raw/main/2005%20Toyota%20TownAce%20GL.glb?raw=true'
         };
 
-        // Alternative Firebase Storage URLs (uncomment if Vercel hosting fails)
-        /*
-        const modelUrls = {
-            small: 'https://firebasestorage.googleapis.com/v0/b/digitaltwinparkingbrin.appspot.com/o/1989%20Ferrari%20F40%20LM.glb?alt=media',
-            medium: 'https://firebasestorage.googleapis.com/v0/b/digitaltwinparkingbrin.appspot.com/o/2022%20Hongqi%20LS7%20Guoyao.glb?alt=media',
-            big: 'https://firebasestorage.googleapis.com/v0/b/digitaltwinparkingbrin.appspot.com/o/2005%20Toyota%20TownAce%20GL.glb?alt=media'
-        };
-        */
-
-        // Load GLB models sequentially with detailed logging
+        // Load GLB models sequentially
         function loadModels() {
-            console.log("Starting GLB model loading...");
-            console.log("Attempting to load small car: ", modelUrls.small);
+            console.log("Loading GLB models...");
             return loader.loadAsync(modelUrls.small)
                 .then(gltf => {
-                    console.log("Success: Small car (1989 Ferrari F40 LM) loaded", gltf.scene);
+                    console.log("Success: Small car (1989 Ferrari F40 LM) loaded");
                     loadedModels.small = gltf.scene;
                     loadedModels.small.animations = gltf.animations;
-                    console.log("Attempting to load medium car: ", modelUrls.medium);
                     return loader.loadAsync(modelUrls.medium);
                 })
                 .then(gltf => {
-                    console.log("Success: Medium car (2022 Hongqi LS7 Guoyao) loaded", gltf.scene);
+                    console.log("Success: Medium car (2022 Hongqi LS7 Guoyao) loaded");
                     loadedModels.medium = gltf.scene;
                     loadedModels.medium.animations = gltf.animations;
-                    console.log("Attempting to load big car: ", modelUrls.big);
                     return loader.loadAsync(modelUrls.big);
                 })
                 .then(gltf => {
-                    console.log("Success: Big car (2005 Toyota TownAce GL) loaded", gltf.scene);
+                    console.log("Success: Big car (2005 Toyota TownAce GL) loaded");
                     loadedModels.big = gltf.scene;
                     loadedModels.big.animations = gltf.animations;
-                    console.log("All models loaded successfully");
                 })
                 .catch(error => {
                     console.error("Model loading error:", error.message, error.stack);
-                    console.error("Failed URL:", error.url || "Unknown");
                     showError("Failed to load one or more car models. Using fallback shapes.");
                     throw error;
                 });
@@ -818,47 +804,36 @@
         function initScene() {
             console.log("Initializing Three.js scene...");
             const threeContainer = document.getElementById('threeContainer');
-            console.log("threeContainer dimensions:", threeContainer.clientWidth, threeContainer.clientHeight);
-            if (!threeContainer.clientWidth || !threeContainer.clientHeight) {
-                console.error("threeContainer has invalid dimensions!");
-                showError("3D container has invalid dimensions.");
-                return;
+            if (threeContainer.clientHeight === 0) {
+                threeContainer.style.height = '300px';
+                console.log("Set threeContainer height to 300px");
             }
-            try {
-                scene = new THREE.Scene();
-                console.log("Scene created");
-                scene.background = new THREE.Color(0x87CEEB);
-                
-                camera = new THREE.PerspectiveCamera(75, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 1000);
-                console.log("Camera created");
-                renderer = new THREE.WebGLRenderer({ antialias: true });
-                console.log("Renderer created");
-                renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight);
-                renderer.shadowMap.enabled = true;
-                renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-                threeContainer.appendChild(renderer.domElement);
-                console.log("Renderer appended to DOM");
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87CEEB);
+            
+            camera = new THREE.PerspectiveCamera(75, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            threeContainer.appendChild(renderer.domElement);
 
-                const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-                scene.add(ambientLight);
-                
-                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-                directionalLight.position.set(50, 50, 25);
-                directionalLight.castShadow = true;
-                directionalLight.shadow.mapSize.width = 2048;
-                directionalLight.shadow.mapSize.height = 2048;
-                scene.add(directionalLight);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(50, 50, 25);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
 
-                const groundGeometry = new THREE.PlaneGeometry(200, 50);
-                const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
-                const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-                ground.rotation.x = -Math.PI / 2;
-                ground.receiveShadow = true;
-                scene.add(ground);
-            } catch (error) {
-                console.error("Scene initialization error:", error);
-                showError("Failed to initialize 3D scene.");
-            }
+            const groundGeometry = new THREE.PlaneGeometry(200, 50);
+            const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
         }
 
         // Create Parking Slots
@@ -981,7 +956,7 @@
                 };
 
                 if (model) {
-                    model.scale.set(0.008, 0.008, 0.008); // Adjusted scale
+                    model.scale.set(0.01, 0.01, 0.01);
                     model.position.set(slotStatuses[slotKey] ? slotData.position.x : slotData.position.x + 10, 0.5, slotData.position.z);
                     model.rotation.y = Math.PI / 2;
                     model.castShadow = true;
@@ -998,7 +973,7 @@
                     }
 
                     if (slotStatuses[slotKey]) {
-                        animateCar(model, new THREE.Vector3(slotData.position.x, 0.5, slotData.position.z), new THREE.Vector3(0.008, 0.008, 0.008));
+                        animateCar(model, new THREE.Vector3(slotData.position.x, 0.5, slotData.position.z), new THREE.Vector3(0.01, 0.01, 0.01));
                     }
                 } else {
                     const carGeometry = new THREE.BoxGeometry(2, 2, 4);
@@ -1058,7 +1033,7 @@
                 }
 
                 if (model) {
-                    model.scale.set(0.008, 0.008, 0.008); // Adjusted scale
+                    model.scale.set(0.01, 0.01, 0.01);
                     model.position.set(newStatus ? slotData.position.x : slotData.position.x + 10, 0.5, slotData.position.z);
                     model.rotation.y = Math.PI / 2;
                     model.castShadow = true;
@@ -1075,9 +1050,9 @@
                     }
 
                     if (newStatus && (car.currentOpacity === 0 || car.currentScale === 0)) {
-                        animateCar(model, new THREE.Vector3(slotData.position.x, 0.5, slotData.position.z), new THREE.Vector3(0.008, 0.008, 0.008));
+                        animateCar(model, new THREE.Vector3(slotData.position.x, 0.5, slotData.position.z), new THREE.Vector3(0.01, 0.01, 0.01));
                     } else if (!newStatus && (car.currentOpacity !== 0 || car.currentScale !== 0)) {
-                        animateCar(model, new THREE.Vector3(slotData.position.x + 10, 0.5, slotData.position.z), new THREE.Vector3(0.008, 0.008, 0.008), 2, () => {
+                        animateCar(model, new THREE.Vector3(slotData.position.x + 10, 0.5, slotData.position.z), new THREE.Vector3(0.01, 0.01, 0.01), 2, () => {
                             scene.remove(model);
                         });
                     }
@@ -1328,18 +1303,18 @@
             const profilePic = document.getElementById('profilePic');
             if (!currentUser) {
                 alert('Silakan login terlebih dahulu!');
-                window.location.replace('/login');
+                window.location.replace('/login.html');
                 return;
             } else {
                 userName.textContent = currentUser.username;
-                profilePic.src = currentUser.profilePic || '/user.JPG';
+                profilePic.src = currentUser.profilePic || '/assets/user.JPG';
             }
 
             // Logout
             document.querySelector('.logout').addEventListener('click', () => {
                 localStorage.removeItem('currentUser');
                 alert('Berhasil logout!');
-                window.location.replace('/login');
+                window.location.replace('/login.html');
             });
 
             // Toggle Toolbar
@@ -1593,7 +1568,7 @@
                 event.preventDefault();
                 event.stopPropagation();
                 if (!localStorage.getItem('currentUser')) {
-                    window.location.replace('/login');
+                    window.location.replace('/login.html');
                 } else {
                     history.replaceState(null, null, window.location.href);
                 }
