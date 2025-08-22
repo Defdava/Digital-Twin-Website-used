@@ -249,7 +249,7 @@
         .history-table th, .history-table td {
             border: 1px solid #ccc;
             padding: 10px;
-            text-align: center; /* Align all cells to center for better alignment */
+            text-align: center;
             font-size: 14px;
         }
 
@@ -687,6 +687,7 @@
         </div>
     </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script>
@@ -750,6 +751,54 @@
         let slotSizes = {};
         const loadingElement = document.getElementById('loading');
         const errorElement = document.getElementById('error-message');
+        const loader = new THREE.GLTFLoader();
+        const loadedModels = {};
+        const mixers = [];
+        const clock = new THREE.Clock();
+
+        // Car model URLs
+        const modelUrls = {
+            small: 'https://github.com/Defdava/Digital-Twin-Website-used/raw/899c041333faa3054f985632fcaa6343e1edb54a/1989%20Ferrari%20F40%20LM.glb',
+            medium: 'https://github.com/Defdava/Digital-Twin-Website-used/raw/899c041333faa3054f985632fcaa6343e1edb54a/2022%20Hongqi%20LS7%20Guoyao.glb',
+            big: 'https://github.com/Defdava/Digital-Twin-Website-used/raw/899c041333faa3054f985632fcaa6343e1edb54a/2005%20Toyota%20TownAce%20GL.glb'
+        };
+
+        // Load GLB models
+        function loadModels() {
+            console.log("Loading GLB models...");
+            return Promise.all([
+                new Promise((resolve, reject) => {
+                    loader.load(modelUrls.small, (gltf) => {
+                        loadedModels.small = gltf.scene;
+                        loadedModels.small.animations = gltf.animations;
+                        resolve();
+                    }, undefined, (error) => {
+                        console.error("Error loading small car model:", error);
+                        reject(error);
+                    });
+                }),
+                new Promise((resolve, reject) => {
+                    loader.load(modelUrls.medium, (gltf) => {
+                        loadedModels.medium = gltf.scene;
+                        loadedModels.medium.animations = gltf.animations;
+                        resolve();
+                    }, undefined, (error) => {
+                        console.error("Error loading medium car model:", error);
+                        reject(error);
+                    });
+                }),
+                new Promise((resolve, reject) => {
+                    loader.load(modelUrls.big, (gltf) => {
+                        loadedModels.big = gltf.scene;
+                        loadedModels.big.animations = gltf.animations;
+                        resolve();
+                    }, undefined, (error) => {
+                        console.error("Error loading big car model:", error);
+                        reject(error);
+                    });
+                })
+            ]);
+        }
 
         // Show Error Message
         function showError(message) {
@@ -847,51 +896,65 @@
             });
         }
 
-        // Create Cars with Animation and Size-Based Colors
+        // Animate car movement
+        function animateCar(car, targetPosition, targetScale, duration = 2, onComplete = () => {}) {
+            const startPosition = car.position.clone();
+            const startScale = car.scale.clone();
+            const startTime = performance.now();
+            const animate = () => {
+                const elapsed = (performance.now() - startTime) / 1000;
+                const t = Math.min(elapsed / duration, 1);
+                car.position.lerpVectors(startPosition, targetPosition, t);
+                car.scale.lerpVectors(startScale, targetScale, t);
+                if (t < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    onComplete();
+                }
+            };
+            requestAnimationFrame(animate);
+        }
+
+        // Create Cars with GLB Models
         function createCars() {
             console.log("Creating cars...");
-            const carGeometry = new THREE.BoxGeometry(2, 2, 4);
+            cars.forEach(car => scene.remove(car.mesh));
+            cars.length = 0;
+            mixers.length = 0;
 
             allSlots.forEach((slotData, index) => {
                 const slotKey = `slot_${slotData.slotNumber}`;
-                let carColor = 0x808080; // Default to gray
-                if (slotStatuses[slotKey]) {
-                    // Force slots 18, 19, 20 to gray, and any slot with size 'none'
-                    if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || slotSizes[slotKey] === 'none') {
-                        carColor = 0x808080; // Gray for slots 18, 19, 20 or size 'none'
-                    } else {
-                        switch (slotSizes[slotKey]?.toLowerCase()) {
-                            case 'small':
+                let model = null;
+                let carColor = 0x808080; // Default gray for fallback
+
+                if (slotStatuses[slotKey] && !['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
+                    switch (slotSizes[slotKey]?.toLowerCase()) {
+                        case 'small':
+                            if (loadedModels.small) {
+                                model = loadedModels.small.clone();
                                 carColor = 0x0000FF; // Blue
-                                break;
-                            case 'medium':
+                            }
+                            break;
+                        case 'medium':
+                            if (loadedModels.medium) {
+                                model = loadedModels.medium.clone();
                                 carColor = 0xFFA500; // Orange
-                                break;
-                            case 'big':
+                            }
+                            break;
+                        case 'big':
+                            if (loadedModels.big) {
+                                model = loadedModels.big.clone();
                                 carColor = 0xFF0000; // Red
-                                break;
-                            default:
-                                carColor = 0x808080; // Gray for unknown sizes
-                                break;
-                        }
+                            }
+                            break;
+                        default:
+                            model = null; // No model for 'none'
+                            break;
                     }
                 }
 
-                const carMaterial = new THREE.MeshLambertMaterial({ 
-                    color: carColor,
-                    transparent: true,
-                    opacity: slotStatuses[slotKey] ? 1 : 0
-                });
-                
-                const car = new THREE.Mesh(carGeometry, carMaterial);
-                car.position.set(slotData.position.x, 0.5, slotData.position.z);
-                car.castShadow = true;
-                car.scale.set(slotStatuses[slotKey] ? 1 : 0, slotStatuses[slotKey] ? 1 : 0, slotStatuses[slotKey] ? 1 : 0);
-                scene.add(car);
-                
-                cars.push({
-                    mesh: car,
-                    material: carMaterial,
+                const carObj = {
+                    mesh: null,
                     slotIndex: slotData.slotNumber,
                     targetOpacity: slotStatuses[slotKey] ? 1 : 0,
                     currentOpacity: slotStatuses[slotKey] ? 1 : 0,
@@ -900,33 +963,144 @@
                     animationSpeed: 0.05,
                     isAnimating: false,
                     bobOffset: Math.random() * Math.PI * 2,
-                    originalY: car.position.y
-                });
+                    originalY: 0.5
+                };
+
+                if (model) {
+                    model.scale.set(0.01, 0.01, 0.01); // Adjust scale to fit slot
+                    model.position.set(slotData.position.x + (slotStatuses[slotKey] ? 0 : 10), 0.5, slotData.position.z);
+                    model.rotation.y = Math.PI / 2; // Orient car correctly
+                    model.castShadow = true;
+                    model.receiveShadow = true;
+                    scene.add(model);
+                    carObj.mesh = model;
+
+                    // Play internal animations if available
+                    if (model.animations && model.animations.length) {
+                        const mixer = new THREE.AnimationMixer(model);
+                        model.animations.forEach(clip => {
+                            mixer.clipAction(clip).play();
+                        });
+                        mixers.push(mixer);
+                    }
+
+                    // Animate car into position if occupied
+                    if (slotStatuses[slotKey]) {
+                        animateCar(model, new THREE.Vector3(slotData.position.x, 0.5, slotData.position.z), new THREE.Vector3(0.01, 0.01, 0.01));
+                    }
+                } else {
+                    // Fallback to BoxGeometry for slots 18-20 or 'none'
+                    const carGeometry = new THREE.BoxGeometry(2, 2, 4);
+                    const carMaterial = new THREE.MeshLambertMaterial({
+                        color: carColor,
+                        transparent: true,
+                        opacity: slotStatuses[slotKey] ? 1 : 0
+                    });
+                    const car = new THREE.Mesh(carGeometry, carMaterial);
+                    car.position.set(slotData.position.x, 0.5, slotData.position.z);
+                    car.castShadow = true;
+                    car.scale.set(slotStatuses[slotKey] ? 1 : 0, slotStatuses[slotKey] ? 1 : 0, slotStatuses[slotKey] ? 1 : 0);
+                    scene.add(car);
+                    carObj.mesh = car;
+                    carObj.material = carMaterial;
+                }
+
+                cars.push(carObj);
             });
         }
 
         // Update Cars Based on Firebase Data
         function updateCarsFromFirebase() {
-            for (let i = 1; i <= 20; i++) {
-                const slotKey = `slot_${i}`;
-                if (slotStatuses[slotKey]) {
-                    if (cars[i-1]) {
-                        cars[i-1].targetOpacity = 1;
-                        cars[i-1].targetScale = 1;
-                        if (cars[i-1].currentOpacity !== 1 || cars[i-1].currentScale !== 1) {
-                            cars[i-1].isAnimating = true;
-                        }
-                    }
-                } else {
-                    if (cars[i-1]) {
-                        cars[i-1].targetOpacity = 0;
-                        cars[i-1].targetScale = 0;
-                        if (cars[i-1].currentOpacity !== 0 || cars[i-1].currentScale !== 0) {
-                            cars[i-1].isAnimating = true;
-                        }
+            console.log("Updating cars from Firebase...");
+            cars.forEach(car => {
+                const slotKey = `slot_${car.slotIndex}`;
+                const newStatus = slotStatuses[slotKey];
+                const newSize = slotSizes[slotKey] || 'none';
+                const slotData = allSlots.find(slot => slot.slotNumber === car.slotIndex);
+
+                if (!slotData) return;
+
+                // Remove existing car
+                scene.remove(car.mesh);
+                car.mesh = null;
+
+                let model = null;
+                let carColor = 0x808080; // Default gray
+
+                if (newStatus && !['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
+                    switch (newSize.toLowerCase()) {
+                        case 'small':
+                            if (loadedModels.small) {
+                                model = loadedModels.small.clone();
+                                carColor = 0x0000FF; // Blue
+                            }
+                            break;
+                        case 'medium':
+                            if (loadedModels.medium) {
+                                model = loadedModels.medium.clone();
+                                carColor = 0xFFA500; // Orange
+                            }
+                            break;
+                        case 'big':
+                            if (loadedModels.big) {
+                                model = loadedModels.big.clone();
+                                carColor = 0xFF0000; // Red
+                            }
+                            break;
+                        default:
+                            model = null; // No model for 'none'
+                            break;
                     }
                 }
-            }
+
+                if (model) {
+                    model.scale.set(0.01, 0.01, 0.01);
+                    model.position.set(slotData.position.x + (newStatus ? 0 : 10), 0.5, slotData.position.z);
+                    model.rotation.y = Math.PI / 2;
+                    model.castShadow = true;
+                    model.receiveShadow = true;
+                    scene.add(model);
+                    car.mesh = model;
+
+                    // Play internal animations
+                    if (model.animations && model.animations.length) {
+                        const mixer = new THREE.AnimationMixer(model);
+                        model.animations.forEach(clip => {
+                            mixer.clipAction(clip).play();
+                        });
+                        mixers.push(mixer);
+                    }
+
+                    // Animate car movement
+                    if (newStatus && (car.currentOpacity === 0 || car.currentScale === 0)) {
+                        animateCar(model, new THREE.Vector3(slotData.position.x, 0.5, slotData.position.z), new THREE.Vector3(0.01, 0.01, 0.01));
+                    } else if (!newStatus && (car.currentOpacity !== 0 || car.currentScale !== 0)) {
+                        animateCar(model, new THREE.Vector3(slotData.position.x + 10, 0.5, slotData.position.z), new THREE.Vector3(0.01, 0.01, 0.01), 2, () => {
+                            scene.remove(model);
+                        });
+                    }
+                } else {
+                    const carGeometry = new THREE.BoxGeometry(2, 2, 4);
+                    const carMaterial = new THREE.MeshLambertMaterial({
+                        color: carColor,
+                        transparent: true,
+                        opacity: newStatus ? 1 : 0
+                    });
+                    const carMesh = new THREE.Mesh(carGeometry, carMaterial);
+                    carMesh.position.set(slotData.position.x, 0.5, slotData.position.z);
+                    carMesh.castShadow = true;
+                    carMesh.scale.set(newStatus ? 1 : 0, newStatus ? 1 : 0, newStatus ? 1 : 0);
+                    scene.add(carMesh);
+                    car.mesh = carMesh;
+                    car.material = carMaterial;
+                }
+
+                car.targetOpacity = newStatus ? 1 : 0;
+                car.targetScale = newStatus ? 1 : 0;
+                if (car.currentOpacity !== car.targetOpacity || car.currentScale !== car.targetScale) {
+                    car.isAnimating = true;
+                }
+            });
         }
 
         // Update Live Overview Stats
@@ -949,12 +1123,15 @@
         function animate() {
             animationFrame = requestAnimationFrame(animate);
             
+            const delta = clock.getDelta();
+            mixers.forEach(mixer => mixer.update(delta));
+
             const time = Date.now() * 0.001;
             let animatingCars = 0;
             let visibleCars = 0;
 
             cars.forEach((car, index) => {
-                if (car.isAnimating) {
+                if (car.isAnimating && car.material) {
                     animatingCars++;
                     const opacityDiff = car.targetOpacity - car.currentOpacity;
                     const scaleDiff = car.targetScale - car.currentScale;
@@ -967,8 +1144,10 @@
                     } else {
                         car.currentOpacity += opacityDiff * car.animationSpeed;
                         car.currentScale += scaleDiff * car.animationSpeed;
-                        car.material.opacity = car.currentOpacity;
-                        car.mesh.scale.set(car.currentScale, car.currentScale, car.currentScale);
+                        if (car.material) {
+                            car.material.opacity = car.currentOpacity;
+                            car.mesh.scale.set(car.currentScale, car.currentScale, car.currentScale);
+                        }
                     }
                 }
                 
@@ -1013,12 +1192,21 @@
                 console.log("threeContainer dimensions:", threeContainer.clientWidth, threeContainer.clientHeight);
                 initScene();
                 createParkingSlots();
-                createCars();
+                loadModels().then(() => {
+                    createCars();
+                    setupFirebaseListener();
+                    animate();
+                    document.getElementById('threeError').style.display = 'none';
+                    document.getElementById('controls').style.display = 'block';
+                }).catch(error => {
+                    console.error("❌ Model loading error:", error);
+                    document.getElementById('threeError').style.display = 'block';
+                    showError("Failed to load car models.");
+                    createCars(); // Fallback to BoxGeometry
+                    setupFirebaseListener();
+                    animate();
+                });
                 resetCamera();
-                animate();
-                setupFirebaseListener();
-                document.getElementById('threeError').style.display = 'none';
-                document.getElementById('controls').style.display = 'block';
             } catch (error) {
                 console.error("❌ Three.js initialization error:", error);
                 document.getElementById('threeError').style.display = 'block';
@@ -1069,13 +1257,8 @@
                             slotEl.querySelector(".car").style.display = "none";
                             slotEl.querySelector(".car").style.backgroundColor = "#808080";
                         }
-                        if (cars[i-1]) {
-                            cars[i-1].targetOpacity = 0;
-                            cars[i-1].targetScale = 0;
-                            cars[i-1].isAnimating = true;
-                            cars[i-1].material.color.set(0x808080);
-                        }
                     }
+                    updateCarsFromFirebase();
                     updateLiveOverview(0, 20, 20);
                     return;
                 }
@@ -1087,12 +1270,11 @@
 
                 for (let i = 1; i <= totalSlots; i++) {
                     const slotKey = `slot_${i}`;
-                    slotStatuses[slotKey] = false; // Initialize
-                    slotSizes[slotKey] = 'none'; // Initialize size
+                    slotStatuses[slotKey] = false;
+                    slotSizes[slotKey] = 'none';
                     const slotEl = document.querySelector(`.slot[data-slot="${i}"]`);
                     let newStatus = data[slotKey] && data[slotKey].occupied === true;
                     let newSize = (data[slotKey] && data[slotKey].size) ? data[slotKey].size.toLowerCase() : 'none';
-                    // Force slots 18, 19, 20 to have size 'none' if no size is specified
                     if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
                         newSize = 'none';
                     }
@@ -1103,7 +1285,6 @@
                         if (newStatus) {
                             slotEl.classList.add("occupied");
                             slotEl.querySelector(".car").style.display = "block";
-                            // Set car color to gray for slots 18, 19, 20 or size 'none'
                             slotEl.querySelector(".car").style.backgroundColor = 
                                 ['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || newSize === 'none' ? "#808080" : 
                                 newSize === 'small' ? "#0000FF" : 
@@ -1117,38 +1298,13 @@
                         }
                     }
 
-                    if (cars[i-1]) {
-                        let carColor = 0x808080; // Gray by default
-                        if (newStatus) {
-                            if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || newSize === 'none') {
-                                carColor = 0x808080; // Gray for slots 18, 19, 20 or size 'none'
-                            } else {
-                                switch (newSize) {
-                                    case 'small':
-                                        carColor = 0x0000FF; // Blue
-                                        break;
-                                    case 'medium':
-                                        carColor = 0xFFA500; // Orange
-                                        break;
-                                    case 'big':
-                                        carColor = 0xFF0000; // Red
-                                        break;
-                                }
-                            }
-                        }
-                        cars[i-1].material.color.set(carColor);
-                        cars[i-1].targetOpacity = newStatus ? 1 : 0;
-                        cars[i-1].targetScale = newStatus ? 1 : 0;
-                        if (cars[i-1].currentOpacity !== (newStatus ? 1 : 0) || cars[i-1].currentScale !== (newStatus ? 1 : 0)) {
-                            cars[i-1].isAnimating = true;
-                        }
-                        console.log(`🚗 Slot ${i}: ${newStatus ? 'OCCUPIED' : 'AVAILABLE'} - Size: ${newSize}, Color: #${carColor.toString(16)}, Target opacity=${cars[i-1].targetOpacity}, scale=${cars[i-1].targetScale}`);
-                    }
+                    console.log(`🚗 Slot ${i}: ${newStatus ? 'OCCUPIED' : 'AVAILABLE'} - Size: ${newSize}`);
                 }
 
                 const emptyCount = totalSlots - occupiedCount;
                 console.log(`📈 Final count: ${occupiedCount} occupied, ${emptyCount} available out of ${totalSlots} total`);
                 
+                updateCarsFromFirebase();
                 updateLiveOverview(occupiedCount, emptyCount, totalSlots);
             }, (error) => {
                 loadingElement.style.display = 'none';
@@ -1210,12 +1366,12 @@
             setInterval(updateClock, 1000);
 
             // Slot History Update with Filtering
-            let historyDataArray = []; // Array to store all history entries for filtering
+            let historyDataArray = [];
 
             slotHistoryRef.on("value", (snapshot) => {
                 console.log("Firebase slot_history data:", snapshot.val());
                 const historyData = snapshot.val();
-                historyDataArray = []; // Clear and rebuild array
+                historyDataArray = [];
 
                 if (!historyData) {
                     console.warn("No slot history data available.");
@@ -1223,7 +1379,6 @@
                     return;
                 }
 
-                // Collect all entries into an array and sort by timestamp descending
                 Object.keys(historyData).forEach((slotKey) => {
                     const slotLogs = historyData[slotKey];
                     Object.entries(slotLogs).forEach(([timestamp, entry]) => {
@@ -1238,26 +1393,23 @@
                     });
                 });
 
-                // Sort by timestamp descending (assuming timestamp format allows string comparison, e.g., YYYY-MM-DD HH:MM:SS)
                 historyDataArray.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-
                 renderHistoryTable();
             }, (error) => {
                 console.error("Error fetching slot history:", error);
                 showError("Failed to fetch slot history data.");
             });
 
-            // Function to render the table based on current filters
             function renderHistoryTable() {
                 const slotHistoryTable = document.getElementById("slotHistoryTable").getElementsByTagName('tbody')[0];
                 slotHistoryTable.innerHTML = "";
 
                 const filterSlot = document.getElementById('filterSlot').value.trim();
-                const filterDate = document.getElementById('filterDate').value; // YYYY-MM-DD
+                const filterDate = document.getElementById('filterDate').value;
                 const filterStatus = document.getElementById('filterStatus').value;
 
                 historyDataArray.forEach((entry) => {
-                    const entryDate = entry.timestamp.split(' ')[0]; // Extract date from timestamp
+                    const entryDate = entry.timestamp.split(' ')[0];
 
                     if (filterSlot && entry.slot !== filterSlot) return;
                     if (filterDate && entryDate !== filterDate) return;
@@ -1277,7 +1429,6 @@
                 });
             }
 
-            // Add event listeners for filters
             document.getElementById('filterSlot').addEventListener('input', renderHistoryTable);
             document.getElementById('filterDate').addEventListener('change', renderHistoryTable);
             document.getElementById('filterStatus').addEventListener('change', renderHistoryTable);
@@ -1299,8 +1450,6 @@
                     if (!scene) {
                         initThree();
                     } else {
-                        // Reinitialize renderer and restore scene
-                        const threeContainer = document.getElementById('threeContainer');
                         renderer = new THREE.WebGLRenderer({ antialias: true });
                         renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
                         renderer.shadowMap.enabled = true;
@@ -1349,7 +1498,6 @@
             fullscreenBtn.addEventListener('click', toggleFullScreen);
             collapseBtn.addEventListener('click', handleCollapse);
 
-            // Fullscreen change event to manage collapse button visibility
             document.addEventListener('fullscreenchange', () => {
                 if (document.fullscreenElement) {
                     document.getElementById('collapseBtn').style.display = 'block';
