@@ -750,6 +750,7 @@
         let slotSizes = {};
         const loadingElement = document.getElementById('loading');
         const errorElement = document.getElementById('error-message');
+        let ambientLight, directionalLight;
 
         // Show Error Message
         function showError(message) {
@@ -774,10 +775,10 @@
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             threeContainer.appendChild(renderer.domElement);
 
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
             scene.add(ambientLight);
             
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
             directionalLight.position.set(50, 50, 25);
             directionalLight.castShadow = true;
             directionalLight.shadow.mapSize.width = 2048;
@@ -970,9 +971,40 @@
             console.log(`🔄 Stats updated: ${occupiedCount} occupied, ${emptyCount} empty`);
         }
 
+        // Fungsi untuk memperbarui posisi matahari berdasarkan waktu real-time
+        function updateSunPosition() {
+            const now = new Date();
+            const options = { timeZone: 'Asia/Jakarta' };
+            const hours = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600; // Fractional hours for smoother transition
+            const dayFraction = (hours - 6) / 12; // Assume sunrise at 6 AM, sunset at 6 PM (adjusted for 12-hour day cycle)
+
+            if (dayFraction < 0 || dayFraction > 1) {
+                // Night time
+                directionalLight.intensity = 0.2; // Low intensity for night (moonlight simulation)
+                ambientLight.intensity = 0.3;
+                scene.background = new THREE.Color(0x000022); // Dark blue night sky
+                directionalLight.position.set(0, -50, 0); // Sun below horizon
+            } else {
+                // Day time
+                const theta = Math.PI * dayFraction; // Arc from east to west
+                const sunRadius = 100; // Distance from origin
+                directionalLight.position.x = sunRadius * Math.cos(theta);
+                directionalLight.position.y = sunRadius * Math.sin(theta);
+                directionalLight.position.z = 25 * Math.sin(theta); // Slight z-variation for realism
+
+                // Adjust intensity and colors based on time
+                directionalLight.intensity = 0.8 * Math.sin(theta); // Max at noon
+                ambientLight.intensity = 0.6;
+                const skyColor = new THREE.Color().setHSL(0.6, 1, Math.max(0.1, Math.sin(theta) * 0.5 + 0.3)); // Blue to orange-ish at dawn/dusk
+                scene.background = skyColor;
+            }
+        }
+
         // Animation Loop
         function animate() {
             animationFrame = requestAnimationFrame(animate);
+            
+            updateSunPosition(); // Update sun position every frame for real-time adjustment
             
             const time = Date.now() * 0.001;
             let animatingCars = 0;
