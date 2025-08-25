@@ -948,28 +948,23 @@
                 let carColor = 0x808080;
                 let targetScale = 0;
                 if (slotStatuses[slotKey]) {
-                    if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || slotSizes[slotKey] === 'none') {
-                        carColor = 0x808080;
-                        targetScale = 1.0;
-                    } else {
-                        switch (slotSizes[slotKey]?.toLowerCase()) {
-                            case 'small':
-                                carColor = 0x0000FF;
-                                targetScale = 0.7;
-                                break;
-                            case 'medium':
-                                carColor = 0xFFA500;
-                                targetScale = 1.0;
-                                break;
-                            case 'big':
-                                carColor = 0xFF0000;
-                                targetScale = 1.3;
-                                break;
-                            default:
-                                carColor = 0x808080;
-                                targetScale = 1.0;
-                                break;
-                        }
+                    switch (slotSizes[slotKey]?.toLowerCase()) {
+                        case 'small':
+                            carColor = 0x0000FF;
+                            targetScale = 0.7;
+                            break;
+                        case 'medium':
+                            carColor = 0xFFA500;
+                            targetScale = 1.0;
+                            break;
+                        case 'big':
+                            carColor = 0xFF0000;
+                            targetScale = 1.3;
+                            break;
+                        default:
+                            carColor = 0x808080;
+                            targetScale = 1.0;
+                            break;
                     }
                 }
 
@@ -1184,26 +1179,23 @@
 
                 for (let i = 1; i <= totalSlots; i++) {
                     const slotKey = `slot_${i}`;
-                    slotStatuses[slotKey] = false;
-                    slotSizes[slotKey] = 'none';
-                    const slotEl = document.querySelector(`.slot[data-slot="${i}"]`);
-                    let newStatus = data[slotKey] && data[slotKey].occupied === true;
-                    let newSize = (data[slotKey] && data[slotKey].size) ? data[slotKey].size.toLowerCase() : 'none';
-                    if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
-                        newSize = 'none'; // Enforce 'none' for slots 18, 19, 20
-                    }
+                    const slotData = data[slotKey] || { occupied: false, size: 'none' };
+                    let newStatus = slotData.occupied === true;
+                    let newSize = slotData.size ? slotData.size.toLowerCase() : 'none';
                     slotStatuses[slotKey] = newStatus;
                     slotSizes[slotKey] = newSize;
 
+                    // Update 2D Visualization
+                    const slotEl = document.querySelector(`.slot[data-slot="${i}"]`);
                     if (slotEl) {
                         if (newStatus) {
                             slotEl.classList.add("occupied");
                             slotEl.querySelector(".car").style.display = "block";
                             slotEl.querySelector(".car").style.backgroundColor = 
-                                ['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || newSize === 'none' ? "#808080" : 
                                 newSize === 'small' ? "#0000FF" : 
                                 newSize === 'medium' ? "#FFA500" : 
-                                newSize === 'big' ? "#FF0000" : "#808080";
+                                newSize === 'big' ? "#FF0000" : 
+                                "#808080";
                             occupiedCount++;
                         } else {
                             slotEl.classList.remove("occupied");
@@ -1212,32 +1204,28 @@
                         }
                     }
 
+                    // Update 3D Visualization
                     if (cars[i-1]) {
                         let carColor = 0x808080;
                         let targetScale = 1.0;
                         if (newStatus) {
-                            if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || newSize === 'none') {
-                                carColor = 0x808080;
-                                targetScale = 1.0;
-                            } else {
-                                switch (newSize) {
-                                    case 'small':
-                                        carColor = 0x0000FF;
-                                        targetScale = 0.7;
-                                        break;
-                                    case 'medium':
-                                        carColor = 0xFFA500;
-                                        targetScale = 1.0;
-                                        break;
-                                    case 'big':
-                                        carColor = 0xFF0000;
-                                        targetScale = 1.3;
-                                        break;
-                                    default:
-                                        carColor = 0x808080;
-                                        targetScale = 1.0;
-                                        break;
-                                }
+                            switch (newSize) {
+                                case 'small':
+                                    carColor = 0x0000FF;
+                                    targetScale = 0.7;
+                                    break;
+                                case 'medium':
+                                    carColor = 0xFFA500;
+                                    targetScale = 1.0;
+                                    break;
+                                case 'big':
+                                    carColor = 0xFF0000;
+                                    targetScale = 1.3;
+                                    break;
+                                default:
+                                    carColor = 0x808080;
+                                    targetScale = 1.0;
+                                    break;
                             }
                         }
                         cars[i-1].material.color.set(carColor);
@@ -1283,13 +1271,13 @@
             {
                 element: '.park-condition',
                 title: "Park Condition (3D)",
-                text: "Visualisasi 3D area parkir. Klik 'Click to Expand' untuk melihat model interaktif. Gunakan kontrol kamera untuk navigasi. Warna mobil: biru (kecil), kuning (sedang), merah (besar). Slot 18-20 selalu abu-abu.",
+                text: "Visualisasi 3D area parkir. Klik 'Click to Expand' untuk melihat model interaktif. Gunakan kontrol kamera untuk navigasi. Warna mobil: biru (kecil), kuning (sedang), merah (besar), abu-abu (kosong).",
                 position: 'right'
             },
             {
                 element: '.park-condition-2d',
                 title: "Park Condition (2D)",
-                text: "Menampilkan peta 2D slot parkir. Slot kuning menandakan terisi, abu-abu menandakan kosong. Slot 18-20 menggunakan warna abu-abu untuk mobil.",
+                text: "Menampilkan peta 2D slot parkir. Slot kuning menandakan terisi, abu-abu menandakan kosong. Warna mobil sesuai ukuran dari Firebase.",
                 position: 'left'
             }
         ];
@@ -1427,10 +1415,7 @@
                     Object.entries(slotLogs).forEach(([timestamp, entry]) => {
                         const status = entry.status === true || entry.status === 'terisi' ? 'terisi' : 'kosong';
                         const slotNumber = slotKey.split("_")[1];
-                        let size = entry.size || 'none';
-                        if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
-                            size = 'none'; // Enforce 'none' for slots 18, 19, 20
-                        }
+                        const size = entry.size ? entry.size.toLowerCase() : 'none';
                         historyDataArray.push({
                             slot: slotNumber,
                             timestamp: timestamp,
