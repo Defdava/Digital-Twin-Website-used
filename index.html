@@ -168,6 +168,7 @@
             border-radius: 8px;
             border: 2px solid #dc3545;
             min-height: 150px;
+            position: relative;
         }
 
         .park-condition-2d {
@@ -379,59 +380,6 @@
             animation: carExit 0.5s ease-in-out forwards;
         }
 
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: rgba(0, 0, 0, 0.5);
-            padding-top: 80px;
-        }
-
-        .login-box {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: 300px;
-            text-align: center;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .login-box h2 {
-            margin-top: 0;
-            color: #007bff;
-            font-size: 20px;
-        }
-
-        .login-box input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-
-        .login-box button {
-            width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .login-box a {
-            display: block;
-            margin: 10px 0;
-            color: #007bff;
-            text-decoration: none;
-            font-size: 12px;
-        }
-
         #toggleCameraBtn {
             position: absolute;
             top: 10px;
@@ -559,6 +507,60 @@
         :fullscreen #collapseBtn {
             display: block;
         }
+
+        /* Popup Tutorial Styles */
+        .tutorial-popup {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 200;
+            max-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            pointer-events: none;
+        }
+
+        .overview:hover .tutorial-popup,
+        .history:hover .tutorial-popup,
+        .park-condition:hover .tutorial-popup,
+        .park-condition-2d:hover .tutorial-popup {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tutorial-popup::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid rgba(0, 0, 0, 0.85);
+        }
+
+        .overview .tutorial-popup {
+            top: 10px;
+            left: 10px;
+        }
+
+        .history .tutorial-popup {
+            top: 10px;
+            right: 10px;
+        }
+
+        .park-condition .tutorial-popup {
+            bottom: 10px;
+            left: 10px;
+        }
+
+        .park-condition-2d .tutorial-popup {
+            bottom: 10px;
+            right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -599,6 +601,9 @@
         <div class="main-content-grid">
             <div class="overview">
                 <h1>Live Overview</h1>
+                <div class="tutorial-popup">
+                    Menampilkan statistik terkini seperti jumlah slot terisi, kosong, waktu saat ini, dan total mobil masuk/keluar hari ini.
+                </div>
                 <div class="stats">
                     <div>
                         <span>Cars</span>
@@ -628,6 +633,9 @@
             </div>
             <div class="history">
                 <h2>Slot History</h2>
+                <div class="tutorial-popup">
+                    Menampilkan riwayat status slot parkir. Gunakan filter untuk mencari berdasarkan slot, tanggal, atau status (terisi/kosong).
+                </div>
                 <div class="history-filters">
                     <input type="text" id="filterSlot" placeholder="Filter by Slot (e.g. 1)">
                     <input type="date" id="filterDate">
@@ -653,6 +661,9 @@
             </div>
             <div class="park-condition">
                 <h2>Park Condition (3D)</h2>
+                <div class="tutorial-popup">
+                    Visualisasi 3D dari area parkir. Klik "Click to Expand" untuk melihat model 3D interaktif. Gunakan tombol kontrol untuk mengubah sudut pandang.
+                </div>
                 <div id="cameraContainer" style="width: 100%; position: relative; min-height: 300px;">
                     <div id="threeContainer"></div>
                     <div id="threeError">3D visualization failed to load.</div>
@@ -671,6 +682,9 @@
             </div>
             <div class="park-condition-2d">
                 <h2>Park Condition (2D)</h2>
+                <div class="tutorial-popup">
+                    Menampilkan peta 2D dari slot parkir. Slot kuning menandakan terisi, abu-abu menandakan kosong. Warna mobil menunjukkan ukuran kendaraan.
+                </div>
                 <div class="parking-lot">
                     <div class="column top">
                         <div class="slot" data-slot="20"><span>20</span><div class="car"></div></div>
