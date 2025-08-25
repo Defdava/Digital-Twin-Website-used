@@ -508,126 +508,122 @@
             display: block;
         }
 
-        /* Popup Tutorial Styles */
-        .tutorial-popup, .main-tutorial-popup {
+        /* Tour Tooltip Styles */
+        .tour-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            pointer-events: none;
+        }
+
+        .tour-tooltip {
             position: absolute;
-            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
-            border: 2px solid #007bff;
-            font-family: Arial, sans-serif;
-            color: #333;
+            background-color: lightgrey;
+            border: 2px solid #dc3545;
+            border-radius: 8px;
             padding: 15px;
-            border-radius: 10px;
-            font-size: 12px;
-            z-index: 200;
-            max-width: 250px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            max-width: 300px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             pointer-events: auto;
+            animation: fadeIn 0.3s ease-in-out;
+            z-index: 2001;
         }
 
-        .tutorial-popup.show, .main-tutorial-popup.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .tutorial-popup h3, .main-tutorial-popup h3 {
-            margin: 0 0 10px;
-            font-size: 14px;
+        .tour-tooltip h3 {
             color: #007bff;
-            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
         }
 
-        .tutorial-popup p, .main-tutorial-popup p {
-            margin: 0 0 15px;
-            font-size: 12px;
+        .tour-tooltip p {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 15px;
             line-height: 1.5;
         }
 
-        .tutorial-close-btn {
-            background-color: #007bff;
-            color: white;
+        .tour-tooltip .tour-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .tour-tooltip button {
+            padding: 8px 12px;
             border: none;
-            padding: 6px 12px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 12px;
-            display: block;
-            margin: 0 auto;
             transition: background-color 0.3s;
         }
 
-        .tutorial-close-btn:hover {
+        .tour-tooltip .next-btn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .tour-tooltip .next-btn:hover {
             background-color: #0056b3;
         }
 
-        .tutorial-popup::before, .main-tutorial-popup::before {
-            content: '';
+        .tour-tooltip .close-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .tour-tooltip .close-btn:hover {
+            background-color: #c82333;
+        }
+
+        .tour-tooltip:after {
+            content: "";
             position: absolute;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-bottom: 10px solid #007bff;
+            border: 10px solid transparent;
+            pointer-events: none;
         }
 
-        .overview .tutorial-popup {
-            top: 10px;
-            left: 10px;
+        .tour-tooltip.right:after {
+            border-right-color: lightgrey;
+            border-right-width: 10px;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
-        .overview .tutorial-popup::before {
-            top: -10px;
-            left: 20px;
+        .tour-tooltip.left:after {
+            border-left-color: lightgrey;
+            border-left-width: 10px;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
-        .history .tutorial-popup {
-            top: 10px;
-            right: 10px;
-        }
-
-        .history .tutorial-popup::before {
-            top: -10px;
-            right: 20px;
-        }
-
-        .park-condition .tutorial-popup {
-            bottom: 10px;
-            left: 10px;
-        }
-
-        .park-condition .tutorial-popup::before {
-            bottom: -10px;
-            left: 20px;
-            border-bottom: none;
-            border-top: 10px solid #007bff;
-        }
-
-        .park-condition-2d .tutorial-popup {
-            bottom: 10px;
-            right: 10px;
-        }
-
-        .park-condition-2d .tutorial-popup::before {
-            bottom: -10px;
-            right: 20px;
-            border-bottom: none;
-            border-top: 10px solid #007bff;
-        }
-
-        .main-tutorial-popup {
-            position: fixed;
-            top: 70px;
+        .tour-tooltip.top:after {
+            border-top-color: lightgrey;
+            border-top-width: 10px;
+            bottom: -20px;
             left: 50%;
             transform: translateX(-50%);
-            max-width: 400px;
-            z-index: 201;
-            text-align: center;
         }
 
-        .main-tutorial-popup::before {
-            top: -10px;
+        .tour-tooltip.bottom:after {
+            border-bottom-color: lightgrey;
+            border-bottom-width: 10px;
+            top: -20px;
             left: 50%;
             transform: translateX(-50%);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
@@ -644,11 +640,6 @@
         </div>
         <div class="header-right">
             <span>Parking Management System</span>
-        </div>
-        <div class="main-tutorial-popup">
-            <h3>Petunjuk Website</h3>
-            <p>Klik logo BRIN untuk membuka toolbar samping yang berisi fitur seperti Profile, Log Out, Live Overview, Previous Analysis, Export Data, 3D Viewer VR, Helpdesk, dan Parking Analysis.</p>
-            <button class="tutorial-close-btn">Sudah</button>
         </div>
     </header>
     <aside class="toolbar" id="toolbar">
@@ -674,11 +665,6 @@
         <div class="main-content-grid">
             <div class="overview">
                 <h1>Live Overview</h1>
-                <div class="tutorial-popup">
-                    <h3>Live Overview</h3>
-                    <p>Menampilkan statistik terkini seperti jumlah slot terisi, kosong, waktu saat ini, pelanggan loyal, dan total mobil masuk/keluar hari ini.</p>
-                    <button class="tutorial-close-btn">Sudah</button>
-                </div>
                 <div class="stats">
                     <div>
                         <span>Cars</span>
@@ -708,11 +694,6 @@
             </div>
             <div class="history">
                 <h2>Slot History</h2>
-                <div class="tutorial-popup">
-                    <h3>Slot History</h3>
-                    <p>Menampilkan riwayat status slot parkir. Gunakan filter untuk mencari berdasarkan slot, tanggal, atau status (terisi/kosong).</p>
-                    <button class="tutorial-close-btn">Sudah</button>
-                </div>
                 <div class="history-filters">
                     <input type="text" id="filterSlot" placeholder="Filter by Slot (e.g. 1)">
                     <input type="date" id="filterDate">
@@ -738,11 +719,6 @@
             </div>
             <div class="park-condition">
                 <h2>Park Condition (3D)</h2>
-                <div class="tutorial-popup">
-                    <h3>Park Condition (3D)</h3>
-                    <p>Visualisasi 3D area parkir. Klik "Click to Expand" untuk melihat model interaktif. Gunakan kontrol kamera untuk navigasi. Warna mobil: biru (kecil), kuning (sedang), merah (besar).</p>
-                    <button class="tutorial-close-btn">Sudah</button>
-                </div>
                 <div id="cameraContainer" style="width: 100%; position: relative; min-height: 300px;">
                     <div id="threeContainer"></div>
                     <div id="threeError">3D visualization failed to load.</div>
@@ -761,11 +737,6 @@
             </div>
             <div class="park-condition-2d">
                 <h2>Park Condition (2D)</h2>
-                <div class="tutorial-popup">
-                    <h3>Park Condition (2D)</h3>
-                    <p>Menampilkan peta 2D slot parkir. Slot kuning menandakan terisi, abu-abu menandakan kosong. Warna mobil menunjukkan ukuran kendaraan.</p>
-                    <button class="tutorial-close-btn">Sudah</button>
-                </div>
                 <div class="parking-lot">
                     <div class="column top">
                         <div class="slot" data-slot="20"><span>20</span><div class="car"></div></div>
@@ -792,6 +763,15 @@
                         <div class="slot" data-slot="1"><span>1</span><div class="car"></div></div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="tour-overlay" id="tourOverlay"></div>
+        <div class="tour-tooltip" id="tourTooltip" style="display: none;">
+            <h3 id="tooltipTitle"></h3>
+            <p id="tooltipText"></p>
+            <div class="tour-buttons">
+                <button class="next-btn" id="tourNextBtn">Next</button>
+                <button class="close-btn" id="tourCloseBtn">Close</button>
             </div>
         </div>
     </main>
@@ -1336,24 +1316,99 @@
             });
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            // Show Tutorial Popups if not seen before
+        // Tour Steps Configuration
+        const tourSteps = [
+            {
+                element: 'header',
+                title: "Petunjuk Website",
+                text: "Klik logo BRIN untuk membuka toolbar samping yang berisi fitur seperti Profile, Log Out, Live Overview, Previous Analysis, Export Data, 3D Viewer VR, Helpdesk, dan Parking Analysis.",
+                position: 'bottom'
+            },
+            {
+                element: '.overview',
+                title: "Live Overview",
+                text: "Menampilkan statistik terkini seperti jumlah slot terisi, kosong, waktu saat ini, pelanggan loyal, dan total mobil masuk/keluar hari ini.",
+                position: 'right'
+            },
+            {
+                element: '.history',
+                title: "Slot History",
+                text: "Menampilkan riwayat status slot parkir. Gunakan filter untuk mencari berdasarkan slot, tanggal, atau status (terisi/kosong).",
+                position: 'left'
+            },
+            {
+                element: '.park-condition',
+                title: "Park Condition (3D)",
+                text: "Visualisasi 3D area parkir. Klik 'Click to Expand' untuk melihat model interaktif. Gunakan kontrol kamera untuk navigasi. Warna mobil: biru (kecil), kuning (sedang), merah (besar).",
+                position: 'right'
+            },
+            {
+                element: '.park-condition-2d',
+                title: "Park Condition (2D)",
+                text: "Menampilkan peta 2D slot parkir. Slot kuning menandakan terisi, abu-abu menandakan kosong. Warna mobil menunjukkan ukuran kendaraan.",
+                position: 'left'
+            }
+        ];
+
+        let currentTourStep = 0;
+
+        function startTour() {
             if (!localStorage.getItem('hasSeenTutorial')) {
-                document.querySelectorAll('.tutorial-popup, .main-tutorial-popup').forEach(popup => {
-                    popup.classList.add('show');
-                });
+                document.getElementById('tourOverlay').style.display = 'block';
+                showTooltip(currentTourStep);
+            }
+        }
+
+        function showTooltip(step) {
+            const tooltip = document.getElementById('tourTooltip');
+            const title = document.getElementById('tooltipTitle');
+            const text = document.getElementById('tooltipText');
+            const nextBtn = document.getElementById('tourNextBtn');
+
+            const targetElement = document.querySelector(tourSteps[step].element);
+            if (!targetElement) return;
+
+            title.textContent = tourSteps[step].title;
+            text.textContent = tourSteps[step].text;
+            tooltip.style.display = 'block';
+            tooltip.className = 'tour-tooltip ' + tourSteps[step].position;
+
+            const rect = targetElement.getBoundingClientRect();
+            const tooltipRect = tooltip.getBoundingClientRect();
+            let left, top;
+
+            switch (tourSteps[step].position) {
+                case 'right':
+                    left = rect.right + 10;
+                    top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                    break;
+                case 'left':
+                    left = rect.left - tooltipRect.width - 10;
+                    top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                    break;
+                case 'top':
+                    left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                    top = rect.top - tooltipRect.height - 10;
+                    break;
+                case 'bottom':
+                    left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                    top = rect.bottom + 10;
+                    break;
             }
 
-            // Handle Tutorial Close Buttons
-            document.querySelectorAll('.tutorial-close-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    localStorage.setItem('hasSeenTutorial', 'true');
-                    document.querySelectorAll('.tutorial-popup, .main-tutorial-popup').forEach(popup => {
-                        popup.classList.remove('show');
-                    });
-                });
-            });
+            tooltip.style.left = `${left}px`;
+            tooltip.style.top = `${top}px`;
 
+            nextBtn.textContent = step === tourSteps.length - 1 ? 'Finish' : 'Next';
+        }
+
+        function endTour() {
+            localStorage.setItem('hasSeenTutorial', 'true');
+            document.getElementById('tourOverlay').style.display = 'none';
+            document.getElementById('tourTooltip').style.display = 'none';
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
             // Authentication
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             const userInfo = document.getElementById('userInfo');
@@ -1421,7 +1476,6 @@
                     return;
                 }
 
-                // Collect all entries into an array
                 Object.keys(historyData).forEach((slotKey) => {
                     const slotLogs = historyData[slotKey];
                     Object.entries(slotLogs).forEach(([timestamp, entry]) => {
@@ -1436,10 +1490,8 @@
                     });
                 });
 
-                // Sort by timestamp descending
                 historyDataArray.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
 
-                // Calculate Total Cars In and Out for today
                 const today = new Date().toISOString().split('T')[0];
                 let totalIn = 0;
                 let totalOut = 0;
@@ -1451,7 +1503,6 @@
                     }
                 });
 
-                // Update the DOM with totals
                 document.getElementById('totalCarsIn').textContent = `${totalIn} Today`;
                 document.getElementById('totalCarsOut').textContent = `${totalOut} Today`;
                 console.log(`📊 Total Cars In: ${totalIn}, Total Cars Out: ${totalOut} for ${today}`);
@@ -1464,7 +1515,6 @@
                 document.getElementById('totalCarsOut').textContent = '0 Today';
             });
 
-            // Function to render the table based on current filters
             function renderHistoryTable() {
                 const slotHistoryTable = document.getElementById("slotHistoryTable").getElementsByTagName('tbody')[0];
                 slotHistoryTable.innerHTML = "";
@@ -1494,7 +1544,6 @@
                 });
             }
 
-            // Add event listeners for filters
             document.getElementById('filterSlot').addEventListener('input', renderHistoryTable);
             document.getElementById('filterDate').addEventListener('change', renderHistoryTable);
             document.getElementById('filterStatus').addEventListener('change', renderHistoryTable);
@@ -1564,7 +1613,6 @@
             fullscreenBtn.addEventListener('click', toggleFullScreen);
             collapseBtn.addEventListener('click', handleCollapse);
 
-            // Fullscreen change event
             document.addEventListener('fullscreenchange', () => {
                 if (document.fullscreenElement) {
                     document.getElementById('collapseBtn').style.display = 'block';
@@ -1658,6 +1706,21 @@
                     history.replaceState(null, null, window.location.href);
                 }
             });
+
+            // Tour Event Listeners
+            document.getElementById('tourNextBtn').addEventListener('click', () => {
+                currentTourStep++;
+                if (currentTourStep < tourSteps.length) {
+                    showTooltip(currentTourStep);
+                } else {
+                    endTour();
+                }
+            });
+
+            document.getElementById('tourCloseBtn').addEventListener('click', endTour);
+
+            // Start the tour
+            startTour();
         });
     </script>
 </body>
