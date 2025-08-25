@@ -129,7 +129,9 @@
         .toolbar .feature-box button {
             width: 100%;
             padding: 6px;
-            background-color: darkgrey;
+            background-color: dark
+
+grey;
             color: black;
             border: none;
             border-radius: 5px;
@@ -511,8 +513,10 @@
         /* Popup Tutorial Styles */
         .tutorial-popup {
             position: absolute;
-            background-color: rgba(0, 0, 0, 0.85);
-            color: white;
+            background-color: lightgrey;
+            border: 2px solid #dc3545;
+            font-family: Arial, sans-serif;
+            color: darkslategrey;
             padding: 10px;
             border-radius: 5px;
             font-size: 12px;
@@ -522,6 +526,17 @@
             visibility: hidden;
             transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
             pointer-events: none;
+        }
+
+        .tutorial-popup h3 {
+            margin: 0 0 5px;
+            font-size: 14px;
+            color: #007bff;
+        }
+
+        .tutorial-popup p {
+            margin: 0;
+            font-size: 12px;
         }
 
         .overview:hover .tutorial-popup,
@@ -537,11 +552,9 @@
         .main-tutorial-popup::before {
             content: '';
             position: absolute;
-            top: -8px;
-            left: 20px;
             border-left: 8px solid transparent;
             border-right: 8px solid transparent;
-            border-bottom: 8px solid rgba(0, 0, 0, 0.85);
+            border-bottom: 8px solid #dc3545;
         }
 
         .overview .tutorial-popup {
@@ -549,9 +562,19 @@
             left: 10px;
         }
 
+        .overview .tutorial-popup::before {
+            top: -8px;
+            left: 20px;
+        }
+
         .history .tutorial-popup {
             top: 10px;
             right: 10px;
+        }
+
+        .history .tutorial-popup::before {
+            top: -8px;
+            right: 20px;
         }
 
         .park-condition .tutorial-popup {
@@ -559,25 +582,39 @@
             left: 10px;
         }
 
+        .park-condition .tutorial-popup::before {
+            bottom: -8px;
+            left: 20px;
+            border-bottom: none;
+            border-top: 8px solid #dc3545;
+        }
+
         .park-condition-2d .tutorial-popup {
             bottom: 10px;
             right: 10px;
         }
 
-        /* Main Tutorial Popup Style - Adjusted to match website gradient and colors */
+        .park-condition-2d .tutorial-popup::before {
+            bottom: -8px;
+            right: 20px;
+            border-bottom: none;
+            border-top: 8px solid #dc3545;
+        }
+
         .main-tutorial-popup {
             position: fixed;
             top: 60px;
             left: 50%;
             transform: translateX(-50%);
-            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
-            color: white;
+            background-color: lightgrey;
+            border: 2px solid #dc3545;
+            font-family: Arial, sans-serif;
+            color: darkslategrey;
             padding: 15px;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: 12px;
             z-index: 201;
             max-width: 400px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
@@ -586,18 +623,12 @@
 
         .main-tutorial-popup h3 {
             margin: 0 0 10px;
-            color: white;
             font-size: 14px;
+            color: #007bff;
         }
 
-        .main-tutorial-popup ul {
-            list-style-type: disc;
-            padding-left: 20px;
+        .main-tutorial-popup p {
             margin: 0;
-        }
-
-        .main-tutorial-popup li {
-            margin-bottom: 8px;
             font-size: 12px;
         }
 
@@ -606,7 +637,6 @@
             left: 50%;
             transform: translateX(-50%);
         }
-
     </style>
 </head>
 <body>
@@ -623,17 +653,9 @@
         <div class="header-right">
             <span>Parking Management System</span>
         </div>
-        <!-- Main Tutorial Popup for Overall Website Guidance -->
         <div class="main-tutorial-popup">
-            <h3>Petunjuk Tutorial Website</h3>
-            <ul>
-                <li>Klik logo BRIN untuk membuka toolbar samping yang berisi fitur seperti Profile, Log Out, Live Overview, Previous Analysis, Export Data, 3D Viewer VR, Helpdesk, dan Parking Analysis.</li>
-                <li>Live Overview: Menampilkan statistik real-time seperti jumlah mobil, slot kosong, waktu saat ini, pelanggan loyal, total mobil masuk/keluar hari ini.</li>
-                <li>Slot History: Filter riwayat slot berdasarkan nomor slot, tanggal, atau status (terisi/kosong).</li>
-                <li>Park Condition (3D): Visualisasi 3D interaktif. Klik tombol expand untuk melihat, gunakan kontrol kamera untuk navigasi. Warna mobil: merah (besar), kuning (sedang), biru (kecil).</li>
-                <li>Park Condition (2D): Peta 2D slot parkir. Slot kuning berarti terisi, abu-abu kosong.</li>
-                <li>Hover pada setiap bagian untuk petunjuk spesifik. Gunakan tombol di toolbar untuk navigasi halaman lain.</li>
-            </ul>
+            <h3>Petunjuk Website</h3>
+            <p>Klik logo BRIN untuk membuka toolbar samping yang berisi fitur seperti Profile, Log Out, Live Overview, Previous Analysis, Export Data, 3D Viewer VR, Helpdesk, dan Parking Analysis.</p>
         </div>
     </header>
     <aside class="toolbar" id="toolbar">
@@ -660,7 +682,8 @@
             <div class="overview">
                 <h1>Live Overview</h1>
                 <div class="tutorial-popup">
-                    Menampilkan statistik terkini seperti jumlah slot terisi, kosong, waktu saat ini, dan total mobil masuk/keluar hari ini.
+                    <h3>Live Overview</h3>
+                    <p>Menampilkan statistik terkini seperti jumlah slot terisi, kosong, waktu saat ini, pelanggan loyal, dan total mobil masuk/keluar hari ini.</p>
                 </div>
                 <div class="stats">
                     <div>
@@ -692,7 +715,8 @@
             <div class="history">
                 <h2>Slot History</h2>
                 <div class="tutorial-popup">
-                    Menampilkan riwayat status slot parkir. Gunakan filter untuk mencari berdasarkan slot, tanggal, atau status (terisi/kosong).
+                    <h3>Slot History</h3>
+                    <p>Menampilkan riwayat status slot parkir. Gunakan filter untuk mencari berdasarkan slot, tanggal, atau status (terisi/kosong).</p>
                 </div>
                 <div class="history-filters">
                     <input type="text" id="filterSlot" placeholder="Filter by Slot (e.g. 1)">
@@ -720,7 +744,8 @@
             <div class="park-condition">
                 <h2>Park Condition (3D)</h2>
                 <div class="tutorial-popup">
-                    Visualisasi 3D dari area parkir. Klik "Click to Expand" untuk melihat model 3D interaktif. Gunakan tombol kontrol untuk mengubah sudut pandang. Warna mobil: merah untuk ukuran besar, kuning untuk sedang, biru untuk kecil.
+                    <h3>Park Condition (3D)</h3>
+                    <p>Visualisasi 3D area parkir. Klik "Click to Expand" untuk melihat model interaktif. Gunakan kontrol kamera untuk navigasi. Warna mobil: biru (kecil), kuning (sedang), merah (besar).</p>
                 </div>
                 <div id="cameraContainer" style="width: 100%; position: relative; min-height: 300px;">
                     <div id="threeContainer"></div>
@@ -741,7 +766,8 @@
             <div class="park-condition-2d">
                 <h2>Park Condition (2D)</h2>
                 <div class="tutorial-popup">
-                    Menampilkan peta 2D dari slot parkir. Slot kuning menandakan terisi, abu-abu menandakan kosong. Warna mobil menunjukkan ukuran kendaraan.
+                    <h3>Park Condition (2D)</h3>
+                    <p>Menampilkan peta 2D slot parkir. Slot kuning menandakan terisi, abu-abu menandakan kosong. Warna mobil menunjukkan ukuran kendaraan.</p>
                 </div>
                 <div class="parking-lot">
                     <div class="column top">
