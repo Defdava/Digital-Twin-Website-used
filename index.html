@@ -527,12 +527,14 @@
         .overview:hover .tutorial-popup,
         .history:hover .tutorial-popup,
         .park-condition:hover .tutorial-popup,
-        .park-condition-2d:hover .tutorial-popup {
+        .park-condition-2d:hover .tutorial-popup,
+        header:hover .main-tutorial-popup {
             opacity: 1;
             visibility: visible;
         }
 
-        .tutorial-popup::before {
+        .tutorial-popup::before,
+        .main-tutorial-popup::before {
             content: '';
             position: absolute;
             top: -8px;
@@ -561,6 +563,50 @@
             bottom: 10px;
             right: 10px;
         }
+
+        /* Main Tutorial Popup Style - Adjusted to match website gradient and colors */
+        .main-tutorial-popup {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            z-index: 201;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            pointer-events: none;
+        }
+
+        .main-tutorial-popup h3 {
+            margin: 0 0 10px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .main-tutorial-popup ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin: 0;
+        }
+
+        .main-tutorial-popup li {
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .main-tutorial-popup::before {
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
     </style>
 </head>
 <body>
@@ -576,6 +622,18 @@
         </div>
         <div class="header-right">
             <span>Parking Management System</span>
+        </div>
+        <!-- Main Tutorial Popup for Overall Website Guidance -->
+        <div class="main-tutorial-popup">
+            <h3>Petunjuk Tutorial Website</h3>
+            <ul>
+                <li>Klik logo BRIN untuk membuka toolbar samping yang berisi fitur seperti Profile, Log Out, Live Overview, Previous Analysis, Export Data, 3D Viewer VR, Helpdesk, dan Parking Analysis.</li>
+                <li>Live Overview: Menampilkan statistik real-time seperti jumlah mobil, slot kosong, waktu saat ini, pelanggan loyal, total mobil masuk/keluar hari ini.</li>
+                <li>Slot History: Filter riwayat slot berdasarkan nomor slot, tanggal, atau status (terisi/kosong).</li>
+                <li>Park Condition (3D): Visualisasi 3D interaktif. Klik tombol expand untuk melihat, gunakan kontrol kamera untuk navigasi. Warna mobil: merah (besar), kuning (sedang), biru (kecil).</li>
+                <li>Park Condition (2D): Peta 2D slot parkir. Slot kuning berarti terisi, abu-abu kosong.</li>
+                <li>Hover pada setiap bagian untuk petunjuk spesifik. Gunakan tombol di toolbar untuk navigasi halaman lain.</li>
+            </ul>
         </div>
     </header>
     <aside class="toolbar" id="toolbar">
@@ -662,7 +720,7 @@
             <div class="park-condition">
                 <h2>Park Condition (3D)</h2>
                 <div class="tutorial-popup">
-                    Visualisasi 3D dari area parkir. Klik "Click to Expand" untuk melihat model 3D interaktif. Gunakan tombol kontrol untuk mengubah sudut pandang.
+                    Visualisasi 3D dari area parkir. Klik "Click to Expand" untuk melihat model 3D interaktif. Gunakan tombol kontrol untuk mengubah sudut pandang. Warna mobil: merah untuk ukuran besar, kuning untuk sedang, biru untuk kecil.
                 </div>
                 <div id="cameraContainer" style="width: 100%; position: relative; min-height: 300px;">
                     <div id="threeContainer"></div>
