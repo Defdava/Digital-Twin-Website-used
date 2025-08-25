@@ -235,31 +235,45 @@
         .history-table-container {
             max-height: 200px;
             overflow-y: auto;
-            border-radius: 5px;
-            background-color: #fff;
+            border-radius: 8px;
+            background-color: lightgrey; /* Match the section background */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center; /* Center the table horizontally */
+            padding: 10px;
         }
 
         .history-table {
-            width: 100%;
+            width: 90%; /* Slightly reduced width to avoid edge-to-edge look */
             border-collapse: collapse;
-            display: block;
+            background-color: #fff; /* White background for table content */
+            border-radius: 5px;
+            overflow: hidden; /* Ensure rounded corners are visible */
         }
 
         .history-table th, .history-table td {
             border: 1px solid #ccc;
-            padding: 10px;
+            padding: 12px; /* Increased padding for better spacing */
             text-align: center;
             font-size: 14px;
+            color: #333; /* Darker text for better readability */
         }
 
         .history-table th {
-            background-color: #e9ecef;
+            background-color: #e9ecef; /* Light grey header background */
             color: #555;
             font-weight: bold;
             position: sticky;
             top: 0;
             z-index: 10;
+        }
+
+        .history-table tbody tr {
+            transition: background-color 0.2s; /* Smooth hover transition */
+        }
+
+        .history-table tbody tr:hover {
+            background-color: #f5f5f5; /* Subtle hover effect */
         }
 
         .status.in {
