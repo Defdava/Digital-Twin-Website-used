@@ -1353,10 +1353,8 @@
         let currentTourStep = 0;
 
         function startTour() {
-            if (!localStorage.getItem('hasSeenTutorial')) {
-                document.getElementById('tourOverlay').style.display = 'block';
-                showTooltip(currentTourStep);
-            }
+            document.getElementById('tourOverlay').style.display = 'block';
+            showTooltip(currentTourStep);
         }
 
         function showTooltip(step) {
@@ -1366,7 +1364,11 @@
             const nextBtn = document.getElementById('tourNextBtn');
 
             const targetElement = document.querySelector(tourSteps[step].element);
-            if (!targetElement) return;
+            if (!targetElement) {
+                console.error(`Element ${tourSteps[step].element} not found!`);
+                endTour();
+                return;
+            }
 
             title.textContent = tourSteps[step].title;
             text.textContent = tourSteps[step].text;
@@ -1403,9 +1405,9 @@
         }
 
         function endTour() {
-            localStorage.setItem('hasSeenTutorial', 'true');
             document.getElementById('tourOverlay').style.display = 'none';
             document.getElementById('tourTooltip').style.display = 'none';
+            currentTourStep = 0; // Reset to start for next page load
         }
 
         document.addEventListener("DOMContentLoaded", () => {
