@@ -129,9 +129,7 @@
         .toolbar .feature-box button {
             width: 100%;
             padding: 6px;
-            background-color: dark
-
-grey;
+            background-color: darkgrey;
             color: black;
             border: none;
             border-radius: 5px;
@@ -511,7 +509,7 @@ grey;
         }
 
         /* Popup Tutorial Styles */
-        .tutorial-popup {
+        .tutorial-popup, .main-tutorial-popup {
             position: absolute;
             background-color: lightgrey;
             border: 2px solid #dc3545;
@@ -525,31 +523,42 @@ grey;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-            pointer-events: none;
+            pointer-events: auto;
         }
 
-        .tutorial-popup h3 {
+        .tutorial-popup.show, .main-tutorial-popup.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tutorial-popup h3, .main-tutorial-popup h3 {
             margin: 0 0 5px;
             font-size: 14px;
             color: #007bff;
         }
 
-        .tutorial-popup p {
-            margin: 0;
+        .tutorial-popup p, .main-tutorial-popup p {
+            margin: 0 0 10px;
             font-size: 12px;
         }
 
-        .overview:hover .tutorial-popup,
-        .history:hover .tutorial-popup,
-        .park-condition:hover .tutorial-popup,
-        .park-condition-2d:hover .tutorial-popup,
-        header:hover .main-tutorial-popup {
-            opacity: 1;
-            visibility: visible;
+        .tutorial-close-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            display: block;
+            margin: 0 auto;
         }
 
-        .tutorial-popup::before,
-        .main-tutorial-popup::before {
+        .tutorial-close-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .tutorial-popup::before, .main-tutorial-popup::before {
             content: '';
             position: absolute;
             border-left: 8px solid transparent;
@@ -606,30 +615,8 @@ grey;
             top: 60px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: lightgrey;
-            border: 2px solid #dc3545;
-            font-family: Arial, sans-serif;
-            color: darkslategrey;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 12px;
-            z-index: 201;
             max-width: 400px;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-            pointer-events: none;
-        }
-
-        .main-tutorial-popup h3 {
-            margin: 0 0 10px;
-            font-size: 14px;
-            color: #007bff;
-        }
-
-        .main-tutorial-popup p {
-            margin: 0;
-            font-size: 12px;
+            z-index: 201;
         }
 
         .main-tutorial-popup::before {
@@ -656,6 +643,7 @@ grey;
         <div class="main-tutorial-popup">
             <h3>Petunjuk Website</h3>
             <p>Klik logo BRIN untuk membuka toolbar samping yang berisi fitur seperti Profile, Log Out, Live Overview, Previous Analysis, Export Data, 3D Viewer VR, Helpdesk, dan Parking Analysis.</p>
+            <button class="tutorial-close-btn">Sudah</button>
         </div>
     </header>
     <aside class="toolbar" id="toolbar">
@@ -684,6 +672,7 @@ grey;
                 <div class="tutorial-popup">
                     <h3>Live Overview</h3>
                     <p>Menampilkan statistik terkini seperti jumlah slot terisi, kosong, waktu saat ini, pelanggan loyal, dan total mobil masuk/keluar hari ini.</p>
+                    <button class="tutorial-close-btn">Sudah</button>
                 </div>
                 <div class="stats">
                     <div>
@@ -717,6 +706,7 @@ grey;
                 <div class="tutorial-popup">
                     <h3>Slot History</h3>
                     <p>Menampilkan riwayat status slot parkir. Gunakan filter untuk mencari berdasarkan slot, tanggal, atau status (terisi/kosong).</p>
+                    <button class="tutorial-close-btn">Sudah</button>
                 </div>
                 <div class="history-filters">
                     <input type="text" id="filterSlot" placeholder="Filter by Slot (e.g. 1)">
@@ -746,6 +736,7 @@ grey;
                 <div class="tutorial-popup">
                     <h3>Park Condition (3D)</h3>
                     <p>Visualisasi 3D area parkir. Klik "Click to Expand" untuk melihat model interaktif. Gunakan kontrol kamera untuk navigasi. Warna mobil: biru (kecil), kuning (sedang), merah (besar).</p>
+                    <button class="tutorial-close-btn">Sudah</button>
                 </div>
                 <div id="cameraContainer" style="width: 100%; position: relative; min-height: 300px;">
                     <div id="threeContainer"></div>
@@ -768,6 +759,7 @@ grey;
                 <div class="tutorial-popup">
                     <h3>Park Condition (2D)</h3>
                     <p>Menampilkan peta 2D slot parkir. Slot kuning menandakan terisi, abu-abu menandakan kosong. Warna mobil menunjukkan ukuran kendaraan.</p>
+                    <button class="tutorial-close-btn">Sudah</button>
                 </div>
                 <div class="parking-lot">
                     <div class="column top">
@@ -1340,6 +1332,23 @@ grey;
         }
 
         document.addEventListener("DOMContentLoaded", () => {
+            // Show Tutorial Popups if not seen before
+            if (!localStorage.getItem('hasSeenTutorial')) {
+                document.querySelectorAll('.tutorial-popup, .main-tutorial-popup').forEach(popup => {
+                    popup.classList.add('show');
+                });
+            }
+
+            // Handle Tutorial Close Buttons
+            document.querySelectorAll('.tutorial-close-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    localStorage.setItem('hasSeenTutorial', 'true');
+                    document.querySelectorAll('.tutorial-popup, .main-tutorial-popup').forEach(popup => {
+                        popup.classList.remove('show');
+                    });
+                });
+            });
+
             // Authentication
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             const userInfo = document.getElementById('userInfo');
@@ -1630,7 +1639,7 @@ grey;
             document.addEventListener('keydown', (event) => {
                 if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
                     event.preventDefault();
-                    event.stopPropagation();
+                    event.stopPropagation;
                     console.log('Undo/Redo is disabled');
                 }
             });
