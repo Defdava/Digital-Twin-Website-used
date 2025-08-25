@@ -750,7 +750,7 @@
         let slotSizes = {};
         const loadingElement = document.getElementById('loading');
         const errorElement = document.getElementById('error-message');
-        let ambientLight, directionalLight;
+        let ambientLight, directionalLight, sun;
 
         // Show Error Message
         function showError(message) {
@@ -766,7 +766,9 @@
             console.log("Initializing Three.js scene...");
             const threeContainer = document.getElementById('threeContainer');
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x87CEEB);
+            
+            // Set initial background color (will be updated dynamically)
+            scene.background = new THREE.Color(0x000022); // Default to dark blue (night)
             
             camera = new THREE.PerspectiveCamera(75, threeContainer.clientWidth / (threeContainer.clientHeight || 300), 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -775,16 +777,25 @@
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             threeContainer.appendChild(renderer.domElement);
 
-            ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            // Ambient light for general illumination
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
             scene.add(ambientLight);
             
-            directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            // Directional light for sun
+            directionalLight = new THREE.DirectionalLight(0xffffbb, 0.8);
             directionalLight.position.set(50, 50, 25);
             directionalLight.castShadow = true;
             directionalLight.shadow.mapSize.width = 2048;
             directionalLight.shadow.mapSize.height = 2048;
             scene.add(directionalLight);
 
+            // Adding sun as a visible sphere
+            const sunGeometry = new THREE.SphereGeometry(5, 32, 32);
+            const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 }); // Yellow sun
+            sun = new THREE.Mesh(sunGeometry, sunMaterial);
+            scene.add(sun);
+
+            // Ground
             const groundGeometry = new THREE.PlaneGeometry(200, 50);
             const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
             const ground = new THREE.Mesh(groundGeometry, groundMaterial);
@@ -971,32 +982,42 @@
             console.log(`🔄 Stats updated: ${occupiedCount} occupied, ${emptyCount} empty`);
         }
 
-        // Fungsi untuk memperbarui posisi matahari berdasarkan waktu real-time
+        // Update Sun Position and Sky Color
         function updateSunPosition() {
             const now = new Date();
             const options = { timeZone: 'Asia/Jakarta' };
             const hours = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600; // Fractional hours for smoother transition
             const dayFraction = (hours - 6) / 12; // Assume sunrise at 6 AM, sunset at 6 PM (adjusted for 12-hour day cycle)
 
-            if (dayFraction < 0 || dayFraction > 1) {
-                // Night time
-                directionalLight.intensity = 0.2; // Low intensity for night (moonlight simulation)
-                ambientLight.intensity = 0.3;
-                scene.background = new THREE.Color(0x000022); // Dark blue night sky
-                directionalLight.position.set(0, -50, 0); // Sun below horizon
-            } else {
-                // Day time
-                const theta = Math.PI * dayFraction; // Arc from east to west
-                const sunRadius = 100; // Distance from origin
-                directionalLight.position.x = sunRadius * Math.cos(theta);
-                directionalLight.position.y = sunRadius * Math.sin(theta);
-                directionalLight.position.z = 25 * Math.sin(theta); // Slight z-variation for realism
+            // Calculate sun position
+            const theta = Math.PI * dayFraction; // Arc from east to west
+            const sunRadius = 100; // Distance from origin
+            directionalLight.position.set(
+                sunRadius * Math.cos(theta),
+                sunRadius * Math.sin(theta),
+                25 * Math.sin(theta) // Slight z-variation for realism
+            );
+            sun.position.copy(directionalLight.position); // Update sun sphere position
 
-                // Adjust intensity and colors based on time
+            // Update sky color and lighting based on time
+            if (hours >= 0 && hours < 10) {
+                // 00:00 - 10:00: Dark blue sky
+                scene.background = new THREE.Color(0x000022); // Dark blue
+                directionalLight.intensity = 0.2; // Low intensity for night/morning
+                ambientLight.intensity = 0.3;
+                sun.material.color.set(0xffff99); // Pale yellow for early morning
+            } else if (hours >= 10 && hours < 17) {
+                // 10:00 - 17:00: Light blue sky
+                scene.background = new THREE.Color(0x87CEEB); // Light blue
                 directionalLight.intensity = 0.8 * Math.sin(theta); // Max at noon
                 ambientLight.intensity = 0.6;
-                const skyColor = new THREE.Color().setHSL(0.6, 1, Math.max(0.1, Math.sin(theta) * 0.5 + 0.3)); // Blue to orange-ish at dawn/dusk
-                scene.background = skyColor;
+                sun.material.color.set(0xffff00); // Bright yellow for daytime
+            } else {
+                // 17:00 - 00:00: Black sky
+                scene.background = new THREE.Color(0x000000); // Black
+                directionalLight.intensity = 0.1; // Very low intensity for night
+                ambientLight.intensity = 0.2;
+                sun.material.color.set(0xffcc66); // Orange-ish for evening
             }
         }
 
@@ -1004,7 +1025,7 @@
         function animate() {
             animationFrame = requestAnimationFrame(animate);
             
-            updateSunPosition(); // Update sun position every frame for real-time adjustment
+            updateSunPosition(); // Update sun position and sky color every frame
             
             const time = Date.now() * 0.001;
             let animatingCars = 0;
@@ -1149,7 +1170,7 @@
                     const slotEl = document.querySelector(`.slot[data-slot="${i}"]`);
                     let newStatus = data[slotKey] && data[slotKey].occupied === true;
                     let newSize = (data[slotKey] && data[slotKey].size) ? data[slotKey].size.toLowerCase() : 'none';
-                    // Force slots 18, 19, 20 to have size 'none' if no size is specified
+                    // Force slots 18, 19, 20 to have size 'none'
                     if (['slot_18', 'slot_19', 'slot_20'].includes(slotKey)) {
                         newSize = 'none';
                     }
@@ -1160,7 +1181,6 @@
                         if (newStatus) {
                             slotEl.classList.add("occupied");
                             slotEl.querySelector(".car").style.display = "block";
-                            // Set car color to gray for slots 18, 19, 20 or size 'none'
                             slotEl.querySelector(".car").style.backgroundColor = 
                                 ['slot_18', 'slot_19', 'slot_20'].includes(slotKey) || newSize === 'none' ? "#808080" : 
                                 newSize === 'small' ? "#0000FF" : 
@@ -1300,7 +1320,7 @@
                     });
                 });
 
-                // Sort by timestamp descending (assuming timestamp format allows string comparison, e.g., YYYY-MM-DD HH:MM:SS)
+                // Sort by timestamp descending
                 historyDataArray.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
 
                 renderHistoryTable();
@@ -1315,11 +1335,11 @@
                 slotHistoryTable.innerHTML = "";
 
                 const filterSlot = document.getElementById('filterSlot').value.trim();
-                const filterDate = document.getElementById('filterDate').value; // YYYY-MM-DD
+                const filterDate = document.getElementById('filterDate').value;
                 const filterStatus = document.getElementById('filterStatus').value;
 
                 historyDataArray.forEach((entry) => {
-                    const entryDate = entry.timestamp.split(' ')[0]; // Extract date from timestamp
+                    const entryDate = entry.timestamp.split(' ')[0];
 
                     if (filterSlot && entry.slot !== filterSlot) return;
                     if (filterDate && entryDate !== filterDate) return;
@@ -1361,8 +1381,6 @@
                     if (!scene) {
                         initThree();
                     } else {
-                        // Reinitialize renderer and restore scene
-                        const threeContainer = document.getElementById('threeContainer');
                         renderer = new THREE.WebGLRenderer({ antialias: true });
                         renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
                         renderer.shadowMap.enabled = true;
@@ -1411,7 +1429,7 @@
             fullscreenBtn.addEventListener('click', toggleFullScreen);
             collapseBtn.addEventListener('click', handleCollapse);
 
-            // Fullscreen change event to manage collapse button visibility
+            // Fullscreen change event
             document.addEventListener('fullscreenchange', () => {
                 if (document.fullscreenElement) {
                     document.getElementById('collapseBtn').style.display = 'block';
