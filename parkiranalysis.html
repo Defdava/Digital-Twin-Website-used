@@ -15,7 +15,7 @@
             padding: 0;
             color: darkslategrey;
             overflow-x: hidden;
-            font-size: 16px; /* Basis font lebih besar */
+            font-size: 16px;
         }
         video#bg-video {
             position: fixed;
@@ -30,7 +30,7 @@
         header {
             background-image: linear-gradient(to right, lightseagreen, palevioletred);
             color: white;
-            padding: 15px 30px; /* Padding lebih besar */
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -45,22 +45,21 @@
             cursor: pointer;
         }
         .logo img {
-            height: 50px; /* Logo sedikit lebih besar */
+            height: 50px;
         }
         .logo span {
             margin-left: 15px;
-            font-size: 20px; /* Font logo lebih besar */
+            font-size: 20px;
             font-weight: bold;
         }
         .header-right span {
-            font-size: 18px; /* Font header-right lebih besar */
+            font-size: 18px;
         }
-        /* Toolbar Style */
         .toolbar {
             position: fixed;
-            top: 70px; /* Disesuaikan dengan header yang lebih besar */
+            top: 70px;
             left: -400px;
-            width: 240px; /* Toolbar lebih lebar untuk menampung font besar */
+            width: 240px;
             height: 100%;
             background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
             padding: 20px;
@@ -73,32 +72,31 @@
             left: 0;
         }
         .toolbar .feature-box {
-            background-color: lightgrey;
+            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
             padding: 15px;
             margin-bottom: 20px;
-            font-size: 16px; /* Font lebih besar */
+            font-size: 16px;
         }
         .toolbar .feature-box h3 {
             margin: 0 0 10px;
-            font-size: 18px; /* Judul toolbar lebih besar */
-            color: black;
+            font-size: 18px;
+            color: darkslategrey;
         }
         .toolbar .feature-box button {
             width: 100%;
             padding: 8px;
-            background-color: darkgrey;
-            color: black;
+            background-color: lightseagreen;
+            color: white;
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px; /* Font tombol lebih besar */
+            font-size: 14px;
             margin-bottom: 6px;
             transition: background-color 0.3s;
         }
         .toolbar .feature-box button:hover {
-            background-color: darkslategrey;
-            color: white;
+            background-color: palevioletred;
         }
         .toolbar .user-info {
             text-align: center;
@@ -112,54 +110,56 @@
         .toolbar .user-info span {
             display: block;
             margin: 6px 0;
-            font-size: 14px; /* Font user info lebih besar */
-            color: black;
+            font-size: 14px;
+            color: darkslategrey;
         }
-        /* Main Content */
         .main-content {
-            padding: 90px 30px 30px; /* Padding lebih besar */
+            padding: 90px 30px 30px;
             min-height: 100vh;
             margin-left: 0;
             transition: margin-left 0.3s ease-in-out;
         }
         .main-content.with-toolbar {
-            margin-left: 260px; /* Disesuaikan dengan lebar toolbar */
+            margin-left: 260px;
         }
         .analysis-panel {
-            background-color: lightgrey;
+            background-image: linear-gradient(to bottom, rgba(32, 178, 170, 0.8), rgba(219, 112, 147, 0.8));
             padding: 15px;
             border-radius: 10px;
-            border: 2px solid #dc3545;
+            border: 2px solid palevioletred;
             min-height: 200px;
+            color: white;
         }
         .analysis-panel h1 {
             margin: 0 0 15px;
-            color: #007bff;
-            font-size: 20px; /* Judul panel lebih besar */
+            color: white;
+            font-size: 20px;
         }
         .stats {
             margin-bottom: 15px;
-            font-size: 16px; /* Font statistik lebih besar */
+            font-size: 16px;
         }
         .stats span {
             font-weight: bold;
-            color: #555;
+            color: white;
         }
         .message-list {
-            max-height: 400px; /* Tinggi lebih besar untuk visibilitas */
+            max-height: 400px;
             overflow-y: auto;
-            border: 1px solid #ccc;
+            border: 1px solid rgba(255, 255, 255, 0.3);
             padding: 10px;
             border-radius: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
         }
         .message-item {
             display: grid;
             grid-template-columns: 0.5fr 1fr 0.5fr 1fr;
             padding: 8px 0;
-            font-size: 14px; /* Font pesan lebih besar */
+            font-size: 14px;
             align-items: center;
             gap: 8px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
         }
         #error-message {
             position: absolute;
@@ -170,7 +170,7 @@
             color: white;
             padding: 10px;
             border-radius: 6px;
-            font-size: 14px; /* Font error lebih besar */
+            font-size: 14px;
             z-index: 102;
             display: none;
         }
@@ -179,12 +179,17 @@
         }
         .filter-container select {
             padding: 8px;
-            font-size: 14px; /* Font dropdown lebih besar */
+            font-size: 14px;
             border-radius: 6px;
-            border: 1px solid #ccc;
-            background-color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.9);
             cursor: pointer;
-            width: 200px; /* Lebar dropdown lebih besar */
+            width: 200px;
+            color: darkslategrey;
+        }
+        .filter-container select option {
+            background-color: white;
+            color: darkslategrey;
         }
     </style>
 </head>
@@ -279,7 +284,7 @@
             const sortOption = document.getElementById('sortFilter').value;
 
             if (!messagesData.length) {
-                messageList.innerHTML = "<div style='font-size: 14px;'>No messages available</div>";
+                messageList.innerHTML = "<div style='font-size: 14px; color: white;'>No messages available</div>";
                 return;
             }
 
