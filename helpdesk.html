@@ -235,11 +235,26 @@
             display: block;
         }
 
-        .contact-info p {
+        .contact-info .contact-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+
+        .contact-info .contact-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
             font-size: 14px;
             color: white;
-            margin: 5px 0;
-            text-align: center;
+        }
+
+        .contact-info .contact-list li span.icon {
+            margin-right: 10px;
+            font-size: 16px;
         }
 
         #error-message {
@@ -328,10 +343,12 @@
         </div>
         <div class="contact-info">
             <h2>Informasi Kontak</h2>
-            <p><strong>Email:</strong> dukungan@brin.go.id</p>
-            <p><strong>Telepon:</strong> +62 21 1234 5678</p>
-            <p><strong>Alamat:</strong> Kantor Pusat BRIN, Jl. Gatot Subroto No.10, Jakarta Selatan, Indonesia</p>
-            <p><strong>Jam Operasional:</strong> Senin - Jumat, 08:00 - 16:00 WIB</p>
+            <ul class="contact-list">
+                <li><span class="icon">📧</span> <strong>Email:</strong> dukungan@brin.go.id</li>
+                <li><span class="icon">📞</span> <strong>Telepon:</strong> +62 21 1234 5678</li>
+                <li><span class="icon">🏢</span> <strong>Alamat:</strong> Kantor Pusat BRIN, Jl. Gatot Subroto No.10, Jakarta Selatan, Indonesia</li>
+                <li><span class="icon">⏰</span> <strong>Jam Operasional:</strong> Senin - Jumat, 08:00 - 16:00 WIB</li>
+            </ul>
         </div>
     </main>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
