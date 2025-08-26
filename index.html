@@ -457,7 +457,8 @@
             background-color: lightseagreen;
             color: white;
             border: none;
-            padding: 6px 10px;
+            padding: 6px 10;
+
             margin: 2px;
             border-radius: 6px;
             cursor: pointer;
@@ -483,24 +484,7 @@
             display: none;
         }
 
-        #error-message {
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 0, 0, 0.8);
-            color: white;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 14px;
-            z-index: 102;
-            display: none;
-        }
-
-        :fullscreen #collapseBtn {
-            display: block;
-        }
-
+       /* Modified Tour Tooltip Styles */
         .tour-overlay {
             display: none;
             position: fixed;
@@ -515,7 +499,7 @@
 
         .tour-tooltip {
             position: absolute;
-            background-color: var(--white-transparent);
+            background-image: var(--primary-gradient);
             border: 2px solid palevioletred;
             border-radius: 8px;
             padding: 15px;
@@ -529,14 +513,15 @@
         }
 
         .tour-tooltip h3 {
-            color: white;
+            color: var(--white-transparent);
             font-size: 16px;
             margin-bottom: 10px;
+            font-weight: bold;
         }
 
         .tour-tooltip p {
             font-size: 14px;
-            color: var(--text-color);
+            color: var(--white-transparent);
             margin-bottom: 15px;
             line-height: 1.5;
         }
@@ -582,7 +567,7 @@
         }
 
         .tour-tooltip.right:after {
-            border-right-color: var(--white-transparent);
+            border-right-color: palevioletred;
             border-right-width: 10px;
             left: -20px;
             top: 50%;
@@ -590,7 +575,7 @@
         }
 
         .tour-tooltip.left:after {
-            border-left-color: var(--white-transparent);
+            border-left-color: palevioletred;
             border-left-width: 10px;
             right: -20px;
             top: 50%;
@@ -598,7 +583,7 @@
         }
 
         .tour-tooltip.top:after {
-            border-top-color: var(--white-transparent);
+            border-top-color: palevioletred;
             border-top-width: 10px;
             bottom: -20px;
             left: 50%;
@@ -606,7 +591,7 @@
         }
 
         .tour-tooltip.bottom:after {
-            border-bottom-color: var(--white-transparent);
+            border-bottom-color: palevioletred;
             border-bottom-width: 10px;
             top: -20px;
             left: 50%;
