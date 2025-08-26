@@ -260,12 +260,12 @@
             padding: 12px;
             text-align: center;
             font-size: 14px;
-            color: white;
+            color: black;
         }
 
         .history-table th {
             background-color: #e9ecef;
-            color: white;
+            color: black;
             font-weight: bold;
             position: sticky;
             top: 0;
@@ -288,6 +288,23 @@
         .status.out {
             color: red;
             font-weight: bold;
+        }
+
+        /* Warna untuk kolom Size */
+        td:nth-child(4):where(:not(:empty)) {
+            color: black;
+        }
+        td:nth-child(4):where(:not(:empty))[data-size="small"] {
+            color: #0000FF;
+        }
+        td:nth-child(4):where(:not(:empty))[data-size="medium"] {
+            color: #FFA500;
+        }
+        td:nth-child(4):where(:not(:empty))[data-size="big"] {
+            color: #FF0000;
+        }
+        td:nth-child(4):where(:not(:empty))[data-size="none"] {
+            color: black;
         }
 
         .parking-lot {
@@ -1418,7 +1435,7 @@
                     Object.entries(slotLogs).forEach(([timestamp, entry]) => {
                         const status = entry.status === true || entry.status === 'terisi' ? 'terisi' : 'kosong';
                         const slotNumber = slotKey.split("_")[1];
-                        const size = entry.size ? entry.size.toLowerCase() : 'none';
+                        const size = entry.size ? entry.size.charAt(0).toUpperCase() + entry.size.slice(1).toLowerCase() : 'none';
                         historyDataArray.push({
                             slot: slotNumber,
                             timestamp: timestamp,
@@ -1471,7 +1488,9 @@
                     row.insertCell(0).textContent = entry.slot;
                     row.insertCell(1).textContent = entry.timestamp;
                     row.insertCell(2).textContent = entry.status;
-                    row.insertCell(3).textContent = entry.size;
+                    const sizeCell = row.insertCell(3);
+                    sizeCell.textContent = entry.size;
+                    sizeCell.setAttribute('data-size', entry.size.toLowerCase());
 
                     if (entry.status === 'terisi') {
                         row.cells[2].className = 'status in';
