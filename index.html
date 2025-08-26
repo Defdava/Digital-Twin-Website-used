@@ -457,8 +457,7 @@
             background-color: lightseagreen;
             color: white;
             border: none;
-            padding: 6px 10;
-
+            padding: 6px 10px;
             margin: 2px;
             border-radius: 6px;
             cursor: pointer;
@@ -484,7 +483,24 @@
             display: none;
         }
 
-       /* Modified Tour Tooltip Styles */
+        #error-message {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            z-index: 102;
+            display: none;
+        }
+
+        :fullscreen #collapseBtn {
+            display: block;
+        }
+
         .tour-overlay {
             display: none;
             position: fixed;
@@ -802,7 +818,7 @@
         let slotSizes = {};
         const loadingElement = document.getElementById('loading');
         const errorElement = document.getElementById('error-message');
-        let ambientLight, directionalLight, sun;
+        let ambientLight, directionalLight, sun, sunLight;
 
         // Show Error Message
         function showError(message) {
@@ -816,7 +832,7 @@
             console.log("Initializing Three.js scene...");
             const threeContainer = document.getElementById('threeContainer');
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x000022);
+            scene.background = new THREE.Color(0x333366); // Lighter base color for better visibility
             camera = new THREE.PerspectiveCamera(75, threeContainer.clientWidth / (threeContainer.clientHeight || 300), 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
@@ -824,10 +840,10 @@
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             threeContainer.appendChild(renderer.domElement);
 
-            ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Increased intensity for brighter scene
             scene.add(ambientLight);
-            directionalLight = new THREE.DirectionalLight(0xffffbb, 0.8);
-            directionalLight.position.set(50, 50, 25);
+            directionalLight = new THREE.DirectionalLight(0xffffbb, 1.2); // Increased intensity for realism
+            directionalLight.position.set(30, 40, 30); // Adjusted for natural lighting angle
             directionalLight.castShadow = true;
             directionalLight.shadow.mapSize.width = 2048;
             directionalLight.shadow.mapSize.height = 2048;
@@ -837,6 +853,11 @@
             const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
             sun = new THREE.Mesh(sunGeometry, sunMaterial);
             scene.add(sun);
+
+            // Add PointLight to the sun for a subtle glow
+            sunLight = new THREE.PointLight(0xffffbb, 0.5, 200);
+            sunLight.position.copy(sun.position);
+            scene.add(sunLight);
 
             const groundGeometry = new THREE.PlaneGeometry(200, 50);
             const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
@@ -954,21 +975,25 @@
             const sunRadius = 100;
             directionalLight.position.set(sunRadius * Math.cos(theta), sunRadius * Math.sin(theta), 25 * Math.sin(theta));
             sun.position.copy(directionalLight.position);
+            sunLight.position.copy(sun.position); // Update PointLight position
             if (hours >= 0 && hours < 7) {
-                scene.background = new THREE.Color(0x000033);
+                scene.background = new THREE.Color(0x191970); // Brighter night sky
                 directionalLight.intensity = 0.2;
+                sunLight.intensity = 0.2;
                 ambientLight.intensity = 0.3;
-                sun.material.color.set(0xffff99);
+                sun.material.color.set(0xFFDAB9); // Softer night sun color
             } else if (hours >= 7 && hours < 17) {
-                scene.background = new THREE.Color(0x87CEEB);
-                directionalLight.intensity = 0.8 * Math.sin(theta);
+                scene.background = new THREE.Color(0x4682B4); // Brighter daytime sky
+                directionalLight.intensity = 1.2 * Math.sin(theta);
+                sunLight.intensity = 0.5 * Math.sin(theta);
                 ambientLight.intensity = 0.6;
-                sun.material.color.set(0xffff00);
+                sun.material.color.set(0xFFFFE0); // Light yellow for daytime
             } else {
-                scene.background = new THREE.Color(0x000011);
+                scene.background = new THREE.Color(0x191970); // Brighter night sky
                 directionalLight.intensity = 0.1;
+                sunLight.intensity = 0.1;
                 ambientLight.intensity = 0.2;
-                sun.material.color.set(0xffcc66);
+                sun.material.color.set(0xFFDAB9); // Softer night sun color
             }
         }
 
@@ -1411,6 +1436,24 @@
             function toggleFullScreen() {
                 const threeContainer = document.getElementById('threeContainer');
                 if (!document.fullscreenElement) {
+                    // Ensure 3D visualization is initialized and displayed
+                    if (!isExpanded) {
+                        isExpanded = true;
+                        toggleCameraBtn.textContent = 'Click to Collapse';
+                        threeContainer.style.display = 'block';
+                        document.getElementById('fullscreenBtn').style.display = 'block';
+                        document.getElementById('controls').style.display = 'block';
+                        if (!scene) {
+                            initThree();
+                        } else {
+                            renderer = new THREE.WebGLRenderer({ antialias: true });
+                            renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
+                            renderer.shadowMap.enabled = true;
+                            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                            threeContainer.appendChild(renderer.domElement);
+                            animate();
+                        }
+                    }
                     threeContainer.requestFullscreen().catch(err => {
                         alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
                     });
