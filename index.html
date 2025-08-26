@@ -113,7 +113,7 @@
         }
 
         .toolbar .feature-box {
-            background-color: lightgrey;
+            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 8px;
             padding: 12px;
             margin-bottom: 16px;
@@ -162,10 +162,56 @@
             color: black;
         }
 
-        .overview, .history, .park-condition, .park-condition-2d {
+        .overview {
             background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
-            padding: 10px;
-            border-radius: 8px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #dc3545;
+            min-height: 150px;
+            position: relative;
+            color: white;
+        }
+
+        .overview h1 {
+            margin: 0 0 15px;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 10px;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        .stats div {
+            background-color: rgba(233, 236, 239, 0.9);
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stats span:first-child {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            color: black;
+            margin-bottom: 6px;
+        }
+
+        .stats span:last-child {
+            font-size: 12px;
+            color: black;
+        }
+
+        .history, .park-condition, .park-condition-2d {
+            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
+            padding: 15px;
+            border-radius: 10px;
             border: 2px solid #dc3545;
             min-height: 150px;
             position: relative;
@@ -177,71 +223,38 @@
             min-height: 200px;
         }
 
-        .overview h1 {
-            margin: 0 0 10px;
-            color: white;
-            font-size: 16px;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 10px;
-            margin-top: 20px; /* Ditambahkan untuk menggeser ke bawah */
-            font-size: 12px;
-        }
-
-        .stats div {
-            background-color: rgba(233, 236, 239, 0.8);
-            padding: 6px;
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        .stats span:first-child {
-            display: block;
-            font-size: 12px;
-            font-weight: bold;
-            color: white;
-            margin-bottom: 5px;
-        }
-
-        .stats span:last-child {
-            font-size: 12px;
-            color: white;
-        }
-
         .history h2, .park-condition h2, .park-condition-2d h2 {
-            margin-top: 0;
+            margin: 0 0 15px;
             color: white;
-            font-size: 16px;
+            font-size: 18px;
+            text-align: center;
         }
 
         .history-filters {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 12px;
+            margin-bottom: 15px;
+            justify-content: center;
         }
 
         .history-filters input,
         .history-filters select {
-            padding: 5px;
+            padding: 8px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-size: 12px;
+            font-size: 13px;
             flex: 1;
-            min-width: 100px;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.3);
+            min-width: 120px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: black;
         }
 
         .history-table-container {
             max-height: 200px;
             overflow-y: auto;
             border-radius: 8px;
-            background-color: rgba(211, 211, 211, 0.3);
+            background-color: rgba(255, 255, 255, 0.4);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             display: flex;
             justify-content: center;
@@ -249,23 +262,24 @@
         }
 
         .history-table {
-            width: 90%;
+            width: 100%;
             border-collapse: collapse;
-            background-color: #fff;
-            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
             overflow: hidden;
+            table-layout: fixed;
         }
 
         .history-table th, .history-table td {
-            border: 1px solid #ccc;
+            border: 1px solid #ddd;
             padding: 12px;
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
             color: black;
         }
 
         .history-table th {
-            background-color: #e9ecef;
+            background-color: rgba(233, 236, 239, 0.9);
             color: black;
             font-weight: bold;
             position: sticky;
@@ -273,12 +287,16 @@
             z-index: 10;
         }
 
+        .history-table td {
+            background-color: transparent;
+        }
+
         .history-table tbody tr {
             transition: background-color 0.2s;
         }
 
         .history-table tbody tr:hover {
-            background-color: #f5f5f5;
+            background-color: rgba(245, 245, 245, 0.7);
         }
 
         .status.in {
@@ -291,7 +309,6 @@
             font-weight: bold;
         }
 
-        /* Warna untuk kolom Size */
         td:nth-child(4):where(:not(:empty)) {
             color: black;
         }
@@ -487,7 +504,7 @@
             color: white;
             padding: 8px;
             border-radius: 4px;
-            font-size: 10px;
+            font-size: 12px;
             z-index: 102;
             display: none;
         }
@@ -538,13 +555,13 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
-            z26            z-index: 2000;
+            z-index: 2000;
             pointer-events: none;
         }
 
         .tour-tooltip {
             position: absolute;
-            background-color: lightgrey;
+            background-color: rgba(255, 255, 255, 0.9);
             border: 2px solid #dc3545;
             border-radius: 8px;
             padding: 15px;
@@ -611,7 +628,7 @@
         }
 
         .tour-tooltip.right:after {
-            border-right-color: lightgrey;
+            border-right-color: rgba(255, 255, 255, 0.9);
             border-right-width: 10px;
             left: -20px;
             top: 50%;
@@ -619,7 +636,7 @@
         }
 
         .tour-tooltip.left:after {
-            border-left-color: lightgrey;
+            border-left-color: rgba(255, 255, 255, 0.9);
             border-left-width: 10px;
             right: -20px;
             top: 50%;
@@ -627,7 +644,7 @@
         }
 
         .tour-tooltip.top:after {
-            border-top-color: lightgrey;
+            border-top-color: rgba(255, 255, 255, 0.9);
             border-top-width: 10px;
             bottom: -20px;
             left: 50%;
@@ -635,7 +652,7 @@
         }
 
         .tour-tooltip.bottom:after {
-            border-bottom-color: lightgrey;
+            border-bottom-color: rgba(255, 255, 255, 0.9);
             border-bottom-width: 10px;
             top: -20px;
             left: 50%;
