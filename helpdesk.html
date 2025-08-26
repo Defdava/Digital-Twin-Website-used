@@ -106,7 +106,7 @@
         }
 
         .toolbar .feature-box {
-            background-color: lightgrey;
+            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 8px;
             padding: 12px;
             margin-bottom: 16px;
@@ -162,18 +162,20 @@
             margin-bottom: 20px;
         }
 
-        .contact-form, .faq {
-            background-color: lightgrey;
+        .contact-form, .faq, .contact-info {
+            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
             padding: 15px;
             border-radius: 8px;
             border: 2px solid #dc3545;
             min-height: 300px;
+            color: white;
         }
 
-        .contact-form h2, .faq h2 {
+        .contact-form h2, .faq h2, .contact-info h2 {
             margin-top: 0;
-            color: #007bff;
+            color: white;
             font-size: 18px;
+            text-align: center;
         }
 
         .contact-form form {
@@ -190,6 +192,8 @@
             font-size: 14px;
             width: 100%;
             box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: black;
         }
 
         .contact-form button {
@@ -208,18 +212,21 @@
 
         .faq .faq-item {
             margin-bottom: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 5px;
         }
 
         .faq .faq-item h3 {
             font-size: 16px;
-            color: #333;
+            color: black;
             margin: 0 0 5px;
             cursor: pointer;
         }
 
         .faq .faq-item p {
             font-size: 14px;
-            color: #555;
+            color: black;
             margin: 0;
             display: none;
         }
@@ -228,24 +235,11 @@
             display: block;
         }
 
-        .contact-info {
-            background-color: lightgrey;
-            padding: 15px;
-            border-radius: 8px;
-            border: 2px solid #dc3545;
-            margin-top: 20px;
-        }
-
-        .contact-info h2 {
-            margin-top: 0;
-            color: #007bff;
-            font-size: 18px;
-        }
-
         .contact-info p {
             font-size: 14px;
-            color: #555;
+            color: white;
             margin: 5px 0;
+            text-align: center;
         }
 
         #error-message {
@@ -275,65 +269,69 @@
             <span>Badan Riset Nasional</span>
         </div>
         <div class="header-right">
-            <span>Parking Management System</span>
+            <span>Sistem Manajemen Parkir</span>
         </div>
     </header>
     <aside class="toolbar" id="toolbar">
         <div class="feature-box user-info" id="userInfo">
-            <h3>User</h3>
-            <img id="profilePic" src="/assets/user.JPG" alt="User">
-            <span>Welcome Back</span>
+            <h3>Pengguna</h3>
+            <img id="profilePic" src="/assets/user.JPG" alt="Pengguna">
+            <span>Selamat Datang Kembali</span>
             <span id="userName"></span>
-            <button class="profile" onclick="window.location.href='/profile.html'">Profile</button>
-            <button class="logout">Log Out</button>
+            <button class="profile" onclick="window.location.href='/profile.html'">Profil</button>
+            <button class="logout">Keluar</button>
         </div>
         <div class="feature-box">
-            <h2>Parking Management System</h2>
-            <button class="live-overview" onclick="window.location.href='/index.html'">Live Overview</button>
-            <button class="prev-analysis" onclick="window.location.href='/previous-analysis.html'">Previous Analysis</button>
-            <button class="export-data" onclick="window.location.href='/exportdata.html'">Export Data</button>
-            <button class="helpdesk" onclick="window.location.href='/helpdesk.html'">Helpdesk</button>
-            <button class="parking-analysis" onclick="window.location.href='/parkiranalysis.html'">Parking Analysis</button>
+            <h2>Sistem Manajemen Parkir</h2>
+            <button class="live-overview" onclick="window.location.href='/index.html'">Ikhtisar Langsung</button>
+            <button class="prev-analysis" onclick="window.location.href='/previous-analysis.html'">Analisis Sebelumnya</button>
+            <button class="export-data" onclick="window.location.href='/exportdata.html'">Ekspor Data</button>
+            <button class="helpdesk" onclick="window.location.href='/helpdesk.html'">Bantuan</button>
+            <button class="parking-analysis" onclick="window.location.href='/parkiranalysis.html'">Analisis Parkir</button>
         </div>
     </aside>
     <main class="main-content">
         <div id="error-message"></div>
         <div class="helpdesk-content">
             <div class="contact-form">
-                <h2>Contact Us</h2>
+                <h2>Hubungi Kami</h2>
                 <form id="contactForm">
-                    <input type="text" id="name" placeholder="Your Name" required>
-                    <input type="email" id="email" placeholder="Your Email" required>
-                    <textarea id="message" placeholder="Your Message" rows="5" required></textarea>
-                    <button type="submit">Submit</button>
+                    <input type="text" id="name" placeholder="Nama Anda" required>
+                    <input type="email" id="email" placeholder="Email Anda" required>
+                    <textarea id="message" placeholder="Pesan Anda" rows="5" required></textarea>
+                    <button type="submit">Kirim</button>
                 </form>
             </div>
             <div class="faq">
-                <h2>Frequently Asked Questions</h2>
+                <h2>Pertanyaan yang Sering Diajukan</h2>
                 <div class="faq-item">
-                    <h3>How do I reset my password?</h3>
-                    <p>Contact the administrator via email at support@brin.go.id to request a password reset.</p>
+                    <h3>Bagaimana cara melihat status parkir secara real-time?</h3>
+                    <p>Pada halaman "Ikhtisar Langsung", Anda dapat melihat jumlah slot parkir yang terisi dan kosong, waktu terkini, serta visualisasi 2D dan 3D kondisi parkir.</p>
                 </div>
                 <div class="faq-item">
-                    <h3>How can I view the 3D parking visualization?</h3>
-                    <p>Navigate to the "Live Overview" page and click "Click to Expand" in the Park Condition (3D) section.</p>
+                    <h3>Bagaimana cara memfilter riwayat slot parkir?</h3>
+                    <p>Di halaman "Ikhtisar Langsung" bagian "Riwayat Slot", gunakan filter untuk mencari berdasarkan nomor slot, tanggal, atau status (terisi/kosong).</p>
                 </div>
                 <div class="faq-item">
-                    <h3>Why is my slot history not updating?</h3>
-                    <p>Ensure your internet connection is stable and check if the Firebase database is accessible. Contact support if the issue persists.</p>
+                    <h3>Bagaimana cara melihat visualisasi 3D area parkir?</h3>
+                    <p>Pada halaman "Ikhtisar Langsung", klik tombol "Click to Expand" di bagian "Kondisi Parkir (3D)" untuk melihat model 3D interaktif dengan kontrol kamera.</p>
                 </div>
                 <div class="faq-item">
-                    <h3>How do I export parking data?</h3>
-                    <p>Use the "Export Data" button in the toolbar to download parking data in CSV format.</p>
+                    <h3>Bagaimana cara mengunduh data parkir?</h3>
+                    <p>Klik tombol "Ekspor Data" pada toolbar untuk mengunduh data parkir dalam format CSV dari halaman "Ekspor Data".</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Apa yang harus dilakukan jika data parkir tidak diperbarui?</h3>
+                    <p>Pastikan koneksi internet stabil dan cek akses ke database Firebase. Jika masalah berlanjut, hubungi tim dukungan melalui formulir "Hubungi Kami".</p>
                 </div>
             </div>
         </div>
         <div class="contact-info">
-            <h2>Contact Information</h2>
-            <p><strong>Email:</strong> support@brin.go.id</p>
-            <p><strong>Phone:</strong> +62 21 1234 5678</p>
-            <p><strong>Address:</strong> BRIN Headquarters, Jl. Gatot Subroto No.10, Jakarta Selatan, Indonesia</p>
-            <p><strong>Operating Hours:</strong> Monday - Friday, 08:00 - 16:00 WIB</p>
+            <h2>Informasi Kontak</h2>
+            <p><strong>Email:</strong> dukungan@brin.go.id</p>
+            <p><strong>Telepon:</strong> +62 21 1234 5678</p>
+            <p><strong>Alamat:</strong> Kantor Pusat BRIN, Jl. Gatot Subroto No.10, Jakarta Selatan, Indonesia</p>
+            <p><strong>Jam Operasional:</strong> Senin - Jumat, 08:00 - 16:00 WIB</p>
         </div>
     </main>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -358,7 +356,7 @@
             register(username, email, password, idWorker, profilePic) {
                 const userExists = this.users.some(user => user.email === email);
                 if (userExists) {
-                    throw new Error('User already exists!');
+                    throw new Error('Pengguna sudah terdaftar!');
                 }
                 const user = new User(username, email, password, idWorker, profilePic);
                 this.users.push(user);
@@ -371,7 +369,7 @@
                 if (user) {
                     return user;
                 }
-                throw new Error('Invalid email or password!');
+                throw new Error('Email atau kata sandi salah!');
             }
         }
 
@@ -390,7 +388,7 @@
         };
 
         firebase.initializeApp(firebaseConfig);
-        const dbRef = firebase.database().ref("helpdesk_messages");
+        const dbRef = firebase.database().ref("parkir_message_helpdesk");
 
         // Show Error Message
         function showError(message) {
@@ -420,7 +418,7 @@
             // Logout
             document.querySelector('.logout').addEventListener('click', () => {
                 localStorage.removeItem('currentUser');
-                alert('Berhasil logout!');
+                alert('Berhasil keluar!');
                 window.location.replace('/login.html');
             });
 
@@ -449,7 +447,7 @@
                 const message = document.getElementById('message').value.trim();
 
                 if (!name || !email || !message) {
-                    showError('Please fill in all fields.');
+                    showError('Harap isi semua kolom.');
                     return;
                 }
 
@@ -459,17 +457,17 @@
                     email,
                     message,
                     timestamp,
-                    userId: currentUser.idWorker || 'anonymous'
+                    userId: currentUser.idWorker || 'anonim'
                 };
 
                 dbRef.push(messageData)
                     .then(() => {
-                        alert('Message sent successfully!');
+                        alert('Pesan berhasil dikirim!');
                         contactForm.reset();
                     })
                     .catch((error) => {
-                        console.error('Error sending message:', error);
-                        showError('Failed to send message. Please try again.');
+                        console.error('Gagal mengirim pesan:', error);
+                        showError('Gagal mengirim pesan. Silakan coba lagi.');
                     });
             });
 
@@ -478,7 +476,7 @@
                 if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
                     event.preventDefault();
                     event.stopPropagation();
-                    console.log('Undo/Redo is disabled');
+                    console.log('Fungsi undo/redo dinonaktifkan');
                 }
             });
 
