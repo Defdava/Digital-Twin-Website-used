@@ -15,18 +15,7 @@
             padding: 0;
             color: darkslategrey;
             overflow-x: hidden;
-        }
-
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: none;
-            opacity: 0.2;
-            z-index: -1;
+            font-size: 16px;
         }
 
         video#bg-video {
@@ -43,7 +32,7 @@
         header {
             background-image: linear-gradient(to right, lightseagreen, palevioletred);
             color: white;
-            padding: 10px 20px;
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -61,30 +50,95 @@
         }
 
         .logo img {
-            height: 40px;
-            vertical-align: middle;
+            height: 50px;
         }
 
         .logo span {
-            margin-left: 10px;
-            font-size: 16px;
+            margin-left: 15px;
+            font-size: 20px;
             font-weight: bold;
         }
 
-        .header-right {
-            display: flex;
-            align-items: center;
+        .header-right span {
+            font-size: 18px;
         }
 
-        .header-right span {
-            margin-right: 20px;
+        .toolbar {
+            position: fixed;
+            top: 70px;
+            left: -400px;
+            width: 240px;
+            height: 100%;
+            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            overflow-y: auto;
+            transition: left 0.3s ease-in-out;
+        }
+
+        .toolbar.active {
+            left: 0;
+        }
+
+        .toolbar .feature-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .toolbar .feature-box h3 {
+            margin: 0 0 10px;
+            font-size: 18px;
+            color: darkslategrey;
+        }
+
+        .toolbar .feature-box button {
+            width: 100%;
+            padding: 8px;
+            background-color: lightseagreen;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
             font-size: 14px;
+            margin-bottom: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .toolbar .feature-box button:hover {
+            background-color: palevioletred;
+        }
+
+        .toolbar .user-info {
+            text-align: center;
+        }
+
+        .toolbar .user-info img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        .toolbar .user-info span {
+            display: block;
+            margin: 6px 0;
+            font-size: 14px;
+            color: darkslategrey;
         }
 
         .main-content {
-            margin-left: 0;
-            padding: 80px 20px 20px;
+            padding: 90px 30px 30px;
             min-height: 100vh;
+            margin-left: 0;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .main-content.with-toolbar {
+            margin-left: 260px;
         }
 
         .main-content-grid {
@@ -94,79 +148,11 @@
             margin-bottom: 20px;
         }
 
-        .toolbar {
-            position: fixed;
-            top: 60px;
-            left: -400px;
-            width: 200px;
-            height: 100%;
-            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
-            padding: 15px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            transition: left 0.3s ease-in-out;
-            z-index: 999;
-            overflow-y: auto;
-        }
-
-        .toolbar.active {
-            left: 0;
-        }
-
-        .toolbar .feature-box {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 16px;
-            font-size: 13px;
-        }
-
-        .toolbar .feature-box h3 {
-            margin: 0 0 8px;
-            font-size: 14px;
-            color: black;
-        }
-
-        .toolbar .feature-box button {
-            width: 100%;
-            padding: 6px;
-            background-color: darkgrey;
-            color: black;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 11px;
-            margin-bottom: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .toolbar .feature-box button:hover {
-            background-color: darkslategrey;
-            color: white;
-        }
-
-        .toolbar .user-info {
-            text-align: center;
-        }
-
-        .toolbar .user-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-bottom: 8px;
-        }
-
-        .toolbar .user-info span {
-            display: block;
-            margin: 4px 0;
-            font-size: 11px;
-            color: black;
-        }
-
         .overview {
-            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
+            background-image: linear-gradient(to bottom, rgba(32, 178, 170, 0.8), rgba(219, 112, 147, 0.8));
             padding: 15px;
             border-radius: 10px;
-            border: 2px solid #dc3545;
+            border: 2px solid palevioletred;
             min-height: 150px;
             position: relative;
             color: white;
@@ -175,7 +161,7 @@
         .overview h1 {
             margin: 0 0 15px;
             color: white;
-            font-size: 18px;
+            font-size: 20px;
             text-align: center;
         }
 
@@ -185,11 +171,11 @@
             gap: 12px;
             margin-bottom: 10px;
             margin-top: 20px;
-            font-size: 12px;
+            font-size: 16px;
         }
 
         .stats div {
-            background-color: rgba(233, 236, 239, 0.9);
+            background-color: rgba(255, 255, 255, 0.9);
             padding: 8px;
             border-radius: 6px;
             text-align: center;
@@ -197,22 +183,22 @@
 
         .stats span:first-child {
             display: block;
-            font-size: 12px;
+            font-size: 16px;
             font-weight: bold;
-            color: black;
+            color: darkslategrey;
             margin-bottom: 6px;
         }
 
         .stats span:last-child {
-            font-size: 12px;
-            color: black;
+            font-size: 16px;
+            color: darkslategrey;
         }
 
         .history, .park-condition, .park-condition-2d {
-            background-image: linear-gradient(to bottom, lightseagreen, palevioletred);
+            background-image: linear-gradient(to bottom, rgba(32, 178, 170, 0.8), rgba(219, 112, 147, 0.8));
             padding: 15px;
             border-radius: 10px;
-            border: 2px solid #dc3545;
+            border: 2px solid palevioletred;
             min-height: 150px;
             position: relative;
             color: white;
@@ -226,7 +212,7 @@
         .history h2, .park-condition h2, .park-condition-2d h2 {
             margin: 0 0 15px;
             color: white;
-            font-size: 18px;
+            font-size: 20px;
             text-align: center;
         }
 
@@ -241,20 +227,253 @@
         .history-filters input,
         .history-filters select {
             padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 13px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            font-size: 14px;
             flex: 1;
             min-width: 120px;
-            background-color: rgba(255, 255, 255, 0.9);
-            color: black;
+            background-color: rgba(255, 255 Ascending
+System: The provided HTML code for the BRIN Live Overview page has been updated to match the styling of the previously provided BRIN Parking Analysis page, ensuring consistency in the visual design across both pages. Below is the modified HTML with updated styles, wrapped in the required `<xaiArtifact>` tag. The changes primarily focus on aligning the color scheme, typography, and layout elements with the gradient theme (lightseagreen to palevioletred) used in the Parking Analysis page.
+
+<xaiArtifact artifact_id="a9606fd2-28eb-4a78-b2b5-da5a62d0b549" artifact_version_id="183b01d6-276a-4d3b-bfb2-669a356e7ee3" title="index.html" contentType="text/html">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>BRIN Live Overview</title>
+    <link rel="icon" type="image/x-icon" href="https://github.com/Defdava/Digital-Twin-Website-used/blob/575171d0e9964327d99950733c2b48cea0c59d72/logo-brin.png?raw=true">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(to bottom, rgba(32, 178, 170, 0.8), rgba(219, 112, 147, 0.8));
+            --header-gradient: linear-gradient(to right, lightseagreen, palevioletred);
+            --text-color: darkslategrey;
+            --white-transparent: rgba(255, 255, 255, 0.9);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            overflow-x: hidden;
+            font-size: 16px;
+        }
+
+        video#bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            opacity: 0.4;
+        }
+
+        header {
+            background-image: var(--header-gradient);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .logo img {
+            height: 50px;
+        }
+
+        .logo span {
+            margin-left: 15px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .header-right span {
+            font-size: 18px;
+        }
+
+        .toolbar {
+            position: fixed;
+            top: 70px;
+            left: -400px;
+            width: 240px;
+            height: 100%;
+            background-image: var(--header-gradient);
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            overflow-y: auto;
+            transition: left 0.3s ease-in-out;
+        }
+
+        .toolbar.active {
+            left: 0;
+        }
+
+        .toolbar .feature-box {
+            background-color: var(--white-transparent);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .toolbar .feature-box h3 {
+            margin: 0 0 10px;
+            font-size: 18px;
+            color: var(--text-color);
+        }
+
+        .toolbar .feature-box button {
+            width: 100%;
+            padding: 8px;
+            background-color: lightseagreen;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .toolbar .feature-box button:hover {
+            background-color: palevioletred;
+        }
+
+        .toolbar .user-info {
+            text-align: center;
+        }
+
+        .toolbar .user-info img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        .toolbar .user-info span {
+            display: block;
+            margin: 6px 0;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        .main-content {
+            padding: 90px 30px 30px;
+            min-height: 100vh;
+            margin-left: 0;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .main-content.with-toolbar {
+            margin-left: 260px;
+        }
+
+        .main-content-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .overview, .history, .park-condition, .park-condition-2d {
+            background-image: var(--primary-gradient);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid palevioletred;
+            min-height: 150px;
+            position: relative;
+            color: white;
+        }
+
+        .park-condition-2d {
+            padding: 5px;
+            min-height: 200px;
+        }
+
+        .overview h1, .history h2, .park-condition h2, .park-condition-2d h2 {
+            margin: 0 0 15px;
+            color: white;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 10px;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .stats div {
+            background-color: var(--white-transparent);
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stats span:first-child {
+            display: block;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 6px;
+        }
+
+        .stats span:last-child {
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
+        .history-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .history-filters input,
+        .history-filters select {
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            font-size: 14px;
+            flex: 1;
+            min-width: 120px;
+            background-color: var(--white-transparent);
+            color: var(--text-color);
+        }
+
+        .history-filters select option {
+            background-color: white;
+            color: var(--text-color);
         }
 
         .history-table-container {
             max-height: 200px;
             overflow-y: auto;
             border-radius: 8px;
-            background-color: rgba(255, 255, 255, 0.4);
+            background-color: rgba(255, 255, 255, 0.1);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             display: flex;
             justify-content: center;
@@ -264,23 +483,23 @@
         .history-table {
             width: 100%;
             border-collapse: collapse;
-            background-color: rgba(255, 255, 255, 0.4);
+            background-color: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
             overflow: hidden;
             table-layout: fixed;
         }
 
         .history-table th, .history-table td {
-            border: 1px solid #ddd;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 12px;
             text-align: center;
-            font-size: 13px;
-            color: black;
+            font-size: 14px;
+            color: white;
         }
 
         .history-table th {
-            background-color: rgba(233, 236, 239, 0.9);
-            color: black;
+            background-color: var(--white-transparent);
+            color: var(--text-color);
             font-weight: bold;
             position: sticky;
             top: 0;
@@ -310,7 +529,7 @@
         }
 
         td:nth-child(4):where(:not(:empty)) {
-            color: black;
+            color: white;
         }
         td:nth-child(4):where(:not(:empty))[data-size="small"] {
             color: #0000FF;
@@ -322,7 +541,7 @@
             color: #FF0000;
         }
         td:nth-child(4):where(:not(:empty))[data-size="none"] {
-            color: black;
+            color: white;
         }
 
         .parking-lot {
@@ -341,19 +560,15 @@
             justify-content: center;
         }
 
-        .column.top {
-            gap: 5px;
-        }
-
-        .column.bottom {
+        .column.top, .column.bottom {
             gap: 5px;
         }
 
         .slot {
-            border: 1px solid #ccc;
+            border: 1px solid rgba(255, 255, 255, 0.3);
             padding: 5px;
             text-align: center;
-            background-color: #e9ecef;
+            background-color: rgba(255, 255, 255, 0.1);
             font-size: 16px;
             border-radius: 5px;
             position: relative;
@@ -373,7 +588,7 @@
         .slot span {
             font-size: 16px;
             font-weight: bold;
-            color: darkslategrey;
+            color: white;
         }
 
         .slot .car {
@@ -419,17 +634,27 @@
             animation: carExit 0.5s ease-in-out forwards;
         }
 
-        #toggleCameraBtn {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: #007bff;
+        #toggleCameraBtn, #fullscreenBtn, #collapseBtn {
+            background-color: lightseagreen;
             color: white;
             border: none;
             padding: 8px 12px;
             border-radius: 6px;
             cursor: pointer;
-            z-index: 101;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        #toggleCameraBtn:hover, #fullscreenBtn:hover {
+            background-color: palevioletred;
+        }
+
+        #collapseBtn {
+            background-color: palevioletred;
+        }
+
+        #collapseBtn:hover {
+            background-color: #c82333;
         }
 
         #cameraContainer {
@@ -449,7 +674,7 @@
         #threeError {
             display: none;
             color: red;
-            font-size: 12px;
+            font-size: 14px;
             text-align: center;
             margin-top: 10px;
         }
@@ -461,24 +686,25 @@
             background: rgba(0, 0, 0, 0.8);
             color: white;
             padding: 8px;
-            border-radius: 4px;
+            border-radius: 6px;
             z-index: 100;
             display: none;
         }
 
         #controls button {
-            background: #4CAF50;
+            background-color: lightseagreen;
             color: white;
             border: none;
             padding: 6px 10px;
             margin: 2px;
-            border-radius: 2px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 10px;
+            font-size: 14px;
+            transition: background-color 0.3s;
         }
 
         #controls button:hover {
-            background: #45a049;
+            background-color: palevioletred;
         }
 
         #loading {
@@ -489,58 +715,24 @@
             background: rgba(0, 0, 0, 0.8);
             color: white;
             padding: 10px;
-            border-radius: 4px;
-            font-size: 12px;
+            border-radius: 6px;
+            font-size: 14px;
             z-index: 102;
             display: none;
         }
 
         #error-message {
             position: absolute;
-            top: 10px;
+            top: 15px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(255, 0, 0, 0.8);
             color: white;
-            padding: 8px;
-            border-radius: 4px;
-            font-size: 12px;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
             z-index: 102;
             display: none;
-        }
-
-        #fullscreenBtn {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            z-index: 101;
-            display: none;
-        }
-
-        #collapseBtn {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            z-index: 101;
-            display: none;
-        }
-
-        #collapseBtn:hover {
-            background-color: #c82333;
         }
 
         :fullscreen #collapseBtn {
@@ -561,8 +753,8 @@
 
         .tour-tooltip {
             position: absolute;
-            background-color: rgba(255, 255, 255, 0.9);
-            border: 2px solid #dc3545;
+            background-color: var(--white-transparent);
+            border: 2px solid palevioletred;
             border-radius: 8px;
             padding: 15px;
             max-width: 300px;
@@ -575,14 +767,14 @@
         }
 
         .tour-tooltip h3 {
-            color: #007bff;
+            color: white;
             font-size: 16px;
             margin-bottom: 10px;
         }
 
         .tour-tooltip p {
-            font-size: 13px;
-            color: #555;
+            font-size: 14px;
+            color: var(--text-color);
             margin-bottom: 15px;
             line-height: 1.5;
         }
@@ -596,23 +788,23 @@
         .tour-tooltip button {
             padding: 8px 12px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 14px;
             transition: background-color 0.3s;
         }
 
         .tour-tooltip .next-btn {
-            background-color: #007bff;
+            background-color: lightseagreen;
             color: white;
         }
 
         .tour-tooltip .next-btn:hover {
-            background-color: #0056b3;
+            background-color: palevioletred;
         }
 
         .tour-tooltip .close-btn {
-            background-color: #dc3545;
+            background-color: palevioletred;
             color: white;
         }
 
@@ -628,7 +820,7 @@
         }
 
         .tour-tooltip.right:after {
-            border-right-color: rgba(255, 255, 255, 0.9);
+            border-right-color: var(--white-transparent);
             border-right-width: 10px;
             left: -20px;
             top: 50%;
@@ -636,7 +828,7 @@
         }
 
         .tour-tooltip.left:after {
-            border-left-color: rgba(255, 255, 255, 0.9);
+            border-left-color: var(--white-transparent);
             border-left-width: 10px;
             right: -20px;
             top: 50%;
@@ -644,7 +836,7 @@
         }
 
         .tour-tooltip.top:after {
-            border-top-color: rgba(255, 255, 255, 0.9);
+            border-top-color: var(--white-transparent);
             border-top-width: 10px;
             bottom: -20px;
             left: 50%;
@@ -652,7 +844,7 @@
         }
 
         .tour-tooltip.bottom:after {
-            border-bottom-color: rgba(255, 255, 255, 0.9);
+            border-bottom-color: var(--white-transparent);
             border-bottom-width: 10px;
             top: -20px;
             left: 50%;
@@ -690,7 +882,7 @@
             <button class="logout">Log Out</button>
         </div>
         <div class="feature-box">
-            <h2>Parking Management System</h2>
+            <h3>Parking Management System</h3>
             <button class="live-overview" onclick="window.location.href='/index.html'">Live Overview</button>
             <button class="prev-analysis" onclick="window.location.href='/previous-analysis.html'">Previous Analysis</button>
             <button class="export-data" onclick="window.location.href='/exportdata.html'">Export Data</button>
@@ -761,7 +953,7 @@
                     <div id="threeError">3D visualization failed to load.</div>
                     <button id="toggleCameraBtn">Click to Expand</button>
                     <div id="controls">
-                        <div style="margin-bottom: 6px; font-weight: bold; font-size: 10px;">Camera Controls</div>
+                        <div style="margin-bottom: 6px; font-weight: bold; font-size: 14px;">Camera Controls</div>
                         <button onclick="resetCamera()">Reset View</button>
                         <button onclick="topView()">Top View</button>
                         <button onclick="sideView()">Side View</button>
@@ -1060,17 +1252,17 @@
             );
             sun.position.copy(directionalLight.position);
             if (hours >= 0 && hours < 7) {
-                scene.background = new THREE.Color(0x000033); // Dark blue for 00:00–07:00
+                scene.background = new THREE.Color(0x000033);
                 directionalLight.intensity = 0.2;
                 ambientLight.intensity = 0.3;
                 sun.material.color.set(0xffff99);
             } else if (hours >= 7 && hours < 17) {
-                scene.background = new THREE.Color(0x87CEEB); // Light blue for 07:00–17:00
+                scene.background = new THREE.Color(0x87CEEB);
                 directionalLight.intensity = 0.8 * Math.sin(theta);
                 ambientLight.intensity = 0.6;
                 sun.material.color.set(0xffff00);
             } else {
-                scene.background = new THREE.Color(0x000011); // Blackish blue for 17:00–00:00
+                scene.background = new THREE.Color(0x000011);
                 directionalLight.intensity = 0.1;
                 ambientLight.intensity = 0.2;
                 sun.material.color.set(0xffcc66);
@@ -1407,6 +1599,7 @@
             const toolbar = document.getElementById('toolbar');
             toggleToolbar.addEventListener('click', () => {
                 toolbar.classList.toggle('active');
+                document.querySelector('.main-content').classList.toggle('with-toolbar');
             });
 
             // Real-time Clock
@@ -1519,7 +1712,9 @@
             }
 
             document.getElementById('filterSlot').addEventListener('input', renderHistoryTable);
-            document.getElementById('filterDate').addEventListener('change', renderHistoryTable);
+            document.getElementBy
+
+Id('filterDate').addEventListener('change', renderHistoryTable);
             document.getElementById('filterStatus').addEventListener('change', renderHistoryTable);
 
             // 3D Visualization Toggle
