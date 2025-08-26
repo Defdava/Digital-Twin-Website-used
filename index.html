@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -23,6 +23,7 @@
             color: var(--text-color);
             overflow-x: hidden;
             font-size: 16px;
+            touch-action: manipulation; /* Prevent default pinch-to-zoom on the page */
         }
 
         video#bg-video {
@@ -431,6 +432,12 @@
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             display: none;
+            touch-action: none; /* Prevent default touch behaviors on canvas */
+        }
+
+        #threeContainer canvas {
+            width: 100% !important;
+            height: 100% !important;
         }
 
         #threeError {
@@ -617,6 +624,25 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content.with-toolbar {
+                margin-left: 0;
+            }
+
+            .toolbar {
+                width: 100%;
+                left: -100%;
+            }
+
+            .toolbar.active {
+                left: 0;
+            }
         }
     </style>
 </head>
@@ -832,7 +858,7 @@
             console.log("Initializing Three.js scene...");
             const threeContainer = document.getElementById('threeContainer');
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x333366); // Lighter base color for better visibility
+            scene.background = new THREE.Color(0x333366);
             camera = new THREE.PerspectiveCamera(75, threeContainer.clientWidth / (threeContainer.clientHeight || 300), 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
@@ -840,10 +866,10 @@
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             threeContainer.appendChild(renderer.domElement);
 
-            ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Increased intensity for brighter scene
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
             scene.add(ambientLight);
-            directionalLight = new THREE.DirectionalLight(0xffffbb, 1.2); // Increased intensity for realism
-            directionalLight.position.set(30, 40, 30); // Adjusted for natural lighting angle
+            directionalLight = new THREE.DirectionalLight(0xffffbb, 1.2);
+            directionalLight.position.set(30, 40, 30);
             directionalLight.castShadow = true;
             directionalLight.shadow.mapSize.width = 2048;
             directionalLight.shadow.mapSize.height = 2048;
@@ -854,7 +880,6 @@
             sun = new THREE.Mesh(sunGeometry, sunMaterial);
             scene.add(sun);
 
-            // Add PointLight to the sun for a subtle glow
             sunLight = new THREE.PointLight(0xffffbb, 0.5, 200);
             sunLight.position.copy(sun.position);
             scene.add(sunLight);
@@ -975,25 +1000,25 @@
             const sunRadius = 100;
             directionalLight.position.set(sunRadius * Math.cos(theta), sunRadius * Math.sin(theta), 25 * Math.sin(theta));
             sun.position.copy(directionalLight.position);
-            sunLight.position.copy(sun.position); // Update PointLight position
+            sunLight.position.copy(sun.position);
             if (hours >= 0 && hours < 7) {
-                scene.background = new THREE.Color(0x191970); // Brighter night sky
+                scene.background = new THREE.Color(0x191970);
                 directionalLight.intensity = 0.2;
                 sunLight.intensity = 0.2;
                 ambientLight.intensity = 0.3;
-                sun.material.color.set(0xFFDAB9); // Softer night sun color
+                sun.material.color.set(0xFFDAB9);
             } else if (hours >= 7 && hours < 17) {
-                scene.background = new THREE.Color(0x4682B4); // Brighter daytime sky
+                scene.background = new THREE.Color(0x4682B4);
                 directionalLight.intensity = 1.2 * Math.sin(theta);
                 sunLight.intensity = 0.5 * Math.sin(theta);
                 ambientLight.intensity = 0.6;
-                sun.material.color.set(0xFFFFE0); // Light yellow for daytime
+                sun.material.color.set(0xFFFFE0);
             } else {
-                scene.background = new THREE.Color(0x191970); // Brighter night sky
+                scene.background = new THREE.Color(0x191970);
                 directionalLight.intensity = 0.1;
                 sunLight.intensity = 0.1;
                 ambientLight.intensity = 0.2;
-                sun.material.color.set(0xFFDAB9); // Softer night sun color
+                sun.material.color.set(0xFFDAB9);
             }
         }
 
@@ -1193,7 +1218,7 @@
             {
                 element: '.park-condition',
                 title: "Park Condition (3D)",
-                text: "Visualisasi 3D area parkir. Klik 'Click to Expand' untuk melihat model interaktif. Gunakan kontrol kamera untuk navigasi. Warna mobil: biru (kecil), kuning (sedang), merah (besar), abu-abu (kosong).",
+                text: "Visualisasi 3D area parkir. Gunakan tombol 'Click to Expand' atau 'Full Screen' untuk melihat model interaktif. Pada perangkat seluler, gunakan satu jari untuk memutar, dua jari untuk menggeser, atau cubit untuk zoom. Warna mobil: biru (kecil), kuning (sedang), merah (besar), abu-abu (kosong).",
                 position: 'right'
             },
             {
@@ -1436,7 +1461,6 @@
             function toggleFullScreen() {
                 const threeContainer = document.getElementById('threeContainer');
                 if (!document.fullscreenElement) {
-                    // Ensure 3D visualization is initialized and displayed
                     if (!isExpanded) {
                         isExpanded = true;
                         toggleCameraBtn.textContent = 'Click to Collapse';
@@ -1502,7 +1526,7 @@
                 }
             });
 
-            // Mouse Controls for 3D
+            // Mouse Controls for Desktop
             let mouseDown = false;
             let mouseX = 0;
             let mouseY = 0;
@@ -1541,6 +1565,95 @@
                 if (distance < 10) camera.position.multiplyScalar(10 / distance);
                 if (distance > 200) camera.position.multiplyScalar(200 / distance);
                 event.preventDefault();
+            });
+
+            // Touch Controls for Mobile
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let lastPinchDistance = 0;
+            let isPinching = false;
+            let isPanning = false;
+            let target = new THREE.Vector3(0, 0, 0); // Camera look-at point for panning
+
+            threeContainer.addEventListener('touchstart', (event) => {
+                if (!scene) return;
+                event.preventDefault();
+                if (event.touches.length === 1) {
+                    // Single touch for rotation
+                    isPinching = false;
+                    isPanning = false;
+                    touchStartX = event.touches[0].clientX;
+                    touchStartY = event.touches[0].clientY;
+                } else if (event.touches.length === 2) {
+                    // Two touches for pinch or pan
+                    const dx = event.touches[0].clientX - event.touches[1].clientX;
+                    const dy = event.touches[0].clientY - event.touches[1].clientY;
+                    lastPinchDistance = Math.sqrt(dx * dx + dy * dy);
+                    isPinching = true;
+                    isPanning = false;
+                }
+            });
+
+            threeContainer.addEventListener('touchmove', (event) => {
+                if (!scene) return;
+                event.preventDefault();
+                if (event.touches.length === 1 && !isPinching && !isPanning) {
+                    // Single touch rotation
+                    const deltaX = event.touches[0].clientX - touchStartX;
+                    const deltaY = event.touches[0].clientY - touchStartY;
+                    const spherical = new THREE.Spherical();
+                    spherical.setFromVector3(camera.position.sub(target));
+                    spherical.theta -= deltaX * 0.01;
+                    spherical.phi += deltaY * 0.01;
+                    spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi));
+                    camera.position.copy(target).add(new THREE.Vector3().setFromSpherical(spherical));
+                    camera.lookAt(target);
+                    touchStartX = event.touches[0].clientX;
+                    touchStartY = event.touches[0].clientY;
+                } else if (event.touches.length === 2) {
+                    const dx = event.touches[0].clientX - event.touches[1].clientX;
+                    const dy = event.touches[0].clientY - event.touches[1].clientY;
+                    const currentPinchDistance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (isPinching) {
+                        // Pinch-to-zoom
+                        const pinchDelta = currentPinchDistance - lastPinchDistance;
+                        const zoomSpeed = 0.02;
+                        camera.position.multiplyScalar(1 - pinchDelta * zoomSpeed);
+                        const distance = camera.position.length();
+                        if (distance < 10) camera.position.multiplyScalar(10 / distance);
+                        if (distance > 200) camera.position.multiplyScalar(200 / distance);
+                        lastPinchDistance = currentPinchDistance;
+                    } else if (isPanning) {
+                        // Two-finger pan
+                        const deltaX = (event.touches[0].clientX + event.touches[1].clientX) / 2 - touchStartX;
+                        const deltaY = (event.touches[0].clientY + event.touches[1].clientY) / 2 - touchStartY;
+                        const panSpeed = 0.05;
+                        target.x -= deltaX * panSpeed;
+                        target.y += deltaY * panSpeed;
+                        camera.position.sub(new THREE.Vector3(deltaX * panSpeed, -deltaY * panSpeed, 0));
+                        camera.lookAt(target);
+                        touchStartX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
+                        touchStartY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
+                    }
+                }
+            });
+
+            threeContainer.addEventListener('touchend', (event) => {
+                if (event.touches.length < 2) {
+                    isPinching = false;
+                    if (event.touches.length === 0) {
+                        isPanning = false;
+                    } else if (event.touches.length === 1) {
+                        touchStartX = event.touches[0].clientX;
+                        touchStartY = event.touches[0].clientY;
+                    }
+                }
+                if (event.touches.length === 2) {
+                    isPanning = true;
+                    touchStartX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
+                    touchStartY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
+                }
             });
 
             // Prevent Undo/Redo and Navigation
