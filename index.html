@@ -1020,18 +1020,18 @@
                 25 * Math.sin(theta)
             );
             sun.position.copy(directionalLight.position);
-            if (hours >= 0 && hours < 10) {
-                scene.background = new THREE.Color(0x000022);
+            if (hours >= 0 && hours < 7) {
+                scene.background = new THREE.Color(0x000033); // Dark blue for 00:00–07:00
                 directionalLight.intensity = 0.2;
                 ambientLight.intensity = 0.3;
                 sun.material.color.set(0xffff99);
-            } else if (hours >= 10 && hours < 17) {
-                scene.background = new THREE.Color(0x87CEEB);
+            } else if (hours >= 7 && hours < 17) {
+                scene.background = new THREE.Color(0x87CEEB); // Light blue for 07:00–17:00
                 directionalLight.intensity = 0.8 * Math.sin(theta);
                 ambientLight.intensity = 0.6;
                 sun.material.color.set(0xffff00);
             } else {
-                scene.background = new THREE.Color(0x000000);
+                scene.background = new THREE.Color(0x000011); // Blackish blue for 17:00–00:00
                 directionalLight.intensity = 0.1;
                 ambientLight.intensity = 0.2;
                 sun.material.color.set(0xffcc66);
