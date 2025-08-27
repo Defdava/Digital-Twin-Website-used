@@ -997,26 +997,37 @@
             const dayFraction = (hours / 24); // Normalisasi waktu dalam sehari
             const theta = 2 * Math.PI * dayFraction; // Sudut penuh untuk orbit 24 jam
             const sunRadius = 100; // Jarak matahari dari pusat
-            const sunHeight = 50 * Math.sin(theta); // Ketinggian matahari berdasarkan waktu
-            directionalLight.position.set(sunRadius * Math.cos(theta), sunHeight, sunRadius * Math.sin(theta));
+            let sunHeight;
+
+            // Mengatur posisi matahari
+            if (hours >= 0 && hours < 6 || hours >= 17) {
+                // Malam (00:00-06:00 dan 17:00-00:00): Matahari mengorbit di sekitar slot
+                sunHeight = 50 * Math.sin(theta); // Ketinggian bervariasi
+                directionalLight.position.set(sunRadius * Math.cos(theta), sunHeight, sunRadius * Math.sin(theta));
+            } else {
+                // Siang (06:00-17:00): Matahari tetap di atas slot parkir
+                sunHeight = 50; // Ketinggian tetap di atas
+                directionalLight.position.set(0, sunHeight, 0); // Posisi di tengah atas slot parkir
+            }
+
             sun.position.copy(directionalLight.position);
             sunLight.position.copy(sun.position);
 
             // Mengatur warna langit berdasarkan waktu
             if (hours >= 0 && hours < 10) {
-                scene.background = new THREE.Color(0x00008B); // Biru tua (00:00 - 10:00)
+                scene.background = new THREE.Color(0x00008B); // Biru tua (00:00-10:00)
                 directionalLight.intensity = 0.2;
                 sunLight.intensity = 0.2;
                 ambientLight.intensity = 0.3;
                 sun.material.color.set(0xFFDAB9); // Warna matahari malam/pagi
             } else if (hours >= 10 && hours < 17) {
-                scene.background = new THREE.Color(0x87CEEB); // Biru muda (10:00 - 17:00)
+                scene.background = new THREE.Color(0x87CEEB); // Biru muda (10:00-17:00)
                 directionalLight.intensity = 1.2;
                 sunLight.intensity = 0.5;
                 ambientLight.intensity = 0.6;
                 sun.material.color.set(0xFFFFE0); // Warna matahari siang
             } else {
-                scene.background = new THREE.Color(0x191970); // Biru hitam (17:00 - 00:00)
+                scene.background = new THREE.Color(0x191970); // Biru hitam (17:00-00:00)
                 directionalLight.intensity = 0.1;
                 sunLight.intensity = 0.1;
                 ambientLight.intensity = 0.2;
