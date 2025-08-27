@@ -23,7 +23,7 @@
             color: var(--text-color);
             overflow-x: hidden;
             font-size: 16px;
-            touch-action: manipulation; /* Prevent default pinch-to-zoom on the page */
+            touch-action: manipulation;
         }
 
         video#bg-video {
@@ -432,7 +432,7 @@
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             display: none;
-            touch-action: none; /* Prevent default touch behaviors on canvas */
+            touch-action: none;
         }
 
         #threeContainer canvas {
@@ -858,7 +858,6 @@
             console.log("Initializing Three.js scene...");
             const threeContainer = document.getElementById('threeContainer');
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x333366);
             camera = new THREE.PerspectiveCamera(75, threeContainer.clientWidth / (threeContainer.clientHeight || 300), 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight || 300);
@@ -995,30 +994,33 @@
         function updateSunPosition() {
             const now = new Date();
             const hours = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
-            const dayFraction = (hours - 6) / 12;
-            const theta = Math.PI * dayFraction;
-            const sunRadius = 100;
-            directionalLight.position.set(sunRadius * Math.cos(theta), sunRadius * Math.sin(theta), 25 * Math.sin(theta));
+            const dayFraction = (hours / 24); // Normalisasi waktu dalam sehari
+            const theta = 2 * Math.PI * dayFraction; // Sudut penuh untuk orbit 24 jam
+            const sunRadius = 100; // Jarak matahari dari pusat
+            const sunHeight = 50 * Math.sin(theta); // Ketinggian matahari berdasarkan waktu
+            directionalLight.position.set(sunRadius * Math.cos(theta), sunHeight, sunRadius * Math.sin(theta));
             sun.position.copy(directionalLight.position);
             sunLight.position.copy(sun.position);
-            if (hours >= 0 && hours < 7) {
-                scene.background = new THREE.Color(0x191970);
+
+            // Mengatur warna langit berdasarkan waktu
+            if (hours >= 0 && hours < 10) {
+                scene.background = new THREE.Color(0x00008B); // Biru tua (00:00 - 10:00)
                 directionalLight.intensity = 0.2;
                 sunLight.intensity = 0.2;
                 ambientLight.intensity = 0.3;
-                sun.material.color.set(0xFFDAB9);
-            } else if (hours >= 7 && hours < 17) {
-                scene.background = new THREE.Color(0x4682B4);
-                directionalLight.intensity = 1.2 * Math.sin(theta);
-                sunLight.intensity = 0.5 * Math.sin(theta);
+                sun.material.color.set(0xFFDAB9); // Warna matahari malam/pagi
+            } else if (hours >= 10 && hours < 17) {
+                scene.background = new THREE.Color(0x87CEEB); // Biru muda (10:00 - 17:00)
+                directionalLight.intensity = 1.2;
+                sunLight.intensity = 0.5;
                 ambientLight.intensity = 0.6;
-                sun.material.color.set(0xFFFFE0);
+                sun.material.color.set(0xFFFFE0); // Warna matahari siang
             } else {
-                scene.background = new THREE.Color(0x191970);
+                scene.background = new THREE.Color(0x191970); // Biru hitam (17:00 - 00:00)
                 directionalLight.intensity = 0.1;
                 sunLight.intensity = 0.1;
                 ambientLight.intensity = 0.2;
-                sun.material.color.set(0xFFDAB9);
+                sun.material.color.set(0xFFDAB9); // Warna matahari malam
             }
         }
 
@@ -1573,19 +1575,17 @@
             let lastPinchDistance = 0;
             let isPinching = false;
             let isPanning = false;
-            let target = new THREE.Vector3(0, 0, 0); // Camera look-at point for panning
+            let target = new THREE.Vector3(0, 0, 0);
 
             threeContainer.addEventListener('touchstart', (event) => {
                 if (!scene) return;
                 event.preventDefault();
                 if (event.touches.length === 1) {
-                    // Single touch for rotation
                     isPinching = false;
                     isPanning = false;
                     touchStartX = event.touches[0].clientX;
                     touchStartY = event.touches[0].clientY;
                 } else if (event.touches.length === 2) {
-                    // Two touches for pinch or pan
                     const dx = event.touches[0].clientX - event.touches[1].clientX;
                     const dy = event.touches[0].clientY - event.touches[1].clientY;
                     lastPinchDistance = Math.sqrt(dx * dx + dy * dy);
@@ -1598,7 +1598,6 @@
                 if (!scene) return;
                 event.preventDefault();
                 if (event.touches.length === 1 && !isPinching && !isPanning) {
-                    // Single touch rotation
                     const deltaX = event.touches[0].clientX - touchStartX;
                     const deltaY = event.touches[0].clientY - touchStartY;
                     const spherical = new THREE.Spherical();
@@ -1616,7 +1615,6 @@
                     const currentPinchDistance = Math.sqrt(dx * dx + dy * dy);
 
                     if (isPinching) {
-                        // Pinch-to-zoom
                         const pinchDelta = currentPinchDistance - lastPinchDistance;
                         const zoomSpeed = 0.02;
                         camera.position.multiplyScalar(1 - pinchDelta * zoomSpeed);
@@ -1625,7 +1623,6 @@
                         if (distance > 200) camera.position.multiplyScalar(200 / distance);
                         lastPinchDistance = currentPinchDistance;
                     } else if (isPanning) {
-                        // Two-finger pan
                         const deltaX = (event.touches[0].clientX + event.touches[1].clientX) / 2 - touchStartX;
                         const deltaY = (event.touches[0].clientY + event.touches[1].clientY) / 2 - touchStartY;
                         const panSpeed = 0.05;
