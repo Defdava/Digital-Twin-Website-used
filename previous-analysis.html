@@ -466,6 +466,139 @@
             max-width: 300px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
+        .tour-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            pointer-events: none;
+        }
+
+        .tour-tooltip {
+            position: absolute;
+            background-image: var(--primary-gradient);
+            border: 2px solid palevioletred;
+            border-radius: 8px;
+            padding: 15px;
+            max-width: 300px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            pointer-events: auto;
+            animation: fadeIn 0.3s ease-in-out;
+            z-index: 2001;
+        }
+
+        .tour-tooltip h3 {
+            color: var(--white-transparent);
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .tour-tooltip p {
+            font-size: 14px;
+            color: var(--white-transparent);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .tour-tooltip .tour-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .tour-tooltip button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .tour-tooltip .next-btn {
+            background-color: lightseagreen;
+            color: white;
+        }
+
+        .tour-tooltip .next-btn:hover {
+            background-color: palevioletred;
+        }
+
+        .tour-tooltip .close-btn {
+            background-color: palevioletred;
+            color: white;
+        }
+
+        .tour-tooltip .close-btn:hover {
+            background-color: #c82333;
+        }
+
+        .tour-tooltip:after {
+            content: "";
+            position: absolute;
+            border: 10px solid transparent;
+            pointer-events: none;
+        }
+
+        .tour-tooltip.right:after {
+            border-right-color: palevioletred;
+            border-right-width: 10px;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .tour-tooltip.left:after {
+            border-left-color: palevioletred;
+            border-left-width: 10px;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .tour-tooltip.top:after {
+            border-top-color: palevioletred;
+            border-top-width: 10px;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .tour-tooltip.bottom:after {
+            border-bottom-color: palevioletred;
+            border-bottom-width: 10px;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content.with-toolbar {
+                margin-left: 0;
+            }
+
+            .toolbar {
+                width: 100%;
+                left: -100%;
+            }
+
+            .toolbar.active {
+                left: 0;
+            }
+        }
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -536,6 +669,15 @@
                 <div id="success-message"></div>
             </div>
         </div>
+        <div class="tour-overlay" id="tourOverlay"></div>
+        <div class="tour-tooltip" id="tourTooltip" style="display: none;">
+            <h3 id="tooltipTitle"></h3>
+            <p id="tooltipText"></p>
+            <div class="tour-buttons">
+                <button class="next-btn" id="tourNextBtn">Next</button>
+                <button class="close-btn" id="tourCloseBtn">Close</button>
+            </div>
+        </div>
     </main>
 
     <div id="deleteConfirmation" class="delete-confirmation">
@@ -563,6 +705,100 @@
         let messagesData = [];
         let currentSortBy = 'slot';
         let currentSortOrder = 'asc';
+
+        // Tour Steps Configuration
+        const tourSteps = [
+            {
+                element: 'header',
+                title: "Petunjuk Website",
+                text: "Klik logo BRIN untuk membuka toolbar samping yang berisi fitur seperti Profile, Log Out, Live Overview, Previous Analysis, Export Data, Helpdesk, dan Parking Analysis.",
+                position: 'bottom'
+            },
+            {
+                element: '.history',
+                title: "Status Slot Parkir Realtime",
+                text: "Menampilkan status terkini slot parkir (Terisi atau Kosong) yang diambil dari Firebase secara real-time.",
+                position: 'right'
+            },
+            {
+                element: '.customers',
+                title: "Customers Message",
+                text: "Menampilkan daftar pesan pelanggan terkait slot parkir, termasuk informasi seperti nomor plat, pengguna, dan catatan parkir.",
+                position: 'left'
+            },
+            {
+                element: '.sort-controls',
+                title: "Sort Controls",
+                text: "Gunakan opsi ini untuk mengurutkan pesan pelanggan berdasarkan nomor slot, tanggal, pengguna, atau nomor plat. Pilih urutan naik atau turun, lalu klik 'Apply Sort'. Gunakan 'Reset' untuk kembali ke pengurutan default.",
+                position: 'top'
+            },
+            {
+                element: '.customer-item',
+                title: "Edit dan Delete",
+                text: "Setiap pesan pelanggan memiliki tombol 'Edit' untuk mengubah detail dan 'Delete' untuk menghapus pesan. Pastikan untuk menyimpan perubahan setelah mengedit.",
+                position: 'right'
+            }
+        ];
+
+        let currentTourStep = 0;
+
+        function startTour() {
+            document.getElementById('tourOverlay').style.display = 'block';
+            showTooltip(currentTourStep);
+        }
+
+        function showTooltip(step) {
+            const tooltip = document.getElementById('tourTooltip');
+            const title = document.getElementById('tooltipTitle');
+            const text = document.getElementById('tooltipText');
+            const nextBtn = document.getElementById('tourNextBtn');
+
+            const targetElement = document.querySelector(tourSteps[step].element);
+            if (!targetElement) {
+                console.error(`Element ${tourSteps[step].element} not found!`);
+                endTour();
+                return;
+            }
+
+            title.textContent = tourSteps[step].title;
+            text.textContent = tourSteps[step].text;
+            tooltip.style.display = 'block';
+            tooltip.className = 'tour-tooltip ' + tourSteps[step].position;
+
+            const rect = targetElement.getBoundingClientRect();
+            const tooltipRect = tooltip.getBoundingClientRect();
+            let left, top;
+
+            switch (tourSteps[step].position) {
+                case 'right':
+                    left = rect.right + 10;
+                    top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                    break;
+                case 'left':
+                    left = rect.left - tooltipRect.width - 10;
+                    top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                    break;
+                case 'top':
+                    left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                    top = rect.top - tooltipRect.height - 10;
+                    break;
+                case 'bottom':
+                    left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                    top = rect.bottom + 10;
+                    break;
+            }
+
+            tooltip.style.left = `${left}px`;
+            tooltip.style.top = `${top}px`;
+
+            nextBtn.textContent = step === tourSteps.length - 1 ? 'Finish' : 'Next';
+        }
+
+        function endTour() {
+            document.getElementById('tourOverlay').style.display = 'none';
+            document.getElementById('tourTooltip').style.display = 'none';
+            currentTourStep = 0;
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -894,6 +1130,21 @@
                     console.log('Undo/Redo is disabled');
                 }
             });
+
+            // Tour Event Listeners
+            document.getElementById('tourNextBtn').addEventListener('click', () => {
+                currentTourStep++;
+                if (currentTourStep < tourSteps.length) {
+                    showTooltip(currentTourStep);
+                } else {
+                    endTour();
+                }
+            });
+
+            document.getElementById('tourCloseBtn').addEventListener('click', endTour);
+
+            // Start the tour
+            startTour();
         });
     </script>
 </body>
