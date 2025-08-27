@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -480,7 +481,7 @@
         }
 
         .tour-tooltip {
-            position: absolute;
+            position: fixed;
             background-image: var(--primary-gradient);
             border: 2px solid palevioletred;
             border-radius: 8px;
@@ -492,6 +493,8 @@
             pointer-events: auto;
             animation: fadeIn 0.3s ease-in-out;
             z-index: 2001;
+            margin: 20px;
+            box-sizing: border-box;
         }
 
         .tour-tooltip h3 {
@@ -541,7 +544,10 @@
             background-color: #c82333;
         }
 
-        .tour-tooltip:after {
+        .tour-tooltip.right:after,
+        .tour-tooltip.left:after,
+        .tour-tooltip.top:after,
+        .tour-tooltip.bottom:after {
             content: "";
             position: absolute;
             border: 10px solid transparent;
@@ -580,6 +586,10 @@
             transform: translateX(-50%);
         }
 
+        .tour-tooltip.center:after {
+            display: none; /* Tidak perlu panah untuk posisi tengah */
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
@@ -597,6 +607,25 @@
 
             .toolbar.active {
                 left: 0;
+            }
+
+            .tour-tooltip {
+                max-width: 80%;
+                margin: 10px;
+                font-size: 12px;
+            }
+
+            .tour-tooltip h3 {
+                font-size: 14px;
+            }
+
+            .tour-tooltip p {
+                font-size: 12px;
+            }
+
+            .tour-tooltip button {
+                font-size: 12px;
+                padding: 6px 10px;
             }
         }
     </style>
@@ -718,13 +747,13 @@
                 element: '.history',
                 title: "Status Slot Parkir Realtime",
                 text: "Menampilkan status terkini slot parkir (Terisi atau Kosong) yang diambil dari Firebase secara real-time.",
-                position: 'right'
+                position: 'center'
             },
             {
                 element: '.customers',
                 title: "Customers Message",
                 text: "Menampilkan daftar pesan pelanggan terkait slot parkir, termasuk informasi seperti nomor plat, pengguna, dan catatan parkir.",
-                position: 'left'
+                position: 'center'
             },
             {
                 element: '.sort-controls',
@@ -767,25 +796,46 @@
 
             const rect = targetElement.getBoundingClientRect();
             const tooltipRect = tooltip.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const margin = 20;
             let left, top;
 
-            switch (tourSteps[step].position) {
-                case 'right':
-                    left = rect.right + 10;
-                    top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
-                    break;
-                case 'left':
-                    left = rect.left - tooltipRect.width - 10;
-                    top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
-                    break;
-                case 'top':
-                    left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-                    top = rect.top - tooltipRect.height - 10;
-                    break;
-                case 'bottom':
-                    left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-                    top = rect.bottom + 10;
-                    break;
+            if (tourSteps[step].position === 'center') {
+                // Posisikan tooltip di tengah layar
+                left = (viewportWidth - tooltipRect.width) / 2;
+                top = (viewportHeight - tooltipRect.height) / 2;
+                // Pastikan tooltip tetap dalam batas layar dengan margin
+                left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
+                top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
+            } else {
+                switch (tourSteps[step].position) {
+                    case 'right':
+                        left = rect.right + 10;
+                        top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                        // Batasi agar tidak keluar layar
+                        left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
+                        top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
+                        break;
+                    case 'left':
+                        left = rect.left - tooltipRect.width - 10;
+                        top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                        left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
+                        top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
+                        break;
+                    case 'top':
+                        left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                        top = rect.top - tooltipRect.height - 10;
+                        left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
+                        top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
+                        break;
+                    case 'bottom':
+                        left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                        top = rect.bottom + 10;
+                        left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
+                        top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
+                        break;
+                }
             }
 
             tooltip.style.left = `${left}px`;
@@ -1149,3 +1199,4 @@
     </script>
 </body>
 </html>
+```
