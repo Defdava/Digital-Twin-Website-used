@@ -760,29 +760,37 @@
                 font-size: 7px;
             }
 
-            .history-filters {
-                gap: 8px;
-                flex-direction: column;
-                align-items: stretch;
-            }
+.history-filters {
+        gap: 10px;
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-            .history-filters .filter-item {
-                flex: 1 1 100%;
-                min-width: 100%;
-                max-width: 100%;
-            }
+    .history-filters .filter-item {
+        width: 100%; /* Lebar penuh di mobile */
+        min-width: 100%;
+        max-width: 100%;
+    }
 
-            .history-filters label {
-                font-size: 8px;
-                margin-bottom: 3px;
-            }
+    .history-filters label {
+        width: 100%; /* Memastikan label memenuhi lebar filter-item */
+        font-size: 9px; /* Ukuran font lebih kecil untuk mobile */
+        margin-bottom: 3px;
+        line-height: 1.5; /* Konsisten dengan desktop */
+        text-align: left; /* Menyelaraskan teks ke kiri */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 
-            .history-filters input,
-            .history-filters select {
-                padding: 5px;
-                font-size: 8px;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            }
+    .history-filters input,
+    .history-filters select {
+        width: 100%;
+        height: 28px; /* Tinggi tetap untuk mobile */
+        padding: 6px;
+        font-size: 9px;
+        box-sizing: border-box;
+    }
 
             .history-filters input:focus,
             .history-filters select:focus {
