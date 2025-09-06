@@ -622,169 +622,167 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-@media (max-width: 768px) {
-    body {
-        font-size: 10px;
-    }
+        @media (max-width: 720px) {
+            body {
+                font-size: 12px;
+            }
 
-    header {
-        padding: 5px 8px; /* Further reduced padding */
-    }
+            header {
+                padding: 8px 12px;
+            }
 
-    .logo img {
-        height: 28px; /* Slightly smaller logo */
-    }
+            .logo img {
+                height: 35px;
+            }
 
-    .logo span {
-        font-size: 11px;
-        margin-left: 5px;
-    }
+            .logo span {
+                font-size: 14px;
+                margin-left: 8px;
+            }
 
-    .header-right span {
-        font-size: 10px;
-    }
+            .header-right span {
+                font-size: 12px;
+            }
 
-    .toolbar {
-        width: 25%; /* 1/4 of the page */
-        left: -25%; /* Match width for sliding animation */
-        padding: 5px; /* Further reduced padding */
-        top: 48px; /* Align directly below header (header height: ~28px logo + 5px padding * 2 + border/margin) */
-        background-image: var(--header-gradient); /* Ensure seamless background */
-        box-shadow: none; /* Remove shadow for cleaner connection to header */
-        border-top: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border to blend with header */
-    }
+            .toolbar {
+                width: 100%;
+                left: -800px;
+                padding: 12px;
+                top: 56px;
+            }
 
-    .toolbar.active {
-        left: 0;
-    }
+            .toolbar.active {
+                left: 0;
+            }
 
-    .toolbar .feature-box {
-        padding: 4px; /* Further reduced padding */
-        margin-bottom: 6px;
-    }
+            .toolbar .feature-box {
+                padding: 8px;
+                margin-bottom: 12px;
+            }
 
-    .toolbar .feature-box h3 {
-        font-size: 10px; /* Smaller font */
-    }
+            .toolbar .feature-box h3 {
+                font-size: 14px;
+            }
 
-    .toolbar .feature-box button {
-        padding: 4px;
-        font-size: 8px; /* Smaller button text */
-    }
+            .toolbar .feature-box button {
+                padding: 8px;
+                font-size: 12px;
+            }
 
-    .toolbar .user-info img {
-        width: 22px;
-        height: 22px;
-    }
+            .toolbar .user-info img {
+                width: 35px;
+                height: 35px;
+            }
 
-    .toolbar .user-info span {
-        font-size: 8px;
-    }
+            .toolbar .user-info span {
+                font-size: 11px;
+            }
 
-    .main-content {
-        padding: 58px 8px 8px; /* Adjusted to account for smaller header */
-    }
+            .main-content {
+                padding: 60px 12px 12px;
+            }
 
-    .main-content-grid {
-        grid-template-columns: 1fr;
-        gap: 3px; /* Tighter gap */
-    }
+            .main-content-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
 
-    .overview, .history, .park-condition, .park-condition-2d {
-        padding: 3px; /* Reduced padding */
-        min-height: 50px; /* Extremely small minimum height */
-    }
+            .overview, .history, .park-condition, .park-condition-2d {
+                padding: 8px;
+                min-height: 40px;
+            }
 
-    .overview h1, .history h2, .park-condition h2, .park-condition-2d h2 {
-        font-size: 10px; /* Smaller title font */
-    }
+            .overview h1, .history h2, .park-condition h2, .park-condition-2d h2 {
+                font-size: 16px;
+            }
 
-    .stats {
-        grid-template-columns: 1fr 1fr;
-        gap: 2px; /* Tighter gap */
-        font-size: 8px; /* Smaller font */
-    }
+            .stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+                font-size: 12px;
+            }
 
-    .stats div {
-        padding: 2px; /* Reduced padding */
-    }
+            .stats div {
+                padding: 5px;
+            }
 
-    .stats span:first-child {
-        font-size: 8px;
-    }
+            .stats span:first-child {
+                font-size: 12px;
+            }
 
-    .stats span:last-child {
-        font-size: 8px;
-    }
+            .stats span:last-child {
+                font-size: 12px;
+            }
 
-    .history-filters {
-        gap: 2px; /* Tighter gap */
-    }
+            .history-filters {
+                gap: 6px;
+            }
 
-    .history-filters input,
-    .history-filters select {
-        padding: 2px;
-        font-size: 8px;
-        min-width: 60px;
-    }
+            .history-filters input,
+            .history-filters select {
+                padding: 5px;
+                font-size: 11px;
+                min-width: 90px;
+            }
 
-    .history-table th, .history-table td {
-        padding: 2px; /* Reduced padding */
-        font-size: 8px; /* Smaller font */
-    }
+            .history-table th, .history-table td {
+                padding: 6px;
+                font-size: 11px;
+            }
 
-    .parking-lot {
-        margin-top: 6px; /* Reduced margin */
-        gap: 0.3px; /* Extremely tight gap */
-    }
+            .parking-lot {
+                margin-top: 15px;
+                gap: 1px;
+            }
 
-    .column {
-        gap: 0.3px; /* Extremely tight gap */
-    }
+            .column {
+                gap: 2px;
+            }
 
-    .slot {
-        width: 20px; /* Very small slot size */
-        height: 12px;
-        font-size: 8px;
-        border-width: 0.5px; /* Thinner border */
-    }
+            .slot {
+                width: 35px;
+                height: 22px;
+                font-size: 11px;
+                border-width: 1px;
+            }
 
-    .slot span {
-        font-size: 8px;
-    }
+            .slot span {
+                font-size: 11px;
+            }
 
-    .slot .car {
-        width: 15px; /* Very small car size */
-        height: 6px;
-    }
+            .slot .car {
+                width: 25px;
+                height: 12px;
+            }
 
-    #toggleCameraBtn, #fullscreenBtn, #collapseBtn {
-        padding: 4px 6px;
-        font-size: 8px; /* Smaller button text */
-    }
+            #toggleCameraBtn, #fullscreenBtn, #collapseBtn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
 
-    #cameraContainer {
-        min-height: 100px; /* Very small 3D container height */
-    }
+            #cameraContainer {
+                min-height: 200px;
+            }
 
-    .tour-tooltip {
-        max-width: 75%;
-        padding: 4px;
-    }
+            .tour-tooltip {
+                max-width: 85%;
+                padding: 8px;
+            }
 
-    .tour-tooltip h3 {
-        font-size: 9px;
-    }
+            .tour-tooltip h3 {
+                font-size: 12px;
+            }
 
-    .tour-tooltip p {
-        font-size: 8px;
-    }
+            .tour-tooltip p {
+                font-size: 11px;
+            }
 
-    .tour-tooltip button {
-        padding: 2px 4px;
-        font-size: 8px;
-    }
-}
+            .tour-tooltip button {
+                padding: 5px 8px;
+                font-size: 11px;
+            }
+        }
+
         @media (max-width: 480px) {
             .stats {
                 grid-template-columns: 1fr;
