@@ -73,13 +73,12 @@
 
         .toolbar {
             position: fixed;
-            top: 70px;
+            top: 0;
             left: -400px;
             width: 240px;
-            height: 100%;
+            height: 100vh;
             background-image: var(--header-gradient);
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            padding: 15px 20px;
             z-index: 999;
             overflow-y: auto;
             transition: left 0.3s ease-in-out;
@@ -210,21 +209,43 @@
         .history-filters {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 15px;
             margin-bottom: 15px;
-            justify-content: center;
+            justify-content: space-evenly;
+        }
+
+        .history-filters label {
+            display: block;
+            font-size: 14px;
+            color: white;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .history-filters .filter-item {
+            flex: 1;
+            min-width: 120px;
+            max-width: 200px;
         }
 
         .history-filters input,
         .history-filters select {
+            width: 100%;
             padding: 8px;
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 6px;
             font-size: 14px;
-            flex: 1;
-            min-width: 120px;
             background-color: var(--white-transparent);
             color: var(--text-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .history-filters input:focus,
+        .history-filters select:focus {
+            outline: none;
+            border-color: lightseagreen;
+            box-shadow: 0 0 8px rgba(32, 178, 170, 0.5);
         }
 
         .history-filters select option {
@@ -657,10 +678,9 @@
                 width: 25%;
                 left: -25%;
                 padding: 4px;
-                top: 39px;
-                height: calc(100% - 39px);
+                top: 0;
+                height: 100vh;
                 background-image: var(--header-gradient);
-                box-shadow: none;
                 z-index: 999;
             }
 
@@ -734,14 +754,31 @@
             }
 
             .history-filters {
-                gap: 1px;
+                gap: 10px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .history-filters label {
+                font-size: 8px;
+                margin-bottom: 3px;
+            }
+
+            .history-filters .filter-item {
+                min-width: unset;
+                max-width: unset;
             }
 
             .history-filters input,
             .history-filters select {
-                padding: 1px;
-                font-size: 7px;
-                min-width: 50px;
+                padding: 5px;
+                font-size: 8px;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            }
+
+            .history-filters input:focus,
+            .history-filters select:focus {
+                box-shadow: 0 0 5px rgba(32, 178, 170, 0.5);
             }
 
             .history-table th, .history-table td {
@@ -805,17 +842,6 @@
         @media (max-width: 480px) {
             .stats {
                 grid-template-columns: 1fr;
-            }
-
-            .history-filters {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .history-filters input,
-            .history-filters select {
-                min-width: unset;
-                width: 100%;
             }
 
             .slot {
@@ -897,13 +923,22 @@
             <div class="history">
                 <h2>Slot History</h2>
                 <div class="history-filters">
-                    <input type="text" id="filterSlot" placeholder="Filter by Slot (e.g. 18)">
-                    <input type="date" id="filterDate">
-                    <select id="filterStatus">
-                        <option value="">All Status</option>
-                        <option value="terisi">Terisi</option>
-                        <option value="kosong">Kosong</option>
-                    </select>
+                    <div class="filter-item">
+                        <label for="filterSlot">Slot Number</label>
+                        <input type="text" id="filterSlot" placeholder="e.g. 18">
+                    </div>
+                    <div class="filter-item">
+                        <label for="filterDate">Date</label>
+                        <input type="date" id="filterDate">
+                    </div>
+                    <div class="filter-item">
+                        <label for="filterStatus">Status</label>
+                        <select id="filterStatus">
+                            <option value="">All Status</option>
+                            <option value="terisi">Terisi</option>
+                            <option value="kosong">Kosong</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="history-table-container">
                     <table class="history-table" id="slotHistoryTable">
