@@ -223,7 +223,7 @@
         }
 
         .history-filters .filter-item {
-            flex: 1;
+            flex: 1 1 30%;
             min-width: 120px;
             max-width: 200px;
         }
@@ -675,13 +675,14 @@
             }
 
             .toolbar {
-                width: 25%;
-                left: -25%;
-                padding: 4px;
+                width: 70%;
+                left: -70%;
+                padding: 60px 4px 4px;
                 top: 0;
                 height: 100vh;
                 background-image: var(--header-gradient);
                 z-index: 999;
+                box-sizing: border-box;
             }
 
             .toolbar.active {
@@ -702,6 +703,12 @@
                 font-size: 7px;
             }
 
+            .toolbar .user-info {
+                padding-top: 10px;
+                border-bottom: 1px solid rgba(255,255,255,0.2);
+                margin-bottom: 10px;
+            }
+
             .toolbar .user-info img {
                 width: 20px;
                 height: 20px;
@@ -714,10 +721,11 @@
             .main-content {
                 padding: 49px 6px 6px;
                 overflow-x: auto;
+                transition: margin-left 0.3s ease-in-out;
             }
 
             .main-content.with-toolbar {
-                margin-left: 0;
+                margin-left: 70%;
             }
 
             .main-content-grid {
@@ -759,14 +767,15 @@
                 align-items: stretch;
             }
 
+            .history-filters .filter-item {
+                flex: 1 1 100%;
+                min-width: unset;
+                max-width: unset;
+            }
+
             .history-filters label {
                 font-size: 8px;
                 margin-bottom: 3px;
-            }
-
-            .history-filters .filter-item {
-                min-width: unset;
-                max-width: unset;
             }
 
             .history-filters input,
@@ -852,6 +861,14 @@
             .slot .car {
                 width: 22px;
                 height: 10px;
+            }
+
+            .toolbar {
+                width: 80%;
+            }
+
+            .main-content.with-toolbar {
+                margin-left: 80%;
             }
         }
     </style>
@@ -1551,9 +1568,11 @@
             const toolbar = document.getElementById('toolbar');
             const mainContent = document.getElementById('mainContent');
             toggleToolbar.addEventListener('click', () => {
-                toolbar.classList.toggle('active');
+                const isActive = toolbar.classList.toggle('active');
                 if (window.innerWidth > 768) {
-                    mainContent.classList.toggle('with-toolbar');
+                    mainContent.classList.toggle('with-toolbar', isActive);
+                } else {
+                    mainContent.classList.toggle('with-toolbar', isActive);
                 }
             });
 
