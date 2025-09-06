@@ -5,60 +5,64 @@
     { "src": ".*\\.(css|js|png|jpg|jpeg|gif|svg|ico|glb)", "use": "@vercel/static" }
   ],
   "routes": [
-    { 
-      "src": "/style.css", 
-      "dest": "/style.css" 
+    {
+      "src": "/",
+      "dest": "/login.html"
     },
-    { 
-      "src": "/app.js", 
-      "dest": "/app.js" 
+    {
+      "src": "/style.css",
+      "dest": "/style.css"
     },
-    { 
-      "src": "/assets/(.*)", 
-      "dest": "/assets/$1" 
+    {
+      "src": "/app.js",
+      "dest": "/app.js"
     },
-    { 
-      "src": "/models/(.*)", 
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/models/(.*)",
       "dest": "/models/$1",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Content-Type": "model/gltf-binary"
       }
     },
-    { 
-      "src": "/login", 
-      "dest": "/login.html" 
+    {
+      "src": "/login",
+      "dest": "/login.html"
     },
-    { 
-      "src": "/register", 
-      "dest": "/register.html" 
+    {
+      "src": "/register",
+      "dest": "/register.html"
     },
-    { 
-      "src": "/forgot-password", 
-      "dest": "/forgotpassword.html" 
+    {
+      "src": "/forgot-password",
+      "dest": "/forgotpassword.html"
     },
-    { 
-      "src": "/live-overview", 
-      "dest": "/index.html" 
+    {
+      "src": "/live-overview",
+      "dest": "/index.html"
     },
-    { 
-      "src": "/previous-analysis", 
-      "dest": "/previous-analysis.html" 
+    {
+      "src": "/previous-analysis",
+      "dest": "/previous-analysis.html"
     },
-    { 
-      "src": "/parking-analysis", 
-      "dest": "/parkinganalysis.html" 
+    {
+      "src": "/parking-analysis",
+      "dest": "/parkinganalysis.html"
     },
-    { 
-      "src": "/profile", 
-      "dest": "/profile.html" 
+    {
+      "src": "/profile",
+      "dest": "/profile.html"
     },
-    { 
-      "handle": "filesystem" 
+    {
+      "handle": "filesystem"
     },
-    { 
-      "src": "/(.*)", 
-      "dest": "/login.html" 
+    {
+      "src": "/(.*)",
+      "dest": "/login.html"
     }
   ]
 }
