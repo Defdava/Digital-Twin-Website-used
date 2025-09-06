@@ -627,21 +627,200 @@
         }
 
         @media (max-width: 768px) {
-            .main-content-grid {
-                grid-template-columns: 1fr;
+            body {
+                font-size: 14px; /* Smaller base font size for mobile */
+            }
+
+            header {
+                padding: 10px 15px; /* Reduced padding for mobile */
+            }
+
+            .logo img {
+                height: 40px; /* Smaller logo for mobile */
+            }
+
+            .logo span {
+                font-size: 16px; /* Smaller logo text */
+                margin-left: 10px;
+            }
+
+            .header-right span {
+                font-size: 14px; /* Smaller header text */
+            }
+
+            .toolbar {
+                width: 100%;
+                left: -100%;
+                padding: 15px;
+                top: 60px; /* Adjusted for smaller header */
+            }
+
+            .toolbar.active {
+                left: 0;
+            }
+
+            .toolbar .feature-box {
+                padding: 10px;
+                margin-bottom: 15px;
+            }
+
+            .toolbar .feature-box h3 {
+                font-size: 16px;
+            }
+
+            .toolbar .feature-box button {
+                padding: 10px; /* Larger tap area */
+                font-size: 13px;
+            }
+
+            .toolbar .user-info img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .toolbar .user-info span {
+                font-size: 12px;
+            }
+
+            .main-content {
+                padding: 70px 15px 15px; /* Adjusted padding for mobile */
             }
 
             .main-content.with-toolbar {
                 margin-left: 0;
             }
 
-            .toolbar {
-                width: 100%;
-                left: -100%;
+            .main-content-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
             }
 
-            .toolbar.active {
-                left: 0;
+            .overview, .history, .park-condition, .park-condition-2d {
+                padding: 10px;
+                min-height: 120px;
+            }
+
+            .overview h1, .history h2, .park-condition h2, .park-condition-2d h2 {
+                font-size: 18px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                font-size: 14px;
+            }
+
+            .stats div {
+                padding: 6px;
+            }
+
+            .stats span:first-child {
+                font-size: 14px;
+            }
+
+            .stats span:last-child {
+                font-size: 14px;
+            }
+
+            .history-filters {
+                gap: 8px;
+            }
+
+            .history-filters input,
+            .history-filters select {
+                padding: 6px;
+                font-size: 12px;
+                min-width: 100px;
+            }
+
+            .history-table th, .history-table td {
+                padding: 8px;
+                font-size: 12px;
+            }
+
+            .parking-lot {
+                margin-top: 30px;
+                gap: 2px;
+            }
+
+            .slot {
+                width: 45px; /* Slightly smaller slots for mobile */
+                height: 30px;
+                font-size: 14px;
+            }
+
+            .slot span {
+                font-size: 14px;
+            }
+
+            .slot .car {
+                width: 35px;
+                height: 18px;
+            }
+
+            #toggleCameraBtn, #fullscreenBtn, #collapseBtn {
+                padding: 10px 14px; /* Larger tap area */
+                font-size: 13px;
+            }
+
+            #cameraContainer {
+                min-height: 250px; /* Smaller container for mobile */
+            }
+
+            #controls {
+                top: 5px;
+                right: 5px;
+                padding: 6px;
+            }
+
+            #controls button {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
+
+            .tour-tooltip {
+                max-width: 90%; /* Ensure tooltip fits on small screens */
+                padding: 10px;
+            }
+
+            .tour-tooltip h3 {
+                font-size: 14px;
+            }
+
+            .tour-tooltip p {
+                font-size: 12px;
+            }
+
+            .tour-tooltip button {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr; /* Stack stats vertically on very small screens */
+            }
+
+            .history-filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .history-filters input,
+            .history-filters select {
+                min-width: unset;
+                width: 100%;
+            }
+
+            .slot {
+                width: 40px; /* Even smaller slots for very small screens */
+                height: 28px;
+            }
+
+            .slot .car {
+                width: 32px;
+                height: 16px;
             }
         }
     </style>
@@ -870,8 +1049,8 @@
             directionalLight = new THREE.DirectionalLight(0xffffbb, 1.2);
             directionalLight.position.set(30, 40, 30);
             directionalLight.castShadow = true;
-            directionalLight.shadow.mapSize.width = 2048;
-            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.mapSize.width = 1024; // Reduced for mobile performance
+            directionalLight.shadow.mapSize.height = 1024;
             scene.add(directionalLight);
 
             const sunGeometry = new THREE.SphereGeometry(5, 32, 32);
@@ -994,44 +1173,40 @@
         function updateSunPosition() {
             const now = new Date();
             const hours = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
-            const dayFraction = (hours / 24); // Normalisasi waktu dalam sehari
-            const theta = 2 * Math.PI * dayFraction; // Sudut penuh untuk orbit 24 jam
-            const sunRadius = 100; // Jarak matahari dari pusat
+            const dayFraction = (hours / 24);
+            const theta = 2 * Math.PI * dayFraction;
+            const sunRadius = 100;
             let sunHeight;
 
-            // Mengatur posisi matahari
             if (hours >= 0 && hours < 6 || hours >= 17) {
-                // Malam (00:00-06:00 dan 17:00-00:00): Matahari mengorbit di sekitar slot
-                sunHeight = 50 * Math.sin(theta); // Ketinggian bervariasi
+                sunHeight = 50 * Math.sin(theta);
                 directionalLight.position.set(sunRadius * Math.cos(theta), sunHeight, sunRadius * Math.sin(theta));
             } else {
-                // Siang (06:00-17:00): Matahari tetap di atas slot parkir
-                sunHeight = 50; // Ketinggian tetap di atas
-                directionalLight.position.set(0, sunHeight, 0); // Posisi di tengah atas slot parkir
+                sunHeight = 50;
+                directionalLight.position.set(0, sunHeight, 0);
             }
 
             sun.position.copy(directionalLight.position);
             sunLight.position.copy(sun.position);
 
-            // Mengatur warna langit berdasarkan waktu
             if (hours >= 0 && hours < 10) {
-                scene.background = new THREE.Color(0x00008B); // Biru tua (00:00-10:00)
+                scene.background = new THREE.Color(0x00008B);
                 directionalLight.intensity = 0.2;
                 sunLight.intensity = 0.2;
                 ambientLight.intensity = 0.3;
-                sun.material.color.set(0xFFDAB9); // Warna matahari malam/pagi
+                sun.material.color.set(0xFFDAB9);
             } else if (hours >= 10 && hours < 17) {
-                scene.background = new THREE.Color(0x87CEEB); // Biru muda (10:00-17:00)
+                scene.background = new THREE.Color(0x87CEEB);
                 directionalLight.intensity = 1.2;
                 sunLight.intensity = 0.5;
                 ambientLight.intensity = 0.6;
-                sun.material.color.set(0xFFFFE0); // Warna matahari siang
+                sun.material.color.set(0xFFFFE0);
             } else {
-                scene.background = new THREE.Color(0x191970); // Biru hitam (17:00-00:00)
+                scene.background = new THREE.Color(0x191970);
                 directionalLight.intensity = 0.1;
                 sunLight.intensity = 0.1;
                 ambientLight.intensity = 0.2;
-                sun.material.color.set(0xFFDAB9); // Warna matahari malam
+                sun.material.color.set(0xFFDAB9);
             }
         }
 
@@ -1271,23 +1446,32 @@
             const tooltipRect = tooltip.getBoundingClientRect();
             let left, top;
 
-            switch (tourSteps[step].position) {
-                case 'right':
-                    left = rect.right + 10;
-                    top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
-                    break;
-                case 'left':
-                    left = rect.left - tooltipRect.width - 10;
-                    top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
-                    break;
-                case 'top':
-                    left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-                    top = rect.top - tooltipRect.height - 10;
-                    break;
-                case 'bottom':
-                    left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-                    top = rect.bottom + 10;
-                    break;
+            // Adjust tooltip positioning for mobile
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                // Center tooltip on mobile for better visibility
+                left = (window.innerWidth - tooltipRect.width) / 2;
+                top = rect.bottom + 10;
+                tooltip.className = 'tour-tooltip bottom'; // Force bottom position on mobile
+            } else {
+                switch (tourSteps[step].position) {
+                    case 'right':
+                        left = rect.right + 10;
+                        top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                        break;
+                    case 'left':
+                        left = rect.left - tooltipRect.width - 10;
+                        top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                        break;
+                    case 'top':
+                        left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                        top = rect.top - tooltipRect.height - 10;
+                        break;
+                    case 'bottom':
+                        left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                        top = rect.bottom + 10;
+                        break;
+                }
             }
 
             tooltip.style.left = `${left}px`;
