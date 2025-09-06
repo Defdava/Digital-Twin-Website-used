@@ -82,6 +82,7 @@
             z-index: 999;
             overflow-y: auto;
             transition: left 0.3s ease-in-out;
+            box-sizing: border-box;
         }
 
         .toolbar.active {
@@ -100,6 +101,7 @@
             margin: 0 0 10px;
             font-size: 18px;
             color: var(--text-color);
+            text-align: center;
         }
 
         .toolbar .feature-box button {
@@ -121,6 +123,10 @@
 
         .toolbar .user-info {
             text-align: center;
+            background-color: var(--white-transparent);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
         }
 
         .toolbar .user-info img {
@@ -420,7 +426,7 @@
             animation: carExit 0.5s ease-in-out forwards;
         }
 
-        #toggleCameraBtn, #fullscreenBtn, #collapseBtn {
+        #toggleCameraBtn, #fullscreenBtn {
             background-color: lightseagreen;
             color: white;
             border: none;
@@ -433,14 +439,6 @@
 
         #toggleCameraBtn:hover, #fullscreenBtn:hover {
             background-color: palevioletred;
-        }
-
-        #collapseBtn {
-            background-color: palevioletred;
-        }
-
-        #collapseBtn:hover {
-            background-color: #c82333;
         }
 
         #cameraContainer {
@@ -525,10 +523,6 @@
             font-size: 14px;
             z-index: 102;
             display: none;
-        }
-
-        :fullscreen #collapseBtn {
-            display: block;
         }
 
         .tour-overlay {
@@ -675,9 +669,9 @@
             }
 
             .toolbar {
-                width: 73%;
-                left: -400%;
-                padding: 60px 4px 4px;
+                width: 80%;
+                left: -100%;
+                padding: 60px 10px 10px;
                 top: 0;
                 height: 100vh;
                 background-image: var(--header-gradient);
@@ -690,32 +684,37 @@
             }
 
             .toolbar .feature-box {
-                padding: 3px;
-                margin-bottom: 5px;
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             }
 
             .toolbar .feature-box h3 {
-                font-size: 9px;
+                font-size: 12px;
+                margin-bottom: 8px;
             }
 
             .toolbar .feature-box button {
-                padding: 3px;
-                font-size: 7px;
+                padding: 6px;
+                font-size: 10px;
+                border-radius: 5px;
             }
 
             .toolbar .user-info {
-                padding-top: 10px;
-                border-bottom: 1px solid rgba(255,255,255,0.2);
+                padding: 10px;
                 margin-bottom: 10px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             }
 
             .toolbar .user-info img {
-                width: 20px;
-                height: 20px;
+                width: 30px;
+                height: 30px;
             }
 
             .toolbar .user-info span {
-                font-size: 7px;
+                font-size: 10px;
             }
 
             .main-content {
@@ -725,7 +724,7 @@
             }
 
             .main-content.with-toolbar {
-                margin-left: 70%;
+                margin-left: 80%;
             }
 
             .main-content-grid {
@@ -769,8 +768,8 @@
 
             .history-filters .filter-item {
                 flex: 1 1 100%;
-                min-width: unset;
-                max-width: unset;
+                min-width: 100%;
+                max-width: 100%;
             }
 
             .history-filters label {
@@ -820,7 +819,7 @@
                 height: 5px;
             }
 
-            #toggleCameraBtn, #fullscreenBtn, #collapseBtn {
+            #toggleCameraBtn, #fullscreenBtn {
                 padding: 3px 5px;
                 font-size: 7px;
             }
@@ -864,11 +863,11 @@
             }
 
             .toolbar {
-                width: 80%;
+                width: 85%;
             }
 
             .main-content.with-toolbar {
-                margin-left: 80%;
+                margin-left: 85%;
             }
         }
     </style>
@@ -986,7 +985,6 @@
                     <div id="loading">Loading parking data...</div>
                     <div id="error-message"></div>
                     <button id="fullscreenBtn">Full Screen</button>
-                    <button id="collapseBtn">Click to Collapse</button>
                 </div>
             </div>
             <div class="park-condition-2d">
@@ -1686,6 +1684,7 @@
             // 3D Visualization Toggle
             const toggleCameraBtn = document.getElementById('toggleCameraBtn');
             const threeContainer = document.getElementById('threeContainer');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
             let isExpanded = false;
 
             toggleCameraBtn.addEventListener('click', () => {
@@ -1693,7 +1692,7 @@
                 toggleCameraBtn.textContent = isExpanded ? 'Click to Collapse' : 'Click to Expand';
                 if (isExpanded) {
                     threeContainer.style.display = 'block';
-                    document.getElementById('fullscreenBtn').style.display = 'block';
+                    fullscreenBtn.style.display = 'block';
                     if (!scene) initThree();
                     else {
                         renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -1705,24 +1704,19 @@
                     }
                 } else {
                     threeContainer.style.display = 'none';
-                    document.getElementById('fullscreenBtn').style.display = 'none';
-                    document.getElementById('collapseBtn').style.display = 'none';
+                    fullscreenBtn.style.display = 'none';
                     cleanupThree();
                 }
             });
 
-            // Full Screen and Collapse Button
-            const fullscreenBtn = document.getElementById('fullscreenBtn');
-            const collapseBtn = document.getElementById('collapseBtn');
-
-            function toggleFullScreen() {
-                const threeContainer = document.getElementById('threeContainer');
+            // Full Screen Button
+            fullscreenBtn.addEventListener('click', () => {
                 if (!document.fullscreenElement) {
                     if (!isExpanded) {
                         isExpanded = true;
                         toggleCameraBtn.textContent = 'Click to Collapse';
                         threeContainer.style.display = 'block';
-                        document.getElementById('fullscreenBtn').style.display = 'block';
+                        fullscreenBtn.style.display = 'block';
                         document.getElementById('controls').style.display = 'block';
                         if (!scene) {
                             initThree();
@@ -1741,35 +1735,15 @@
                 } else {
                     document.exitFullscreen();
                 }
-            }
+            });
 
-            function handleCollapse() {
-                if (document.fullscreenElement) document.exitFullscreen();
-                if (isExpanded) {
+            document.addEventListener('fullscreenchange', () => {
+                if (!document.fullscreenElement && isExpanded) {
                     isExpanded = false;
                     toggleCameraBtn.textContent = 'Click to Expand';
                     threeContainer.style.display = 'none';
-                    document.getElementById('fullscreenBtn').style.display = 'none';
-                    document.getElementById('collapseBtn').style.display = 'none';
+                    fullscreenBtn.style.display = 'none';
                     cleanupThree();
-                }
-            }
-
-            fullscreenBtn.addEventListener('click', toggleFullScreen);
-            collapseBtn.addEventListener('click', handleCollapse);
-
-            document.addEventListener('fullscreenchange', () => {
-                if (document.fullscreenElement) {
-                    document.getElementById('collapseBtn').style.display = 'block';
-                } else {
-                    document.getElementById('collapseBtn').style.display = 'none';
-                    if (isExpanded) {
-                        isExpanded = false;
-                        toggleCameraBtn.textContent = 'Click to Expand';
-                        threeContainer.style.display = 'none';
-                        document.getElementById('fullscreenBtn').style.display = 'none';
-                        cleanupThree();
-                    }
                 }
             });
 
