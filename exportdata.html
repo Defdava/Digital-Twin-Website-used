@@ -1,9 +1,8 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -24,6 +23,7 @@
             color: var(--text-color);
             overflow-x: hidden;
             font-size: 16px;
+            touch-action: manipulation;
         }
 
         video#bg-video {
@@ -67,22 +67,29 @@
             font-weight: bold;
         }
 
+        .header-right {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            margin-right: 30px;
+        }
+
         .header-right span {
             font-size: 18px;
         }
 
         .toolbar {
             position: fixed;
-            top: 70px;
+            top: 0;
             left: -400px;
             width: 240px;
-            height: 100%;
+            height: 100vh;
             background-image: var(--header-gradient);
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            padding: 15px 20px;
             z-index: 999;
             overflow-y: auto;
             transition: left 0.3s ease-in-out;
+            box-sizing: border-box;
         }
 
         .toolbar.active {
@@ -101,6 +108,7 @@
             margin: 0 0 10px;
             font-size: 18px;
             color: var(--text-color);
+            text-align: center;
         }
 
         .toolbar .feature-box button {
@@ -122,6 +130,10 @@
 
         .toolbar .user-info {
             text-align: center;
+            background-color: var(--white-transparent);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
         }
 
         .toolbar .user-info img {
@@ -151,7 +163,7 @@
 
         .history {
             background-image: var(--primary-gradient);
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             border: 2px solid palevioletred;
             min-height: 150px;
@@ -169,21 +181,52 @@
         .history-filters {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 15px;
             margin-bottom: 15px;
-            justify-content: center;
+            justify-content: space-evenly;
+        }
+
+        .history-filters .filter-item {
+            flex: 1 1 30%;
+            min-width: 120px;
+            max-width: 200px;
+        }
+
+        .history-filters label {
+            display: block;
+            font-size: 14px;
+            color: white;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
 
         .history-filters input,
         .history-filters select {
+            width: 100%;
             padding: 8px;
-            font-size: 14px;
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 6px;
+            font-size: 14px;
             background-color: var(--white-transparent);
             color: var(--text-color);
-            flex: 1;
-            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .history-filters input:focus,
+        .history-filters select:focus {
+            outline: none;
+            border-color: lightseagreen;
+            box-shadow: 0 0 8px rgba(32, 178, 170, 0.5);
+        }
+
+        .history-filters select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 8px center;
         }
 
         .history-table-container {
@@ -309,7 +352,7 @@
         }
 
         .tour-tooltip {
-            position: fixed;
+            position: absolute;
             background-image: var(--primary-gradient);
             border: 2px solid palevioletred;
             border-radius: 8px;
@@ -321,8 +364,6 @@
             pointer-events: auto;
             animation: fadeIn 0.3s ease-in-out;
             z-index: 2001;
-            margin: 20px;
-            box-sizing: border-box;
         }
 
         .tour-tooltip h3 {
@@ -372,10 +413,7 @@
             background-color: #c82333;
         }
 
-        .tour-tooltip.right:after,
-        .tour-tooltip.left:after,
-        .tour-tooltip.top:after,
-        .tour-tooltip.bottom:after {
+        .tour-tooltip:after {
             content: "";
             position: absolute;
             border: 10px solid transparent;
@@ -414,55 +452,190 @@
             transform: translateX(-50%);
         }
 
-        .tour-tooltip.center:after {
-            display: none; /* No arrow for centered tooltips */
-        }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
 
         @media (max-width: 768px) {
-            .main-content.with-toolbar {
-                margin-left: 0;
+            body {
+                font-size: 9px;
+            }
+
+            header {
+                padding: 4px 6px;
+                position: fixed;
+                width: 100%;
+                z-index: 1000;
+            }
+
+            .logo img {
+                height: 25px;
+            }
+
+            .logo span {
+                font-size: 10px;
+                margin-left: 4px;
+            }
+
+            .header-right span {
+                font-size: 9px;
             }
 
             .toolbar {
-                width: 100%;
+                width: 80%;
                 left: -100%;
+                padding: 60px 10px 10px;
+                top: 0;
+                height: 100vh;
+                z-index: 999;
+                box-sizing: border-box;
             }
 
             .toolbar.active {
                 left: 0;
             }
 
+            .toolbar .feature-box {
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+
+            .toolbar .feature-box h3 {
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+
+            .toolbar .feature-box button {
+                padding: 6px;
+                font-size: 10px;
+                border-radius: 5px;
+            }
+
+            .toolbar .user-info {
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+
+            .toolbar .user-info img {
+                width: 30px;
+                height: 30px;
+            }
+
+            .toolbar .user-info span {
+                font-size: 10px;
+            }
+
+            .main-content {
+                padding: 49px 6px 6px;
+                overflow-x: auto;
+                transition: margin-left 0.3s ease-in-out;
+            }
+
+            .main-content.with-toolbar {
+                margin-left: 80%;
+            }
+
+            .history {
+                padding: 2px;
+                min-height: 40px;
+            }
+
+            .history h2 {
+                font-size: 9px;
+            }
+
             .history-filters {
+                gap: 10px;
                 flex-direction: column;
+                align-items: stretch;
+            }
+
+            .history-filters .filter-item {
+                width: 100%;
+                min-width: 100%;
+                max-width: 100%;
+            }
+
+            .history-filters label {
+                font-size: 9px;
+                margin-bottom: 3px;
+                line-height: 1.5;
+                text-align: left;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
 
             .history-filters input,
             .history-filters select {
-                min-width: 100%;
+                width: 100%;
+                height: 28px;
+                padding: 6px;
+                font-size: 9px;
+                box-sizing: border-box;
+            }
+
+            .history-filters input:focus,
+            .history-filters select:focus {
+                box-shadow: 0 0 5px rgba(32, 178, 170, 0.5);
+            }
+
+            .history-table th,
+            .history-table td {
+                padding: 6px;
+                font-size: 9px;
+            }
+
+            .status.in, .status.out {
+                padding: 3px 6px;
+                font-size: 9px;
+            }
+
+            #exportBtn {
+                padding: 6px 8px;
+                font-size: 9px;
+                border-radius: 5px;
+            }
+
+            #error-message, #success-message {
+                top: 49px;
+                right: 6px;
+                padding: 6px 10px;
+                font-size: 9px;
+                max-width: 70%;
             }
 
             .tour-tooltip {
-                max-width: 80%;
-                margin: 10px;
-                font-size: 12px;
+                max-width: 70%;
+                padding: 3px;
             }
 
             .tour-tooltip h3 {
-                font-size: 14px;
+                font-size: 8px;
             }
 
             .tour-tooltip p {
-                font-size: 12px;
+                font-size: 7px;
             }
 
             .tour-tooltip button {
-                font-size: 12px;
-                padding: 6px 10px;
+                padding: 2px 3px;
+                font-size: 7px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .toolbar {
+                width: 85%;
+            }
+
+            .main-content.with-toolbar {
+                margin-left: 85%;
             }
         }
     </style>
@@ -507,13 +680,22 @@
         <div class="history">
             <h2>Slot History</h2>
             <div class="history-filters">
-                <input type="text" id="filterSlot" placeholder="Filter by Slot (e.g. 18)">
-                <input type="date" id="filterDate">
-                <select id="filterStatus">
-                    <option value="">All Status</option>
-                    <option value="terisi">Terisi</option>
-                    <option value="kosong">Kosong</option>
-                </select>
+                <div class="filter-item">
+                    <label for="filterSlot">Slot Number</label>
+                    <input type="text" id="filterSlot" placeholder="e.g., 10">
+                </div>
+                <div class="filter-item">
+                    <label for="filterDate">Date</label>
+                    <input type="date" id="filterDate">
+                </div>
+                <div class="filter-item">
+                    <label for="filterStatus">Status</label>
+                    <select id="filterStatus">
+                        <option value="">All Status</option>
+                        <option value="terisi">Terisi</option>
+                        <option value="kosong">Kosong</option>
+                    </select>
+                </div>
             </div>
             <button id="exportBtn">Export Data</button>
             <div class="history-table-container">
@@ -543,6 +725,7 @@
         </div>
     </main>
     <script>
+        // Authentication System
         class User {
             constructor(username, email, password, idWorker, profilePic = '/assets/user.JPG') {
                 this.username = username;
@@ -558,22 +741,9 @@
                 this.users = JSON.parse(localStorage.getItem('users')) || [];
             }
 
-            register(username, email, password, idWorker, profilePic) {
-                const userExists = this.users.some(user => user.email === email);
-                if (userExists) {
-                    throw new Error('User already exists!');
-                }
-                const user = new User(username, email, password, idWorker, profilePic);
-                this.users.push(user);
-                localStorage.setItem('users', JSON.stringify(this.users));
-                return user;
-            }
-
             login(email, password) {
                 const user = this.users.find(u => u.email === email && u.password === password);
-                if (user) {
-                    return user;
-                }
+                if (user) return user;
                 throw new Error('Invalid email or password!');
             }
         }
@@ -593,125 +763,15 @@
         firebase.initializeApp(firebaseConfig);
         const slotHistoryRef = firebase.database().ref("slot_history");
 
-        // Tour Steps Configuration
-        const tourSteps = [
-            {
-                element: 'header',
-                title: "Website Tutorial",
-                text: "Click the BRIN logo to open the sidebar toolbar, which contains features like Profile, Log Out, Live Overview, Previous Analysis, Export Data, Helpdesk, and Parking Analysis.",
-                position: 'bottom'
-            },
-            {
-                element: '.history',
-                title: "Slot History Section",
-                text: "This section displays the history of parking slot activities, including filters, a data table, and an export button for downloading data.",
-                position: 'center'
-            },
-            {
-                element: '.history-filters',
-                title: "History Filters",
-                text: "Use these filters to narrow down the slot history by slot number, date, or status (filled or empty).",
-                position: 'top'
-            },
-            {
-                element: '.history-table-container',
-                title: "Slot History Table",
-                text: "This table shows the filtered slot history with details like slot number, timestamp, status, and vehicle size.",
-                position: 'right'
-            },
-            {
-                element: '#exportBtn',
-                title: "Export Data Button",
-                text: "Click this button to export the filtered slot history data to an Excel file (.xlsx).",
-                position: 'top'
-            }
-        ];
+        let historyDataArray = [];
 
-        let currentTourStep = 0;
-
-        function startTour() {
-            document.getElementById('tourOverlay').style.display = 'block';
-            showTooltip(currentTourStep);
-        }
-
-        function showTooltip(step) {
-            const tooltip = document.getElementById('tourTooltip');
-            const title = document.getElementById('tooltipTitle');
-            const text = document.getElementById('tooltipText');
-            const nextBtn = document.getElementById('tourNextBtn');
-
-            const targetElement = document.querySelector(tourSteps[step].element);
-            if (!targetElement) {
-                console.error(`Element ${tourSteps[step].element} not found!`);
-                endTour();
-                return;
-            }
-
-            title.textContent = tourSteps[step].title;
-            text.textContent = tourSteps[step].text;
-            tooltip.style.display = 'block';
-            tooltip.className = 'tour-tooltip ' + tourSteps[step].position;
-
-            const rect = targetElement.getBoundingClientRect();
-            const tooltipRect = tooltip.getBoundingClientRect();
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-            const margin = 20;
-            let left, top;
-
-            if (tourSteps[step].position === 'center') {
-                // Position tooltip at screen center
-                left = (viewportWidth - tooltipRect.width) / 2;
-                top = (viewportHeight - tooltipRect.height) / 2;
-                // Ensure tooltip stays within screen bounds with margin
-                left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
-                top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
-            } else {
-                switch (tourSteps[step].position) {
-                    case 'right':
-                        left = rect.right + 10;
-                        top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
-                        left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
-                        top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
-                        break;
-                    case 'left':
-                        left = rect.left - tooltipRect.width - 10;
-                        top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
-                        left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
-                        top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
-                        break;
-                    case 'top':
-                        left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-                        top = rect.top - tooltipRect.height - 10;
-                        left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
-                        top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
-                        break;
-                    case 'bottom':
-                        left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-                        top = rect.bottom + 10;
-                        left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
-                        top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
-                        break;
-                }
-            }
-
-            tooltip.style.left = `${left}px`;
-            tooltip.style.top = `${top}px`;
-
-            nextBtn.textContent = step === tourSteps.length - 1 ? 'Finish' : 'Next';
-        }
-
-        function endTour() {
-            document.getElementById('tourOverlay').style.display = 'none';
-            document.getElementById('tourTooltip').style.display = 'none';
-            currentTourStep = 0;
-        }
-
+        // Show Error/Success Messages
         function showError(message) {
             const errorElement = document.getElementById('error-message');
             errorElement.textContent = message;
             errorElement.style.display = 'block';
             setTimeout(() => { errorElement.style.display = 'none'; }, 5000);
+            console.error('Error:', message);
         }
 
         function showSuccess(message) {
@@ -719,10 +779,10 @@
             successElement.textContent = message;
             successElement.style.display = 'block';
             setTimeout(() => { successElement.style.display = 'none'; }, 5000);
+            console.log('Success:', message);
         }
 
-        let historyDataArray = [];
-
+        // Render History Table
         function renderHistoryTable() {
             const slotHistoryTable = document.getElementById("slotHistoryTable").getElementsByTagName('tbody')[0];
             slotHistoryTable.innerHTML = "";
@@ -751,10 +811,11 @@
             });
 
             if (slotHistoryTable.rows.length === 0) {
-                showError("No data matches the current filters.");
+                slotHistoryTable.innerHTML = '<tr><td colspan="4" style="padding: 20px; text-align: center; color: var(--text-color);">No matching slots found</td></tr>';
             }
         }
 
+        // Export to Excel
         function exportToExcel() {
             const filteredData = [];
             const filterSlot = document.getElementById('filterSlot').value.trim();
@@ -787,7 +848,109 @@
             showSuccess("Data successfully exported.");
         }
 
+        // Tour Steps Configuration
+        const tourSteps = [
+            {
+                element: 'header',
+                title: "Petunjuk Website",
+                text: "Klik logo BRIN untuk membuka toolbar samping yang berisi fitur seperti Profile, Log Out, Live Overview, Previous Analysis, Export Data, Helpdesk, dan Parking Analysis.",
+                position: 'bottom'
+            },
+            {
+                element: '.history',
+                title: "Slot History",
+                text: "Bagian ini menampilkan riwayat aktivitas slot parkir, termasuk filter untuk nomor slot, tanggal, atau status (terisi/kosong), dan tombol untuk mengekspor data.",
+                position: 'right'
+            },
+            {
+                element: '.history-filters',
+                title: "Filter Riwayat",
+                text: "Gunakan filter ini untuk mempersempit riwayat slot berdasarkan nomor slot, tanggal, atau status.",
+                position: 'top'
+            },
+            {
+                element: '.history-table-container',
+                title: "Tabel Riwayat Slot",
+                text: "Tabel ini menampilkan riwayat slot yang difilter dengan detail seperti nomor slot, waktu, status, dan ukuran kendaraan.",
+                position: 'right'
+            },
+            {
+                element: '#exportBtn',
+                title: "Tombol Ekspor Data",
+                text: "Klik tombol ini untuk mengekspor data riwayat slot yang difilter ke file Excel (.xlsx).",
+                position: 'top'
+            }
+        ];
+
+        let currentTourStep = 0;
+
+        function startTour() {
+            document.getElementById('tourOverlay').style.display = 'block';
+            showTooltip(currentTourStep);
+        }
+
+        function showTooltip(step) {
+            const tooltip = document.getElementById('tourTooltip');
+            const title = document.getElementById('tooltipTitle');
+            const text = document.getElementById('tooltipText');
+            const nextBtn = document.getElementById('tourNextBtn');
+
+            const targetElement = document.querySelector(tourSteps[step].element);
+            if (!targetElement) {
+                console.error(`Element ${tourSteps[step].element} not found!`);
+                endTour();
+                return;
+            }
+
+            title.textContent = tourSteps[step].title;
+            text.textContent = tourSteps[step].text;
+            tooltip.style.display = 'block';
+            tooltip.className = 'tour-tooltip ' + tourSteps[step].position;
+
+            const rect = targetElement.getBoundingClientRect();
+            const tooltipRect = tooltip.getBoundingClientRect();
+            let left, top;
+
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                left = (window.innerWidth - tooltipRect.width) / 2;
+                top = rect.bottom + 10;
+                tooltip.className = 'tour-tooltip bottom';
+            } else {
+                switch (tourSteps[step].position) {
+                    case 'right':
+                        left = rect.right + 10;
+                        top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                        break;
+                    case 'left':
+                        left = rect.left - tooltipRect.width - 10;
+                        top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                        break;
+                    case 'top':
+                        left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                        top = rect.top - tooltipRect.height - 10;
+                        break;
+                    case 'bottom':
+                        left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                        top = rect.bottom + 10;
+                        break;
+                }
+            }
+
+            tooltip.style.left = `${left}px`;
+            tooltip.style.top = `${top}px`;
+
+            nextBtn.textContent = step === tourSteps.length - 1 ? 'Finish' : 'Next';
+        }
+
+        function endTour() {
+            document.getElementById('tourOverlay').style.display = 'none';
+            document.getElementById('tourTooltip').style.display = 'none';
+            currentTourStep = 0;
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
+            // Authentication
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             const userInfo = document.getElementById('userInfo');
             const userName = document.getElementById('userName');
@@ -801,19 +964,27 @@
                 profilePic.src = currentUser.profilePic || '/assets/user.JPG';
             }
 
+            // Logout
             document.querySelector('.logout').addEventListener('click', () => {
                 localStorage.removeItem('currentUser');
                 alert('Berhasil logout!');
                 window.location.replace('/login.html');
             });
 
+            // Toggle Toolbar
             const toggleToolbar = document.getElementById('toggleToolbar');
             const toolbar = document.getElementById('toolbar');
+            const mainContent = document.getElementById('mainContent');
             toggleToolbar.addEventListener('click', () => {
-                toolbar.classList.toggle('active');
-                document.getElementById('mainContent').classList.toggle('with-toolbar');
+                const isActive = toolbar.classList.toggle('active');
+                if (window.innerWidth > 768) {
+                    mainContent.classList.toggle('with-toolbar', isActive);
+                } else {
+                    mainContent.classList.toggle('with-toolbar', isActive);
+                }
             });
 
+            // Slot History Firebase Listener
             slotHistoryRef.on("value", (snapshot) => {
                 console.log("Firebase slot_history data:", snapshot.val());
                 const historyData = snapshot.val();
@@ -848,10 +1019,15 @@
                 showError("Failed to fetch slot history data.");
             });
 
+            // Filter Event Listeners
             document.getElementById('filterSlot').addEventListener('input', renderHistoryTable);
             document.getElementById('filterDate').addEventListener('change', renderHistoryTable);
             document.getElementById('filterStatus').addEventListener('change', renderHistoryTable);
 
+            // Export Button
+            document.getElementById('exportBtn').addEventListener('click', exportToExcel);
+
+            // Tour Event Listeners
             document.getElementById('tourNextBtn').addEventListener('click', () => {
                 currentTourStep++;
                 if (currentTourStep < tourSteps.length) {
@@ -863,8 +1039,7 @@
 
             document.getElementById('tourCloseBtn').addEventListener('click', endTour);
 
-            document.getElementById('exportBtn').addEventListener('click', exportToExcel);
-
+            // Prevent Undo/Redo and Navigation
             document.addEventListener('keydown', (event) => {
                 if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
                     event.preventDefault();
@@ -881,10 +1056,12 @@
                 }
             });
 
-            // Start the tour
-            startTour();
+            // Start Tour
+            if (localStorage.getItem('tourCompleted') !== 'true') {
+                startTour();
+                localStorage.setItem('tourCompleted', 'true');
+            }
         });
     </script>
 </body>
 </html>
-```

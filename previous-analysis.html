@@ -67,6 +67,13 @@
             font-weight: bold;
         }
 
+        .header-right {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            margin-right: 30px;
+        }
+
         .header-right span {
             font-size: 18px;
         }
@@ -79,7 +86,6 @@
             height: 100vh;
             background-image: var(--header-gradient);
             padding: 15px 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
             z-index: 999;
             overflow-y: auto;
             transition: left 0.3s ease-in-out;
@@ -157,7 +163,7 @@
 
         .overview {
             background-image: var(--primary-gradient);
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             border: 2px solid palevioletred;
             margin-bottom: 20px;
@@ -198,29 +204,22 @@
         }
 
         .history-filters .filter-item {
-            width: 160px;
-            min-width: unset;
-            max-width: unset;
+            flex: 1 1 30%;
+            min-width: 120px;
+            max-width: 200px;
         }
 
         .history-filters label {
             display: block;
-            width: 100%;
             font-size: 14px;
             color: white;
             margin-bottom: 5px;
             font-weight: bold;
-            line-height: 1.5;
-            text-align: left;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
         }
 
         .history-filters input,
         .history-filters select {
             width: 100%;
-            height: 36px;
             padding: 8px;
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 6px;
@@ -228,7 +227,14 @@
             background-color: var(--white-transparent);
             color: var(--text-color);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .history-filters input:focus,
+        .history-filters select:focus {
+            outline: none;
+            border-color: lightseagreen;
+            box-shadow: 0 0 8px rgba(32, 178, 170, 0.5);
         }
 
         .history-filters select {
@@ -288,7 +294,7 @@
             max-height: 200px;
             overflow-y: auto;
             border-radius: 8px;
-            background-color: var(--white-transparent);
+            background-color: rgba(255, 255, 255, 0.1);
             padding: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
@@ -301,7 +307,7 @@
             font-size: 14px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             transition: background 0.2s;
-            color: var(--text-color);
+            color: white;
         }
 
         .history-item:last-child, .customer-item:last-child {
@@ -538,7 +544,7 @@
         }
 
         .tour-tooltip {
-            position: fixed;
+            position: absolute;
             background-image: var(--primary-gradient);
             border: 2px solid palevioletred;
             border-radius: 8px;
@@ -550,8 +556,6 @@
             pointer-events: auto;
             animation: fadeIn 0.3s ease-in-out;
             z-index: 2001;
-            margin: 20px;
-            box-sizing: border-box;
         }
 
         .tour-tooltip h3 {
@@ -601,10 +605,7 @@
             background-color: #c82333;
         }
 
-        .tour-tooltip.right:after,
-        .tour-tooltip.left:after,
-        .tour-tooltip.top:after,
-        .tour-tooltip.bottom:after {
+        .tour-tooltip:after {
             content: "";
             position: absolute;
             border: 10px solid transparent;
@@ -641,10 +642,6 @@
             top: -20px;
             left: 50%;
             transform: translateX(-50%);
-        }
-
-        .tour-tooltip.center:after {
-            display: none;
         }
 
         @keyframes fadeIn {
@@ -766,7 +763,6 @@
             }
 
             .history-filters label {
-                width: 100%;
                 font-size: 9px;
                 margin-bottom: 3px;
                 line-height: 1.5;
@@ -783,6 +779,11 @@
                 padding: 6px;
                 font-size: 9px;
                 box-sizing: border-box;
+            }
+
+            .history-filters input:focus,
+            .history-filters select:focus {
+                box-shadow: 0 0 5px rgba(32, 178, 170, 0.5);
             }
 
             .sort-controls {
@@ -890,17 +891,14 @@
             .tour-tooltip {
                 max-width: 70%;
                 padding: 3px;
-                margin: 10px;
             }
 
             .tour-tooltip h3 {
                 font-size: 8px;
-                margin-bottom: 5px;
             }
 
             .tour-tooltip p {
                 font-size: 7px;
-                margin-bottom: 8px;
             }
 
             .tour-tooltip button {
@@ -927,7 +925,6 @@
         <source src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/wave.mp4?raw=true" type="video/mp4">
         Your browser does not support the video tag.
     </video>
-
     <header>
         <div class="logo" id="toggleToolbar">
             <img src="https://github.com/Defdava/Digital-Twin-Website-used/blob/main/Logo_BRIN.png?raw=true" alt="BRIN Logo">
@@ -938,7 +935,6 @@
             <span>Parking Management System</span>
         </div>
     </header>
-
     <aside class="toolbar" id="toolbar">
         <div class="feature-box user-info" id="userInfo">
             <h3>User</h3>
@@ -957,16 +953,15 @@
             <button class="parking-analysis" onclick="window.location.href='/parkiranalysis.html'">Parking Analysis</button>
         </div>
     </aside>
-
     <main class="main-content" id="mainContent">
         <div class="overview">
             <h1>Previous Analysis</h1>
             <div class="history">
-                <h2>Status Slot Parkir Realtime</h2>
+                <h2>Slot History</h2>
                 <div class="history-filters">
                     <div class="filter-item">
                         <label for="filter-slot">Slot Number</label>
-                        <input type="text" id="filter-slot" placeholder="e.g., slot_10">
+                        <input type="text" id="filter-slot" placeholder="e.g., 10">
                     </div>
                     <div class="filter-item">
                         <label for="filter-date">Date</label>
@@ -975,16 +970,27 @@
                     <div class="filter-item">
                         <label for="filter-status">Status</label>
                         <select id="filter-status">
-                            <option value="">All</option>
-                            <option value="Terisi">Terisi</option>
-                            <option value="Kosong">Kosong</option>
+                            <option value="">All Status</option>
+                            <option value="terisi">Terisi</option>
+                            <option value="kosong">Kosong</option>
                         </select>
                     </div>
                 </div>
-                <div id="slotStatusList" class="history-list"></div>
+                <div class="history-table-container">
+                    <table class="history-table" id="slotHistoryTable">
+                        <thead>
+                            <tr>
+                                <th>Slot</th>
+                                <th>Timestamp</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
             <div class="customers">
-                <h2>Customers Message</h2>
+                <h2>Customer Messages</h2>
                 <div class="sort-controls">
                     <label for="sortBy">Sort by:</label>
                     <select id="sortBy">
@@ -1016,17 +1022,41 @@
             </div>
         </div>
     </main>
-
     <div id="deleteConfirmation" class="delete-confirmation">
         <div class="delete-confirmation-box">
             <h3>Confirm Deletion</h3>
-            <p id="deleteMessage">Are you sure you want to delete this customer message?</p>
+            <p id="deleteMessage"></p>
             <button id="confirmDelete" class="confirm-delete">Delete</button>
             <button id="cancelDelete" class="cancel-delete">Cancel</button>
         </div>
     </div>
-
     <script>
+        // Authentication System
+        class User {
+            constructor(username, email, password, idWorker, profilePic = '/assets/user.JPG') {
+                this.username = username;
+                this.email = email;
+                this.password = password;
+                this.idWorker = idWorker;
+                this.profilePic = profilePic;
+            }
+        }
+
+        class AuthSystem {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('users')) || [];
+            }
+
+            login(email, password) {
+                const user = this.users.find(u => u.email === email && u.password === password);
+                if (user) return user;
+                throw new Error('Invalid email or password!');
+            }
+        }
+
+        const auth = new AuthSystem();
+
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAef3SJwvVVTunr6CWki79aenfpXlgYc0s",
             authDomain: "digitaltwinparkingbrin.firebaseapp.com",
@@ -1037,12 +1067,297 @@
             appId: "1:608462498913:web:73695d8c91f923e2db8e20",
             measurementId: "G-F1TRY65RTG"
         };
+
         firebase.initializeApp(firebaseConfig);
+        const dbRef = firebase.database().ref("slot_parking");
+        const slotHistoryRef = firebase.database().ref("slot_history");
+        const messagesRef = firebase.database().ref("slot_message_user");
 
         let messagesData = [];
-        let slotStatusData = [];
+        let slotHistoryData = [];
         let currentSortBy = 'slot';
         let currentSortOrder = 'asc';
+
+        // Show Error/Success Messages
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            setTimeout(() => { errorElement.style.display = 'none'; }, 5000);
+            console.error('Error:', message);
+        }
+
+        function showSuccess(message) {
+            const successElement = document.getElementById('success-message');
+            successElement.textContent = message;
+            successElement.style.display = 'block';
+            setTimeout(() => { successElement.style.display = 'none'; }, 5000);
+            console.log('Success:', message);
+        }
+
+        // Parse Date Function
+        function parseDate(dateStr) {
+            if (!dateStr) return new Date(0);
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                const date = new Date(dateStr);
+                if (!isNaN(date)) return date;
+            }
+            if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+                const [day, month, year] = dateStr.split('-').map(Number);
+                const date = new Date(year, month - 1, day);
+                if (!isNaN(date)) return date;
+            }
+            console.warn(`Invalid date format: ${dateStr}`);
+            return new Date(0);
+        }
+
+        // Slot History Update
+        function renderHistoryTable() {
+            const slotHistoryTable = document.getElementById("slotHistoryTable").getElementsByTagName('tbody')[0];
+            slotHistoryTable.innerHTML = "";
+
+            const filterSlot = document.getElementById('filter-slot').value.trim();
+            const filterDate = document.getElementById('filter-date').value;
+            const filterStatus = document.getElementById('filter-status').value;
+
+            slotHistoryData.forEach((entry) => {
+                const entryDate = entry.timestamp.split(' ')[0];
+                if (filterSlot && entry.slot !== filterSlot) return;
+                if (filterDate && entryDate !== filterDate) return;
+                if (filterStatus && entry.status !== filterStatus) return;
+
+                const row = slotHistoryTable.insertRow();
+                row.insertCell(0).textContent = entry.slot;
+                row.insertCell(1).textContent = entry.timestamp;
+                row.insertCell(2).textContent = entry.status;
+
+                if (entry.status === 'terisi') {
+                    row.cells[2].className = 'status in';
+                } else if (entry.status === 'kosong') {
+                    row.cells[2].className = 'status out';
+                }
+            });
+
+            if (!slotHistoryTable.innerHTML) {
+                slotHistoryTable.innerHTML = '<tr><td colspan="3" style="padding: 20px; text-align: center; color: var(--text-color);">No matching slots found</td></tr>';
+            }
+        }
+
+        // Customer Messages Sorting
+        window.applySorting = function() {
+            currentSortBy = document.getElementById('sortBy').value;
+            currentSortOrder = document.getElementById('sortOrder').value;
+            updateCustomersMessage();
+        };
+
+        window.resetSorting = function() {
+            currentSortBy = 'slot';
+            currentSortOrder = 'asc';
+            document.getElementById('sortBy').value = currentSortBy;
+            document.getElementById('sortOrder').value = currentSortOrder;
+            updateCustomersMessage();
+        };
+
+        function sortMessages(messages) {
+            return messages.sort((a, b) => {
+                let valueA, valueB;
+                switch (currentSortBy) {
+                    case 'slot':
+                        valueA = parseInt(a.slot.split('_')[1]) || 999;
+                        valueB = parseInt(b.slot.split('_')[1]) || 999;
+                        break;
+                    case 'date':
+                        valueA = parseDate(a.message.date);
+                        valueB = parseDate(b.message.date);
+                        break;
+                    case 'user':
+                        valueA = (a.message.user || '').toLowerCase();
+                        valueB = (b.message.user || '').toLowerCase();
+                        break;
+                    case 'plate':
+                        valueA = (a.message.plate || '').toLowerCase();
+                        valueB = (b.message.plate || '').toLowerCase();
+                        break;
+                    default:
+                        valueA = parseInt(a.slot.split('_')[1]) || 999;
+                        valueB = parseInt(b.slot.split('_')[1]) || 999;
+                }
+                return currentSortOrder === 'desc' ? (valueA < valueB ? 1 : -1) : (valueA > valueB ? 1 : -1);
+            });
+        }
+
+        // Edit Form
+        function showEditForm(slot, message) {
+            const formId = `edit-form-${slot}`;
+            const existingForm = document.getElementById(formId);
+            if (existingForm) {
+                existingForm.style.display = existingForm.style.display === 'none' ? 'flex' : 'none';
+                return existingForm;
+            }
+
+            const form = document.createElement('div');
+            form.className = 'edit-form';
+            form.id = formId;
+            const dateValue = message.date ? (message.date.includes('-') && !message.date.startsWith('20') ? message.date : message.date.split('T')[0]) : '';
+            form.innerHTML = `
+                <input type="text" id="edit-slot-${slot}" value="${slot}" placeholder="Slot (e.g., slot_10)">
+                <input type="text" id="edit-contactNumber-${slot}" value="${message.contactNumber || ''}" placeholder="Contact Number">
+                <input type="text" id="edit-idWorker-${slot}" value="${message.idWorker || ''}" placeholder="ID Worker">
+                <input type="text" id="edit-lastAction-${slot}" value="${message.lastAction || ''}" placeholder="Last Action">
+                <input type="text" id="edit-parkingNotes-${slot}" value="${message.parkingNotes || ''}" placeholder="Parking Notes">
+                <input type="text" id="edit-plate-${slot}" value="${message.plate || ''}" placeholder="Plate">
+                <input type="text" id="edit-timestamp-${slot}" value="${message.timestamp || ''}" placeholder="Timestamp (HH:MM:SS)">
+                <input type="text" id="edit-user-${slot}" value="${message.user || ''}" placeholder="User">
+                <input type="date" id="edit-date-${slot}" value="${dateValue}" placeholder="Date">
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button onclick="saveMessage('${slot}')">Save</button>
+                    <button class="cancel-btn" onclick="document.getElementById('${formId}').style.display = 'none'">Cancel</button>
+                </div>
+            `;
+            return form;
+        }
+
+        window.saveMessage = function(oldSlot) {
+            console.log('Saving message for old slot:', oldSlot);
+            const newSlot = document.getElementById(`edit-slot-${oldSlot}`).value.trim() || oldSlot;
+            if (!newSlot.match(/^slot_\d+$/)) {
+                showError('Invalid slot format. Use "slot_X" (e.g., slot_10)');
+                return;
+            }
+            let dateInput = document.getElementById(`edit-date-${oldSlot}`).value;
+            if (/^\d{2}-\d{2}-\d{4}$/.test(dateInput)) {
+                const [day, month, year] = dateInput.split('-');
+                dateInput = `${year}-${month}-${day}`;
+            }
+            const updatedMessage = {
+                contactNumber: document.getElementById(`edit-contactNumber-${oldSlot}`).value || null,
+                idWorker: document.getElementById(`edit-idWorker-${oldSlot}`).value || null,
+                lastAction: document.getElementById(`edit-lastAction-${oldSlot}`).value || null,
+                parkingNotes: document.getElementById(`edit-parkingNotes-${oldSlot}`).value || null,
+                plate: document.getElementById(`edit-plate-${oldSlot}`).value || null,
+                timestamp: document.getElementById(`edit-timestamp-${oldSlot}`).value || null,
+                user: document.getElementById(`edit-user-${oldSlot}`).value || null,
+                date: dateInput || null
+            };
+            console.log('Updated message:', updatedMessage, 'New slot:', newSlot);
+
+            messagesRef.child(newSlot).once('value', (snapshot) => {
+                if (snapshot.exists() && newSlot !== oldSlot) {
+                    showError(`Slot ${newSlot} already exists. Choose a different slot.`);
+                    return;
+                }
+                messagesRef.child(newSlot).set(updatedMessage)
+                    .then(() => {
+                        if (newSlot !== oldSlot) {
+                            return messagesRef.child(oldSlot).remove();
+                        }
+                    })
+                    .then(() => {
+                        showSuccess(`Message ${newSlot === oldSlot ? 'updated' : 'moved to new slot'} successfully`);
+                        document.getElementById(`edit-form-${oldSlot}`).style.display = 'none';
+                    })
+                    .catch((error) => {
+                        showError(`Failed to update message: ${error.message}`);
+                    });
+            });
+        };
+
+        window.deleteMessage = function(slot) {
+            const deleteModal = document.getElementById('deleteConfirmation');
+            const deleteMessage = document.getElementById('deleteMessage');
+            const confirmButton = document.getElementById('confirmDelete');
+            const cancelButton = document.getElementById('cancelDelete');
+
+            deleteMessage.textContent = `Are you sure you want to permanently delete the message for ${slot.replace('_', ' ').toUpperCase()}? This action cannot be undone.`;
+            deleteModal.style.display = 'flex';
+
+            const newConfirmButton = confirmButton.cloneNode(true);
+            const newCancelButton = cancelButton.cloneNode(true);
+            confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+            cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
+
+            newConfirmButton.addEventListener('click', function() {
+                performDelete(slot);
+                deleteModal.style.display = 'none';
+            });
+
+            newCancelButton.addEventListener('click', function() {
+                console.log('Deletion cancelled for slot:', slot);
+                deleteModal.style.display = 'none';
+            });
+
+            deleteModal.addEventListener('click', function(e) {
+                if (e.target === deleteModal) {
+                    deleteModal.style.display = 'none';
+                }
+            });
+        };
+
+        function performDelete(slot) {
+            console.log('Attempting to delete slot:', slot);
+            messagesRef.child(slot).once('value', (snapshot) => {
+                if (!snapshot.exists()) {
+                    showError(`Message for ${slot.replace('_', ' ').toUpperCase()} does not exist in Firebase`);
+                    console.warn(`No message found for slot: ${slot}`);
+                    return;
+                }
+                messagesRef.child(slot).remove()
+                    .then(() => {
+                        console.log(`Successfully deleted message for slot: ${slot}`);
+                        showSuccess(`Message for ${slot.replace('_', ' ').toUpperCase()} deleted successfully`);
+                        messagesData = messagesData.filter(item => item.slot !== slot);
+                        updateCustomersMessage();
+                    })
+                    .catch((error) => {
+                        console.error(`Failed to delete message for slot ${slot}:`, error);
+                        showError(`Failed to delete message: ${error.message}`);
+                    });
+            }).catch((error) => {
+                console.error(`Error checking slot existence: ${error}`);
+                showError(`Error checking slot existence: ${error.message}`);
+            });
+        }
+
+        function updateCustomersMessage() {
+            const customersMessageList = document.getElementById("customersMessageList");
+            customersMessageList.innerHTML = '';
+            if (!messagesData.length) {
+                customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-color);">No messages available</div>';
+                console.log('No messages in messagesData');
+                return;
+            }
+
+            let sortedMessages = sortMessages([...messagesData]);
+            sortedMessages.forEach(({ slot, message }) => {
+                const { contactNumber, idWorker, lastAction, parkingNotes, plate, timestamp, user, date } = message;
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'customer-item';
+                itemDiv.innerHTML = `
+                    <strong>${slot.replace('_', ' ').toUpperCase()}</strong>
+                    <span><strong>Contact:</strong> ${contactNumber || 'N/A'}</span>
+                    <span><strong>ID Worker:</strong> ${idWorker || 'N/A'}</span>
+                    <span><strong>Last Action:</strong> ${lastAction || 'N/A'}</span>
+                    <span><strong>Parking Notes:</strong> ${parkingNotes || 'N/A'}</span>
+                    <span><strong>Plate:</strong> ${plate || 'N/A'}</span>
+                    <span><strong>Timestamp:</strong> ${timestamp || 'N/A'}</span>
+                    <span><strong>User:</strong> ${user || 'N/A'}</span>
+                    <span><strong>Date:</strong> ${date || 'N/A'}</span>
+                    <div class="customer-actions">
+                        <button class="edit-btn" onclick="toggleEditForm('${slot}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteMessage('${slot}')">Delete</button>
+                    </div>
+                `;
+                itemDiv.appendChild(showEditForm(slot, message));
+                customersMessageList.appendChild(itemDiv);
+            });
+        }
+
+        window.toggleEditForm = function(slot) {
+            const form = document.getElementById(`edit-form-${slot}`);
+            if (form) {
+                form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+            }
+        };
 
         // Tour Steps Configuration
         const tourSteps = [
@@ -1054,15 +1369,15 @@
             },
             {
                 element: '.history',
-                title: "Status Slot Parkir Realtime",
-                text: "Menampilkan status terkini slot parkir (Terisi atau Kosong) yang diambil dari Firebase secara real-time. Gunakan filter untuk mencari slot tertentu, tanggal, atau status.",
-                position: 'center'
+                title: "Slot History",
+                text: "Menampilkan riwayat status slot parkir. Gunakan filter untuk mencari berdasarkan slot, tanggal, atau status (terisi/kosong).",
+                position: 'right'
             },
             {
                 element: '.customers',
-                title: "Customers Message",
+                title: "Customer Messages",
                 text: "Menampilkan daftar pesan pelanggan terkait slot parkir, termasuk informasi seperti nomor plat, pengguna, dan catatan parkir.",
-                position: 'center'
+                position: 'left'
             },
             {
                 element: '.sort-controls',
@@ -1105,49 +1420,31 @@
 
             const rect = targetElement.getBoundingClientRect();
             const tooltipRect = tooltip.getBoundingClientRect();
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-            const margin = 10;
             let left, top;
 
-            if (tourSteps[step].position === 'center') {
-                left = (viewportWidth - tooltipRect.width) / 2;
-                top = (viewportHeight - tooltipRect.height) / 2;
-                left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
-                top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                left = (window.innerWidth - tooltipRect.width) / 2;
+                top = rect.bottom + 10;
+                tooltip.className = 'tour-tooltip bottom';
             } else {
-                const isMobile = window.innerWidth <= 768;
-                if (isMobile) {
-                    left = (viewportWidth - tooltipRect.width) / 2;
-                    top = rect.bottom + 10;
-                    tooltip.className = 'tour-tooltip bottom';
-                } else {
-                    switch (tourSteps[step].position) {
-                        case 'right':
-                            left = rect.right + 10;
-                            top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
-                            left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
-                            top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
-                            break;
-                        case 'left':
-                            left = rect.left - tooltipRect.width - 10;
-                            top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
-                            left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
-                            top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
-                            break;
-                        case 'top':
-                            left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-                            top = rect.top - tooltipRect.height - 10;
-                            left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
-                            top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
-                            break;
-                        case 'bottom':
-                            left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-                            top = rect.bottom + 10;
-                            left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
-                            top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
-                            break;
-                    }
+                switch (tourSteps[step].position) {
+                    case 'right':
+                        left = rect.right + 10;
+                        top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                        break;
+                    case 'left':
+                        left = rect.left - tooltipRect.width - 10;
+                        top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                        break;
+                    case 'top':
+                        left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                        top = rect.top - tooltipRect.height - 10;
+                        break;
+                    case 'bottom':
+                        left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                        top = rect.bottom + 10;
+                        break;
                 }
             }
 
@@ -1163,25 +1460,33 @@
             currentTourStep = 0;
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener("DOMContentLoaded", () => {
+            // Authentication
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const userInfo = document.getElementById('userInfo');
+            const userName = document.getElementById('userName');
+            const profilePic = document.getElementById('profilePic');
             if (!currentUser) {
                 alert('Silakan login terlebih dahulu!');
                 window.location.replace('/login.html');
                 return;
+            } else {
+                userName.textContent = currentUser.username;
+                profilePic.src = currentUser.profilePic || '/assets/user.JPG';
             }
-            document.getElementById('userName').textContent = currentUser.username;
-            document.getElementById('profilePic').src = currentUser.profilePic || '/assets/user.JPG';
 
+            // Logout
             document.querySelector('.logout').addEventListener('click', () => {
                 localStorage.removeItem('currentUser');
                 alert('Berhasil logout!');
                 window.location.replace('/login.html');
             });
 
-            document.getElementById('toggleToolbar').addEventListener('click', () => {
-                const toolbar = document.getElementById('toolbar');
-                const mainContent = document.getElementById('mainContent');
+            // Toggle Toolbar
+            const toggleToolbar = document.getElementById('toggleToolbar');
+            const toolbar = document.getElementById('toolbar');
+            const mainContent = document.getElementById('mainContent');
+            toggleToolbar.addEventListener('click', () => {
                 const isActive = toolbar.classList.toggle('active');
                 if (window.innerWidth > 768) {
                     mainContent.classList.toggle('with-toolbar', isActive);
@@ -1190,309 +1495,43 @@
                 }
             });
 
-            document.getElementById('sortBy').value = currentSortBy;
-            document.getElementById('sortOrder').value = currentSortOrder;
+            // Slot History Firebase Listener
+            slotHistoryRef.on("value", (snapshot) => {
+                const historyData = snapshot.val();
+                slotHistoryData = [];
 
-            function showError(message) {
-                const errorElement = document.getElementById('error-message');
-                errorElement.textContent = message;
-                errorElement.style.display = 'block';
-                setTimeout(() => { errorElement.style.display = 'none'; }, 5000);
-                console.error('Error:', message);
-            }
-
-            function showSuccess(message) {
-                const successElement = document.getElementById('success-message');
-                successElement.textContent = message;
-                successElement.style.display = 'block';
-                setTimeout(() => { successElement.style.display = 'none'; }, 5000);
-                console.log('Success:', message);
-            }
-
-            function parseDate(dateStr) {
-                if (!dateStr) return new Date(0);
-                if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-                    const date = new Date(dateStr);
-                    if (!isNaN(date)) return date;
-                }
-                if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
-                    const [day, month, year] = dateStr.split('-').map(Number);
-                    const date = new Date(year, month - 1, day);
-                    if (!isNaN(date)) return date;
-                }
-                console.warn(`Invalid date format: ${dateStr}`);
-                return new Date(0);
-            }
-
-            const slotStatusList = document.getElementById("slotStatusList");
-            function updateSlotStatus(data) {
-                console.log('Slot Status Data:', data);
-                slotStatusList.innerHTML = '';
-                if (!data) {
-                    showError('No slot status data available');
+                if (!historyData) {
+                    console.warn("No slot history data available.");
+                    renderHistoryTable();
                     return;
                 }
-                const slots = Object.keys(data);
-                slots.sort((a, b) => {
-                    const numA = parseInt(a.split('_')[1]) || 999;
-                    const numB = parseInt(b.split('_')[1]) || 999;
-                    return numA - numB;
+
+                Object.keys(historyData).forEach((slotKey) => {
+                    const slotLogs = historyData[slotKey];
+                    Object.entries(slotLogs).forEach(([timestamp, entry]) => {
+                        const status = entry.status === true || entry.status === 'terisi' ? 'terisi' : 'kosong';
+                        const slotNumber = slotKey.split("_")[1];
+                        slotHistoryData.push({
+                            slot: slotNumber,
+                            timestamp: timestamp,
+                            status: status
+                        });
+                    });
                 });
 
-                const filterSlot = document.getElementById('filter-slot').value.trim().toLowerCase();
-                const filterDate = document.getElementById('filter-date').value;
-                const filterStatus = document.getElementById('filter-status').value;
-
-                slots.forEach((slot) => {
-                    const status = data[slot].occupied ? 'Terisi' : 'Kosong';
-                    const date = data[slot].date || '';
-                    if (
-                        (!filterSlot || slot.toLowerCase().includes(filterSlot)) &&
-                        (!filterDate || date === filterDate) &&
-                        (!filterStatus || status === filterStatus)
-                    ) {
-                        const statusClass = data[slot].occupied ? 'status in' : 'status out';
-                        slotStatusList.innerHTML += `
-                            <div class="history-item">
-                                <span>${slot.replace('_', ' ').toUpperCase()}</span>
-                                <span class="${statusClass}">${status}</span>
-                            </div>
-                        `;
-                    }
-                });
-                if (!slotStatusList.innerHTML) {
-                    slotStatusList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-color);">No matching slots found</div>';
-                }
-            }
-
-            firebase.database().ref("slot_parking").on("value", (snapshot) => {
-                const data = snapshot.val();
-                slotStatusData = data || {};
-                updateSlotStatus(data);
+                slotHistoryData.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+                renderHistoryTable();
             }, (error) => {
-                showError(`Failed to fetch slot status: ${error.message}`);
+                console.error("Error fetching slot history:", error);
+                showError("Failed to fetch slot history data.");
             });
 
-            document.getElementById('filter-slot').addEventListener('input', () => updateSlotStatus(slotStatusData));
-            document.getElementById('filter-date').addEventListener('change', () => updateSlotStatus(slotStatusData));
-            document.getElementById('filter-status').addEventListener('change', () => updateSlotStatus(slotStatusData));
+            document.getElementById('filter-slot').addEventListener('input', renderHistoryTable);
+            document.getElementById('filter-date').addEventListener('change', renderHistoryTable);
+            document.getElementById('filter-status').addEventListener('change', renderHistoryTable);
 
-            const customersMessageList = document.getElementById("customersMessageList");
-
-            window.applySorting = function() {
-                currentSortBy = document.getElementById('sortBy').value;
-                currentSortOrder = document.getElementById('sortOrder').value;
-                updateCustomersMessage();
-            };
-
-            window.resetSorting = function() {
-                currentSortBy = 'slot';
-                currentSortOrder = 'asc';
-                document.getElementById('sortBy').value = currentSortBy;
-                document.getElementById('sortOrder').value = currentSortOrder;
-                updateCustomersMessage();
-            };
-
-            function sortMessages(messages) {
-                return messages.sort((a, b) => {
-                    let valueA, valueB;
-                    switch (currentSortBy) {
-                        case 'slot':
-                            valueA = parseInt(a.slot.split('_')[1]) || 999;
-                            valueB = parseInt(b.slot.split('_')[1]) || 999;
-                            break;
-                        case 'date':
-                            valueA = parseDate(a.message.date);
-                            valueB = parseDate(b.message.date);
-                            break;
-                        case 'user':
-                            valueA = (a.message.user || '').toLowerCase();
-                            valueB = (b.message.user || '').toLowerCase();
-                            break;
-                        case 'plate':
-                            valueA = (a.message.plate || '').toLowerCase();
-                            valueB = (b.message.plate || '').toLowerCase();
-                            break;
-                        default:
-                            valueA = parseInt(a.slot.split('_')[1]) || 999;
-                            valueB = parseInt(b.slot.split('_')[1]) || 999;
-                    }
-                    return currentSortOrder === 'desc' ? (valueA < valueB ? 1 : -1) : (valueA > valueB ? 1 : -1);
-                });
-            }
-
-            function showEditForm(slot, message) {
-                const formId = `edit-form-${slot}`;
-                const existingForm = document.getElementById(formId);
-                if (existingForm) {
-                    existingForm.style.display = existingForm.style.display === 'none' ? 'flex' : 'none';
-                    return existingForm;
-                }
-
-                const form = document.createElement('div');
-                form.className = 'edit-form';
-                form.id = formId;
-                const dateValue = message.date ? (message.date.includes('-') && !message.date.startsWith('20') ? message.date : message.date.split('T')[0]) : '';
-                form.innerHTML = `
-                    <input type="text" id="edit-slot-${slot}" value="${slot}" placeholder="Slot (e.g., slot_10)">
-                    <input type="text" id="edit-contactNumber-${slot}" value="${message.contactNumber || ''}" placeholder="Contact Number">
-                    <input type="text" id="edit-idWorker-${slot}" value="${message.idWorker || ''}" placeholder="ID Worker">
-                    <input type="text" id="edit-lastAction-${slot}" value="${message.lastAction || ''}" placeholder="Last Action">
-                    <input type="text" id="edit-parkingNotes-${slot}" value="${message.parkingNotes || ''}" placeholder="Parking Notes">
-                    <input type="text" id="edit-plate-${slot}" value="${message.plate || ''}" placeholder="Plate">
-                    <input type="text" id="edit-timestamp-${slot}" value="${message.timestamp || ''}" placeholder="Timestamp (HH:MM:SS)">
-                    <input type="text" id="edit-user-${slot}" value="${message.user || ''}" placeholder="User">
-                    <input type="date" id="edit-date-${slot}" value="${dateValue}" placeholder="Date">
-                    <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <button onclick="saveMessage('${slot}')">Save</button>
-                        <button class="cancel-btn" onclick="document.getElementById('${formId}').style.display = 'none'">Cancel</button>
-                    </div>
-                `;
-                return form;
-            }
-
-            window.saveMessage = function(oldSlot) {
-                console.log('Saving message for old slot:', oldSlot);
-                const newSlot = document.getElementById(`edit-slot-${oldSlot}`).value.trim() || oldSlot;
-                if (!newSlot.match(/^slot_\d+$/)) {
-                    showError('Invalid slot format. Use "slot_X" (e.g., slot_10)');
-                    return;
-                }
-                let dateInput = document.getElementById(`edit-date-${oldSlot}`).value;
-                if (/^\d{2}-\d{2}-\d{4}$/.test(dateInput)) {
-                    const [day, month, year] = dateInput.split('-');
-                    dateInput = `${year}-${month}-${day}`;
-                }
-                const updatedMessage = {
-                    contactNumber: document.getElementById(`edit-contactNumber-${oldSlot}`).value || null,
-                    idWorker: document.getElementById(`edit-idWorker-${oldSlot}`).value || null,
-                    lastAction: document.getElementById(`edit-lastAction-${oldSlot}`).value || null,
-                    parkingNotes: document.getElementById(`edit-parkingNotes-${oldSlot}`).value || null,
-                    plate: document.getElementById(`edit-plate-${oldSlot}`).value || null,
-                    timestamp: document.getElementById(`edit-timestamp-${oldSlot}`).value || null,
-                    user: document.getElementById(`edit-user-${oldSlot}`).value || null,
-                    date: dateInput || null
-                };
-                console.log('Updated message:', updatedMessage, 'New slot:', newSlot);
-
-                firebase.database().ref(`slot_message_user/${newSlot}`).once('value', (snapshot) => {
-                    if (snapshot.exists() && newSlot !== oldSlot) {
-                        showError(`Slot ${newSlot} already exists. Choose a different slot.`);
-                        return;
-                    }
-                    firebase.database().ref(`slot_message_user/${newSlot}`).set(updatedMessage)
-                        .then(() => {
-                            if (newSlot !== oldSlot) {
-                                return firebase.database().ref(`slot_message_user/${oldSlot}`).remove();
-                            }
-                        })
-                        .then(() => {
-                            showSuccess(`Message ${newSlot === oldSlot ? 'updated' : 'moved to new slot'} successfully`);
-                            document.getElementById(`edit-form-${oldSlot}`).style.display = 'none';
-                        })
-                        .catch((error) => {
-                            showError(`Failed to update message: ${error.message}`);
-                        });
-                });
-            };
-
-            window.deleteMessage = function(slot) {
-                const deleteModal = document.getElementById('deleteConfirmation');
-                const deleteMessage = document.getElementById('deleteMessage');
-                const confirmButton = document.getElementById('confirmDelete');
-                const cancelButton = document.getElementById('cancelDelete');
-
-                deleteMessage.textContent = `Are you sure you want to permanently delete the message for ${slot.replace('_', ' ').toUpperCase()}? This action cannot be undone.`;
-                deleteModal.style.display = 'flex';
-
-                const newConfirmButton = confirmButton.cloneNode(true);
-                const newCancelButton = cancelButton.cloneNode(true);
-                confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
-                cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
-
-                newConfirmButton.addEventListener('click', function() {
-                    performDelete(slot);
-                    deleteModal.style.display = 'none';
-                });
-
-                newCancelButton.addEventListener('click', function() {
-                    console.log('Deletion cancelled for slot:', slot);
-                    deleteModal.style.display = 'none';
-                });
-
-                deleteModal.addEventListener('click', function(e) {
-                    if (e.target === deleteModal) {
-                        deleteModal.style.display = 'none';
-                    }
-                });
-            };
-
-            function performDelete(slot) {
-                console.log('Attempting to delete slot:', slot);
-                firebase.database().ref(`slot_message_user/${slot}`).once('value', (snapshot) => {
-                    if (!snapshot.exists()) {
-                        showError(`Message for ${slot.replace('_', ' ').toUpperCase()} does not exist in Firebase`);
-                        console.warn(`No message found for slot: ${slot}`);
-                        return;
-                    }
-                    firebase.database().ref(`slot_message_user/${slot}`).remove()
-                        .then(() => {
-                            console.log(`Successfully deleted message for slot: ${slot}`);
-                            showSuccess(`Message for ${slot.replace('_', ' ').toUpperCase()} deleted successfully`);
-                            messagesData = messagesData.filter(item => item.slot !== slot);
-                            updateCustomersMessage();
-                        })
-                        .catch((error) => {
-                            console.error(`Failed to delete message for slot ${slot}:`, error);
-                            showError(`Failed to delete message: ${error.message}`);
-                        });
-                }).catch((error) => {
-                    console.error(`Error checking slot existence: ${error}`);
-                    showError(`Error checking slot existence: ${error.message}`);
-                });
-            }
-
-            function updateCustomersMessage() {
-                customersMessageList.innerHTML = '';
-                if (!messagesData.length) {
-                    customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-color);">No messages available</div>';
-                    console.log('No messages in messagesData');
-                    return;
-                }
-
-                let sortedMessages = sortMessages([...messagesData]);
-                sortedMessages.forEach(({ slot, message }) => {
-                    const { contactNumber, idWorker, lastAction, parkingNotes, plate, timestamp, user, date } = message;
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'customer-item';
-                    itemDiv.innerHTML = `
-                        <strong>${slot.replace('_', ' ').toUpperCase()}</strong>
-                        <span><strong>Contact:</strong> ${contactNumber || 'N/A'}</span>
-                        <span><strong>ID Worker:</strong> ${idWorker || 'N/A'}</span>
-                        <span><strong>Last Action:</strong> ${lastAction || 'N/A'}</span>
-                        <span><strong>Parking Notes:</strong> ${parkingNotes || 'N/A'}</span>
-                        <span><strong>Plate:</strong> ${plate || 'N/A'}</span>
-                        <span><strong>Timestamp:</strong> ${timestamp || 'N/A'}</span>
-                        <span><strong>User:</strong> ${user || 'N/A'}</span>
-                        <span><strong>Date:</strong> ${date || 'N/A'}</span>
-                        <div class="customer-actions">
-                            <button class="edit-btn" onclick="toggleEditForm('${slot}')">Edit</button>
-                            <button class="delete-btn" onclick="deleteMessage('${slot}')">Delete</button>
-                        </div>
-                    `;
-                    itemDiv.appendChild(showEditForm(slot, message));
-                    customersMessageList.appendChild(itemDiv);
-                });
-            }
-
-            window.toggleEditForm = function(slot) {
-                const form = document.getElementById(`edit-form-${slot}`);
-                if (form) {
-                    form.style.display = form.style.display === 'none' ? 'flex' : 'none';
-                }
-            };
-
-            firebase.database().ref("slot_message_user").on("value", (snapshot) => {
+            // Customer Messages Firebase Listener
+            messagesRef.on("value", (snapshot) => {
                 const data = snapshot.val();
                 console.log('Real-time Customer Messages Data:', data);
                 messagesData = [];
@@ -1502,17 +1541,26 @@
                     }
                     updateCustomersMessage();
                 } else {
-                    customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-color);">No messages available</div>';
+                    document.getElementById('customersMessageList').innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-color);">No messages available</div>';
                 }
             }, (error) => {
                 showError(`Failed to fetch customer messages: ${error.message}`);
             });
 
+            // Prevent Undo/Redo and Navigation
             document.addEventListener('keydown', (event) => {
                 if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
                     event.preventDefault();
-                    event.stopPropagation();
                     console.log('Undo/Redo is disabled');
+                }
+            });
+
+            window.addEventListener('popstate', (event) => {
+                event.preventDefault();
+                if (!localStorage.getItem('currentUser')) {
+                    window.location.replace('/login.html');
+                } else {
+                    history.replaceState(null, null, window.location.href);
                 }
             });
 
@@ -1528,8 +1576,10 @@
 
             document.getElementById('tourCloseBtn').addEventListener('click', endTour);
 
-            // Start the tour
-            startTour();
+            if (localStorage.getItem('tourCompleted') !== 'true') {
+                startTour();
+                localStorage.setItem('tourCompleted', 'true');
+            }
         });
     </script>
 </body>
