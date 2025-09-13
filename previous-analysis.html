@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>BRIN Previous Analysis</title>
+    <title>Previous Analysis - BRIN Parking Management</title>
     <link rel="icon" type="image/x-icon" href="https://github.com/Defdava/Digital-Twin-Website-used/blob/575171d0e9964327d99950733c2b48cea0c59d72/logo-brin.png?raw=true">
     <style>
         :root {
@@ -23,7 +23,6 @@
             color: var(--text-color);
             overflow-x: hidden;
             font-size: 16px;
-            touch-action: manipulation;
         }
 
         video#bg-video {
@@ -67,29 +66,22 @@
             font-weight: bold;
         }
 
-        .header-right {
-            display: flex;
-            align-items: center;
-            margin-left: auto;
-            margin-right: 30px;
-        }
-
         .header-right span {
             font-size: 18px;
         }
 
         .toolbar {
             position: fixed;
-            top: 0;
+            top: 70px;
             left: -400px;
             width: 240px;
-            height: 100vh;
+            height: 100%;
             background-image: var(--header-gradient);
-            padding: 15px 20px;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
             z-index: 999;
             overflow-y: auto;
             transition: left 0.3s ease-in-out;
-            box-sizing: border-box;
         }
 
         .toolbar.active {
@@ -108,7 +100,6 @@
             margin: 0 0 10px;
             font-size: 18px;
             color: var(--text-color);
-            text-align: center;
         }
 
         .toolbar .feature-box button {
@@ -130,10 +121,6 @@
 
         .toolbar .user-info {
             text-align: center;
-            background-color: var(--white-transparent);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
         }
 
         .toolbar .user-info img {
@@ -161,34 +148,17 @@
             margin-left: 260px;
         }
 
-        .overview {
+        .history {
             background-image: var(--primary-gradient);
-            padding: 15px;
+            padding: 20px;
             border-radius: 10px;
             border: 2px solid palevioletred;
-            margin-bottom: 20px;
+            min-height: 150px;
             color: white;
         }
 
-        .overview h1 {
+        .history h2 {
             margin: 0 0 15px;
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            color: white;
-        }
-
-        .history, .customers {
-            background-image: var(--primary-gradient);
-            padding: 15px;
-            border-radius: 10px;
-            border: 2px solid palevioletred;
-            margin-bottom: 20px;
-            color: white;
-        }
-
-        .history h2, .customers h2 {
-            margin: 0 0 10px;
             font-size: 20px;
             font-weight: bold;
             text-align: center;
@@ -198,124 +168,68 @@
         .history-filters {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 12px;
             margin-bottom: 15px;
-            justify-content: space-evenly;
-        }
-
-        .history-filters .filter-item {
-            flex: 1 1 30%;
-            min-width: 120px;
-            max-width: 200px;
-        }
-
-        .history-filters label {
-            display: block;
-            font-size: 14px;
-            color: white;
-            margin-bottom: 5px;
-            font-weight: bold;
+            justify-content: center;
         }
 
         .history-filters input,
         .history-filters select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 6px;
-            font-size: 14px;
-            background-color: var(--white-transparent);
-            color: var(--text-color);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        .history-filters input:focus,
-        .history-filters select:focus {
-            outline: none;
-            border-color: lightseagreen;
-            box-shadow: 0 0 8px rgba(32, 178, 170, 0.5);
-        }
-
-        .history-filters select {
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-        }
-
-        .sort-controls {
-            margin-bottom: 15px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .sort-controls label {
-            font-size: 14px;
-            font-weight: bold;
-            color: white;
-        }
-
-        .sort-controls select {
             padding: 8px;
             font-size: 14px;
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 6px;
             background-color: var(--white-transparent);
             color: var(--text-color);
+            flex: 1;
+            min-width: 120px;
         }
 
-        .sort-controls select option {
-            background-color: white;
-            color: var(--text-color);
-        }
-
-        .sort-controls button {
-            padding: 8px 12px;
-            background-color: lightseagreen;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s;
-        }
-
-        .sort-controls button:hover {
-            background-color: palevioletred;
-        }
-
-        .history-list {
-            max-height: 200px;
+        .history-table-container {
+            max-height: 400px;
             overflow-y: auto;
             border-radius: 8px;
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 10px;
+            background-color: var(--white-transparent);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 10px;
         }
 
-        .history-item, .customer-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+            table-layout: fixed;
+        }
+
+        .history-table th,
+        .history-table td {
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 12px;
+            text-align: center;
             font-size: 14px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            transition: background 0.2s;
-            color: white;
+            color: var(--text-color);
         }
 
-        .history-item:last-child, .customer-item:last-child {
-            border-bottom: none;
+        .history-table th {
+            background-color: var(--white-transparent);
+            color: var(--text-color);
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
-        .history-item:hover, .customer-item:hover {
-            background: rgba(245, 245, 245, 0.7);
+        .history-table td {
+            background-color: transparent;
+        }
+
+        .history-table tbody tr {
+            transition: background-color 0.2s;
+        }
+
+        .history-table tbody tr:hover {
+            background-color: rgba(245, 245, 245, 0.7);
         }
 
         .status.in {
@@ -334,26 +248,90 @@
             background-color: rgba(220, 53, 69, 0.2);
         }
 
-        .customer-item {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 6px;
+        .customers {
+            background-image: var(--primary-gradient);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid palevioletred;
+            min-height: 150px;
+            color: white;
+        }
+
+        .customers h2 {
+            margin: 0 0 15px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            color: white;
+        }
+
+        .sort-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .sort-controls select,
+        .sort-controls button {
+            padding: 8px;
+            font-size: 14px;
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 6px;
-            padding: 15px;
             background-color: var(--white-transparent);
+            color: var(--text-color);
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .sort-controls button {
+            background-color: lightseagreen;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .sort-controls button:hover {
+            background-color: palevioletred;
+        }
+
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 8px;
+            background-color: var(--white-transparent);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+        }
+
+        .customer-item {
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            margin-bottom: 10px;
+            background-color: transparent;
+            transition: background-color 0.2s;
+        }
+
+        .customer-item:hover {
+            background-color: rgba(245, 245, 245, 0.7);
         }
 
         .customer-item strong {
             font-size: 16px;
             font-weight: bold;
             color: var(--text-color);
+            display: block;
+            margin-bottom: 8px;
         }
 
         .customer-item span {
             display: block;
             font-size: 14px;
             color: var(--text-color);
+            margin-bottom: 5px;
         }
 
         .customer-actions {
@@ -362,15 +340,19 @@
             margin-top: 10px;
         }
 
-        .customer-item button.edit-btn {
+        .customer-item button.edit-btn,
+        .customer-item button.delete-btn {
             padding: 8px 12px;
-            background-color: lightseagreen;
-            color: white;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
             transition: background-color 0.3s;
+        }
+
+        .customer-item button.edit-btn {
+            background-color: lightseagreen;
+            color: white;
         }
 
         .customer-item button.edit-btn:hover {
@@ -378,14 +360,8 @@
         }
 
         .customer-item button.delete-btn {
-            padding: 8px 12px;
             background-color: palevioletred;
             color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s;
         }
 
         .customer-item button.delete-btn:hover {
@@ -396,7 +372,6 @@
             display: none;
             flex-direction: column;
             gap: 8px;
-            width: 100%;
             padding: 10px;
             background-color: var(--white-transparent);
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -417,8 +392,6 @@
 
         .edit-form button {
             padding: 8px 12px;
-            background-color: lightseagreen;
-            color: white;
             border: none;
             border-radius: 6px;
             cursor: pointer;
@@ -426,12 +399,18 @@
             margin-top: 5px;
         }
 
-        .edit-form button:hover {
+        .edit-form button.save-btn {
+            background-color: lightseagreen;
+            color: white;
+        }
+
+        .edit-form button.save-btn:hover {
             background-color: palevioletred;
         }
 
         .edit-form button.cancel-btn {
             background-color: palevioletred;
+            color: white;
         }
 
         .edit-form button.cancel-btn:hover {
@@ -544,7 +523,7 @@
         }
 
         .tour-tooltip {
-            position: absolute;
+            position: fixed;
             background-image: var(--primary-gradient);
             border: 2px solid palevioletred;
             border-radius: 8px;
@@ -556,6 +535,8 @@
             pointer-events: auto;
             animation: fadeIn 0.3s ease-in-out;
             z-index: 2001;
+            margin: 20px;
+            box-sizing: border-box;
         }
 
         .tour-tooltip h3 {
@@ -605,7 +586,10 @@
             background-color: #c82333;
         }
 
-        .tour-tooltip:after {
+        .tour-tooltip.right:after,
+        .tour-tooltip.left:after,
+        .tour-tooltip.top:after,
+        .tour-tooltip.bottom:after {
             content: "";
             position: absolute;
             border: 10px solid transparent;
@@ -644,276 +628,65 @@
             transform: translateX(-50%);
         }
 
+        .tour-tooltip.center:after {
+            display: none;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
 
         @media (max-width: 768px) {
-            body {
-                font-size: 9px;
-            }
-
-            header {
-                padding: 4px 6px;
-                position: fixed;
-                width: 100%;
-                z-index: 1000;
-            }
-
-            .logo img {
-                height: 25px;
-            }
-
-            .logo span {
-                font-size: 10px;
-                margin-left: 4px;
-            }
-
-            .header-right span {
-                font-size: 9px;
+            .main-content.with-toolbar {
+                margin-left: 0;
             }
 
             .toolbar {
-                width: 80%;
+                width: 100%;
                 left: -100%;
-                padding: 60px 10px 10px;
-                top: 0;
-                height: 100vh;
-                z-index: 999;
-                box-sizing: border-box;
             }
 
             .toolbar.active {
                 left: 0;
             }
 
-            .toolbar .feature-box {
-                padding: 10px;
-                margin-bottom: 10px;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            }
-
-            .toolbar .feature-box h3 {
-                font-size: 12px;
-                margin-bottom: 8px;
-            }
-
-            .toolbar .feature-box button {
-                padding: 6px;
-                font-size: 10px;
-                border-radius: 5px;
-            }
-
-            .toolbar .user-info {
-                padding: 10px;
-                margin-bottom: 10px;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            }
-
-            .toolbar .user-info img {
-                width: 30px;
-                height: 30px;
-            }
-
-            .toolbar .user-info span {
-                font-size: 10px;
-            }
-
-            .main-content {
-                padding: 49px 6px 6px;
-                overflow-x: auto;
-                transition: margin-left 0.3s ease-in-out;
-            }
-
-            .main-content.with-toolbar {
-                margin-left: 80%;
-            }
-
-            .overview {
-                padding: 2px;
-                min-height: 40px;
-            }
-
-            .overview h1 {
-                font-size: 9px;
-            }
-
-            .history, .customers {
-                padding: 2px;
-                min-height: 40px;
-            }
-
-            .history h2, .customers h2 {
-                font-size: 9px;
-            }
-
             .history-filters {
-                gap: 10px;
                 flex-direction: column;
-                align-items: stretch;
-            }
-
-            .history-filters .filter-item {
-                width: 100%;
-                min-width: 100%;
-                max-width: 100%;
-            }
-
-            .history-filters label {
-                font-size: 9px;
-                margin-bottom: 3px;
-                line-height: 1.5;
-                text-align: left;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
             }
 
             .history-filters input,
             .history-filters select {
-                width: 100%;
-                height: 28px;
-                padding: 6px;
-                font-size: 9px;
-                box-sizing: border-box;
-            }
-
-            .history-filters input:focus,
-            .history-filters select:focus {
-                box-shadow: 0 0 5px rgba(32, 178, 170, 0.5);
+                min-width: 100%;
             }
 
             .sort-controls {
-                gap: 6px;
+                flex-direction: column;
+                align-items: stretch;
             }
 
-            .sort-controls label {
-                font-size: 9px;
-            }
-
-            .sort-controls select {
-                padding: 6px;
-                font-size: 9px;
-                border-radius: 5px;
-            }
-
+            .sort-controls select,
             .sort-controls button {
-                padding: 6px 8px;
-                font-size: 9px;
-                border-radius: 5px;
-            }
-
-            .history-list {
-                max-height: 150px;
-                padding: 5px;
-            }
-
-            .history-item, .customer-item {
-                padding: 6px;
-                font-size: 9px;
-            }
-
-            .status.in, .status.out {
-                padding: 3px 6px;
-                font-size: 9px;
-            }
-
-            .customer-item strong {
-                font-size: 10px;
-            }
-
-            .customer-item span {
-                font-size: 9px;
-            }
-
-            .customer-actions {
-                gap: 6px;
-                margin-top: 6px;
-            }
-
-            .customer-item button.edit-btn,
-            .customer-item button.delete-btn {
-                padding: 6px 8px;
-                font-size: 9px;
-                border-radius: 5px;
-            }
-
-            .edit-form {
-                padding: 6px;
-                gap: 6px;
-                margin-top: 6px;
-            }
-
-            .edit-form input {
-                padding: 6px;
-                font-size: 9px;
-                border-radius: 5px;
-            }
-
-            .edit-form button {
-                padding: 6px 8px;
-                font-size: 9px;
-                border-radius: 5px;
-            }
-
-            .delete-confirmation-box {
-                padding: 10px;
-                max-width: 80%;
-            }
-
-            .delete-confirmation-box h3 {
-                font-size: 12px;
-                margin-bottom: 10px;
-            }
-
-            .delete-confirmation-box p {
-                font-size: 9px;
-                margin-bottom: 10px;
-            }
-
-            .delete-confirmation-box button {
-                padding: 6px 10px;
-                font-size: 9px;
-                border-radius: 5px;
-            }
-
-            #error-message, #success-message {
-                top: 49px;
-                right: 6px;
-                padding: 6px 10px;
-                font-size: 9px;
-                max-width: 70%;
+                min-width: 100%;
             }
 
             .tour-tooltip {
-                max-width: 70%;
-                padding: 3px;
+                max-width: 80%;
+                margin: 10px;
+                font-size: 12px;
             }
 
             .tour-tooltip h3 {
-                font-size: 8px;
+                font-size: 14px;
             }
 
             .tour-tooltip p {
-                font-size: 7px;
+                font-size: 12px;
             }
 
             .tour-tooltip button {
-                padding: 2px 3px;
-                font-size: 7px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .toolbar {
-                width: 85%;
-            }
-
-            .main-content.with-toolbar {
-                margin-left: 85%;
+                font-size: 12px;
+                padding: 6px 10px;
             }
         }
     </style>
@@ -954,62 +727,56 @@
         </div>
     </aside>
     <main class="main-content" id="mainContent">
-        <div class="overview">
-            <h1>Previous Analysis</h1>
-            <div class="history">
-                <h2>Slot History</h2>
-                <div class="history-filters">
-                    <div class="filter-item">
-                        <label for="filter-slot">Slot Number</label>
-                        <input type="text" id="filter-slot" placeholder="e.g., 10">
-                    </div>
-                    <div class="filter-item">
-                        <label for="filter-date">Date</label>
-                        <input type="date" id="filter-date">
-                    </div>
-                    <div class="filter-item">
-                        <label for="filter-status">Status</label>
-                        <select id="filter-status">
-                            <option value="">All Status</option>
-                            <option value="terisi">Terisi</option>
-                            <option value="kosong">Kosong</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="history-table-container">
-                    <table class="history-table" id="slotHistoryTable">
-                        <thead>
-                            <tr>
-                                <th>Slot</th>
-                                <th>Timestamp</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+        <div class="history">
+            <h2>Slot History</h2>
+            <div class="history-filters">
+                <input type="text" id="filter-slot" placeholder="Filter by Slot (e.g. 18)">
+                <input type="date" id="filter-date">
+                <select id="filter-status">
+                    <option value="">All Status</option>
+                    <option value="terisi">Terisi</option>
+                    <option value="kosong">Kosong</option>
+                </select>
             </div>
-            <div class="customers">
-                <h2>Customer Messages</h2>
-                <div class="sort-controls">
-                    <label for="sortBy">Sort by:</label>
-                    <select id="sortBy">
-                        <option value="slot">Slot Number</option>
-                        <option value="date">Date</option>
-                        <option value="user">User</option>
-                        <option value="plate">Plate</option>
-                    </select>
-                    <label for="sortOrder">Order:</label>
-                    <select id="sortOrder">
-                        <option value="asc">Ascending</option>
-                        <option value="desc">Descending</option>
-                    </select>
-                    <button onclick="applySorting()">Apply Sort</button>
-                    <button onclick="resetSorting()">Reset</button>
-                </div>
-                <div id="customersMessageList" class="history-list"></div>
-                <div id="error-message"></div>
-                <div id="success-message"></div>
+            <div class="history-table-container">
+                <table class="history-table" id="slotHistoryTable">
+                    <thead>
+                        <tr>
+                            <th>Slot</th>
+                            <th>Timestamp</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="customers">
+            <h2>Customer Messages</h2>
+            <div class="sort-controls">
+                <select id="sortBy">
+                    <option value="slot">Slot Number</option>
+                    <option value="date">Date</option>
+                    <option value="user">User</option>
+                    <option value="plate">Plate</option>
+                </select>
+                <select id="sortOrder">
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+                <button onclick="applySorting()">Apply Sort</button>
+                <button onclick="resetSorting()">Reset</button>
+            </div>
+            <div id="customersMessageList" class="history-list"></div>
+        </div>
+        <div id="error-message"></div>
+        <div id="success-message"></div>
+        <div id="deleteConfirmation" class="delete-confirmation">
+            <div class="delete-confirmation-box">
+                <h3>Confirm Deletion</h3>
+                <p id="deleteMessage"></p>
+                <button id="confirmDelete" class="confirm-delete">Delete</button>
+                <button id="cancelDelete" class="cancel-delete">Cancel</button>
             </div>
         </div>
         <div class="tour-overlay" id="tourOverlay"></div>
@@ -1022,16 +789,7 @@
             </div>
         </div>
     </main>
-    <div id="deleteConfirmation" class="delete-confirmation">
-        <div class="delete-confirmation-box">
-            <h3>Confirm Deletion</h3>
-            <p id="deleteMessage"></p>
-            <button id="confirmDelete" class="confirm-delete">Delete</button>
-            <button id="cancelDelete" class="cancel-delete">Cancel</button>
-        </div>
-    </div>
     <script>
-        // Authentication System
         class User {
             constructor(username, email, password, idWorker, profilePic = '/assets/user.JPG') {
                 this.username = username;
@@ -1055,8 +813,6 @@
         }
 
         const auth = new AuthSystem();
-
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAef3SJwvVVTunr6CWki79aenfpXlgYc0s",
             authDomain: "digitaltwinparkingbrin.firebaseapp.com",
@@ -1069,7 +825,6 @@
         };
 
         firebase.initializeApp(firebaseConfig);
-        const dbRef = firebase.database().ref("slot_parking");
         const slotHistoryRef = firebase.database().ref("slot_history");
         const messagesRef = firebase.database().ref("slot_message_user");
 
@@ -1078,7 +833,6 @@
         let currentSortBy = 'slot';
         let currentSortOrder = 'asc';
 
-        // Show Error/Success Messages
         function showError(message) {
             const errorElement = document.getElementById('error-message');
             errorElement.textContent = message;
@@ -1095,7 +849,6 @@
             console.log('Success:', message);
         }
 
-        // Parse Date Function
         function parseDate(dateStr) {
             if (!dateStr) return new Date(0);
             if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
@@ -1111,7 +864,6 @@
             return new Date(0);
         }
 
-        // Slot History Update
         function renderHistoryTable() {
             const slotHistoryTable = document.getElementById("slotHistoryTable").getElementsByTagName('tbody')[0];
             slotHistoryTable.innerHTML = "";
@@ -1138,12 +890,11 @@
                 }
             });
 
-            if (!slotHistoryTable.innerHTML) {
-                slotHistoryTable.innerHTML = '<tr><td colspan="3" style="padding: 20px; text-align: center; color: var(--text-color);">No matching slots found</td></tr>';
+            if (slotHistoryTable.rows.length === 0) {
+                showError("No data matches the current filters.");
             }
         }
 
-        // Customer Messages Sorting
         window.applySorting = function() {
             currentSortBy = document.getElementById('sortBy').value;
             currentSortOrder = document.getElementById('sortOrder').value;
@@ -1186,7 +937,6 @@
             });
         }
 
-        // Edit Form
         function showEditForm(slot, message) {
             const formId = `edit-form-${slot}`;
             const existingForm = document.getElementById(formId);
@@ -1210,7 +960,7 @@
                 <input type="text" id="edit-user-${slot}" value="${message.user || ''}" placeholder="User">
                 <input type="date" id="edit-date-${slot}" value="${dateValue}" placeholder="Date">
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button onclick="saveMessage('${slot}')">Save</button>
+                    <button class="save-btn" onclick="saveMessage('${slot}')">Save</button>
                     <button class="cancel-btn" onclick="document.getElementById('${formId}').style.display = 'none'">Cancel</button>
                 </div>
             `;
@@ -1218,7 +968,6 @@
         }
 
         window.saveMessage = function(oldSlot) {
-            console.log('Saving message for old slot:', oldSlot);
             const newSlot = document.getElementById(`edit-slot-${oldSlot}`).value.trim() || oldSlot;
             if (!newSlot.match(/^slot_\d+$/)) {
                 showError('Invalid slot format. Use "slot_X" (e.g., slot_10)');
@@ -1239,7 +988,6 @@
                 user: document.getElementById(`edit-user-${oldSlot}`).value || null,
                 date: dateInput || null
             };
-            console.log('Updated message:', updatedMessage, 'New slot:', newSlot);
 
             messagesRef.child(newSlot).once('value', (snapshot) => {
                 if (snapshot.exists() && newSlot !== oldSlot) {
@@ -1282,7 +1030,6 @@
             });
 
             newCancelButton.addEventListener('click', function() {
-                console.log('Deletion cancelled for slot:', slot);
                 deleteModal.style.display = 'none';
             });
 
@@ -1294,27 +1041,20 @@
         };
 
         function performDelete(slot) {
-            console.log('Attempting to delete slot:', slot);
             messagesRef.child(slot).once('value', (snapshot) => {
                 if (!snapshot.exists()) {
                     showError(`Message for ${slot.replace('_', ' ').toUpperCase()} does not exist in Firebase`);
-                    console.warn(`No message found for slot: ${slot}`);
                     return;
                 }
                 messagesRef.child(slot).remove()
                     .then(() => {
-                        console.log(`Successfully deleted message for slot: ${slot}`);
                         showSuccess(`Message for ${slot.replace('_', ' ').toUpperCase()} deleted successfully`);
                         messagesData = messagesData.filter(item => item.slot !== slot);
                         updateCustomersMessage();
                     })
                     .catch((error) => {
-                        console.error(`Failed to delete message for slot ${slot}:`, error);
                         showError(`Failed to delete message: ${error.message}`);
                     });
-            }).catch((error) => {
-                console.error(`Error checking slot existence: ${error}`);
-                showError(`Error checking slot existence: ${error.message}`);
             });
         }
 
@@ -1323,7 +1063,6 @@
             customersMessageList.innerHTML = '';
             if (!messagesData.length) {
                 customersMessageList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-color);">No messages available</div>';
-                console.log('No messages in messagesData');
                 return;
             }
 
@@ -1359,36 +1098,41 @@
             }
         };
 
-        // Tour Steps Configuration
         const tourSteps = [
             {
                 element: 'header',
-                title: "Petunjuk Website",
-                text: "Klik logo BRIN untuk membuka toolbar samping yang berisi fitur seperti Profile, Log Out, Live Overview, Previous Analysis, Export Data, Helpdesk, dan Parking Analysis.",
+                title: "Website Tutorial",
+                text: "Click the BRIN logo to open the sidebar toolbar, which contains features like Profile, Log Out, Live Overview, Previous Analysis, Export Data, Helpdesk, and Parking Analysis.",
                 position: 'bottom'
             },
             {
                 element: '.history',
-                title: "Slot History",
-                text: "Menampilkan riwayat status slot parkir. Gunakan filter untuk mencari berdasarkan slot, tanggal, atau status (terisi/kosong).",
-                position: 'right'
+                title: "Slot History Section",
+                text: "This section displays the history of parking slot activities, including filters and a data table for slot number, timestamp, and status.",
+                position: 'center'
+            },
+            {
+                element: '.history-filters',
+                title: "History Filters",
+                text: "Use these filters to narrow down the slot history by slot number, date, or status (filled or empty).",
+                position: 'top'
             },
             {
                 element: '.customers',
-                title: "Customer Messages",
-                text: "Menampilkan daftar pesan pelanggan terkait slot parkir, termasuk informasi seperti nomor plat, pengguna, dan catatan parkir.",
-                position: 'left'
+                title: "Customer Messages Section",
+                text: "This section shows customer messages related to parking slots, including details like contact number, plate, and parking notes.",
+                position: 'center'
             },
             {
                 element: '.sort-controls',
                 title: "Sort Controls",
-                text: "Gunakan opsi ini untuk mengurutkan pesan pelanggan berdasarkan nomor slot, tanggal, pengguna, atau nomor plat. Pilih urutan naik atau turun, lalu klik 'Apply Sort'. Gunakan 'Reset' untuk kembali ke pengurutan default.",
+                text: "Sort customer messages by slot number, date, user, or plate. Select ascending or descending order, then click 'Apply Sort'. Use 'Reset' to revert to default sorting.",
                 position: 'top'
             },
             {
                 element: '.customer-item',
-                title: "Edit dan Delete",
-                text: "Setiap pesan pelanggan memiliki tombol 'Edit' untuk mengubah detail dan 'Delete' untuk menghapus pesan. Pastikan untuk menyimpan perubahan setelah mengedit.",
+                title: "Edit and Delete Actions",
+                text: "Each customer message has 'Edit' and 'Delete' buttons to modify or remove the message. Save changes after editing.",
                 position: 'right'
             }
         ];
@@ -1420,30 +1164,41 @@
 
             const rect = targetElement.getBoundingClientRect();
             const tooltipRect = tooltip.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const margin = 20;
             let left, top;
 
-            const isMobile = window.innerWidth <= 768;
-            if (isMobile) {
-                left = (window.innerWidth - tooltipRect.width) / 2;
-                top = rect.bottom + 10;
-                tooltip.className = 'tour-tooltip bottom';
+            if (tourSteps[step].position === 'center') {
+                left = (viewportWidth - tooltipRect.width) / 2;
+                top = (viewportHeight - tooltipRect.height) / 2;
+                left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
+                top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
             } else {
                 switch (tourSteps[step].position) {
                     case 'right':
                         left = rect.right + 10;
                         top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                        left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
+                        top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
                         break;
                     case 'left':
                         left = rect.left - tooltipRect.width - 10;
                         top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+                        left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
+                        top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
                         break;
                     case 'top':
                         left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
                         top = rect.top - tooltipRect.height - 10;
+                        left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
+                        top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
                         break;
                     case 'bottom':
                         left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
                         top = rect.bottom + 10;
+                        left = Math.max(margin, Math.min(left, viewportWidth - tooltipRect.width - margin));
+                        top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
                         break;
                 }
             }
@@ -1461,7 +1216,6 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Authentication
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             const userInfo = document.getElementById('userInfo');
             const userName = document.getElementById('userName');
@@ -1475,27 +1229,19 @@
                 profilePic.src = currentUser.profilePic || '/assets/user.JPG';
             }
 
-            // Logout
             document.querySelector('.logout').addEventListener('click', () => {
                 localStorage.removeItem('currentUser');
                 alert('Berhasil logout!');
                 window.location.replace('/login.html');
             });
 
-            // Toggle Toolbar
             const toggleToolbar = document.getElementById('toggleToolbar');
             const toolbar = document.getElementById('toolbar');
-            const mainContent = document.getElementById('mainContent');
             toggleToolbar.addEventListener('click', () => {
-                const isActive = toolbar.classList.toggle('active');
-                if (window.innerWidth > 768) {
-                    mainContent.classList.toggle('with-toolbar', isActive);
-                } else {
-                    mainContent.classList.toggle('with-toolbar', isActive);
-                }
+                toolbar.classList.toggle('active');
+                document.getElementById('mainContent').classList.toggle('with-toolbar');
             });
 
-            // Slot History Firebase Listener
             slotHistoryRef.on("value", (snapshot) => {
                 const historyData = snapshot.val();
                 slotHistoryData = [];
@@ -1503,6 +1249,7 @@
                 if (!historyData) {
                     console.warn("No slot history data available.");
                     renderHistoryTable();
+                    showError("No slot history data available.");
                     return;
                 }
 
@@ -1526,14 +1273,8 @@
                 showError("Failed to fetch slot history data.");
             });
 
-            document.getElementById('filter-slot').addEventListener('input', renderHistoryTable);
-            document.getElementById('filter-date').addEventListener('change', renderHistoryTable);
-            document.getElementById('filter-status').addEventListener('change', renderHistoryTable);
-
-            // Customer Messages Firebase Listener
             messagesRef.on("value", (snapshot) => {
                 const data = snapshot.val();
-                console.log('Real-time Customer Messages Data:', data);
                 messagesData = [];
                 if (data) {
                     for (const slot in data) {
@@ -1547,7 +1288,21 @@
                 showError(`Failed to fetch customer messages: ${error.message}`);
             });
 
-            // Prevent Undo/Redo and Navigation
+            document.getElementById('filter-slot').addEventListener('input', renderHistoryTable);
+            document.getElementById('filter-date').addEventListener('change', renderHistoryTable);
+            document.getElementById('filter-status').addEventListener('change', renderHistoryTable);
+
+            document.getElementById('tourNextBtn').addEventListener('click', () => {
+                currentTourStep++;
+                if (currentTourStep < tourSteps.length) {
+                    showTooltip(currentTourStep);
+                } else {
+                    endTour();
+                }
+            });
+
+            document.getElementById('tourCloseBtn').addEventListener('click', endTour);
+
             document.addEventListener('keydown', (event) => {
                 if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
                     event.preventDefault();
@@ -1563,18 +1318,6 @@
                     history.replaceState(null, null, window.location.href);
                 }
             });
-
-            // Tour Event Listeners
-            document.getElementById('tourNextBtn').addEventListener('click', () => {
-                currentTourStep++;
-                if (currentTourStep < tourSteps.length) {
-                    showTooltip(currentTourStep);
-                } else {
-                    endTour();
-                }
-            });
-
-            document.getElementById('tourCloseBtn').addEventListener('click', endTour);
 
             if (localStorage.getItem('tourCompleted') !== 'true') {
                 startTour();
