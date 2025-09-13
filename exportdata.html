@@ -292,6 +292,21 @@
             background-color: rgba(220, 53, 69, 0.2);
         }
 
+        .size.small {
+            color: #0000FF;
+            font-weight: bold;
+        }
+
+        .size.medium {
+            color: #FFA500;
+            font-weight: bold;
+        }
+
+        .size.big {
+            color: #FF0000;
+            font-weight: bold;
+        }
+
         #exportBtn {
             background-color: lightseagreen;
             color: white;
@@ -596,6 +611,10 @@
                 font-size: 9px;
             }
 
+            .size.small, .size.medium, .size.big {
+                font-size: 9px;
+            }
+
             #exportBtn {
                 padding: 6px 8px;
                 font-size: 9px;
@@ -800,13 +819,16 @@
                 const row = slotHistoryTable.insertRow();
                 row.insertCell(0).textContent = entry.slot;
                 row.insertCell(1).textContent = entry.timestamp;
-                row.insertCell(2).textContent = entry.status;
-                row.insertCell(3).textContent = entry.size;
+                const statusCell = row.insertCell(2);
+                statusCell.textContent = entry.status;
+                const sizeCell = row.insertCell(3);
+                sizeCell.textContent = entry.size;
+                sizeCell.className = `size ${entry.size}`;
 
                 if (entry.status === 'terisi') {
-                    row.cells[2].className = 'status in';
+                    statusCell.className = 'status in';
                 } else if (entry.status === 'kosong') {
-                    row.cells[2].className = 'status out';
+                    statusCell.className = 'status out';
                 }
             });
 
