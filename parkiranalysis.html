@@ -357,6 +357,10 @@
             transform: translateX(-50%);
         }
 
+        .tour-tooltip.center:after {
+            display: none;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
@@ -507,6 +511,8 @@
             }
         }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
     <video id="bg-video" autoplay muted loop>
@@ -527,12 +533,12 @@
 
     <aside class="toolbar" id="toolbar">
         <div class="feature-box user-info" id="userInfo">
-            <h3>User</h3>
-            <img id="profilePic" src="/assets/user.JPG" alt="User">
-            <span>Welcome Back</span>
+            <h3>Operator</h3>
+            <img id="profilePic" src="/assets/user.JPG" alt="Pengguna">
+            <span>Welcome Back!</span>
             <span id="userName"></span>
-            <button class="profile" onclick="window.location.href='/profile.html'">Profile</button>
-            <button class="logout">Log Out</button>
+            <button class="profile" onclick="window.location.href='/profile.html'">Profil</button>
+            <button class="logout">Logout</button>
         </div>
         <div class="feature-box">
             <h3>Parking Management System</h3>
@@ -548,13 +554,13 @@
         <div class="analysis-panel">
             <h1>Parking Analysis (Messages)</h1>
             <div class="stats">
-                <span>Current Time:</span> <span id="currentTime"></span>
+                <span>Waktu Saat Ini:</span> <span id="currentTime"></span>
             </div>
             <div class="filter-container">
                 <select id="sortFilter" onchange="renderMessages()">
-                    <option value="slot">Sort by Slot</option>
-                    <option value="newest">Sort by Newest</option>
-                    <option value="oldest">Sort by Oldest</option>
+                    <option value="slot">Urutkan berdasarkan Slot</option>
+                    <option value="newest">Urutkan berdasarkan Terbaru</option>
+                    <option value="oldest">Urutkan berdasarkan Terlama</option>
                 </select>
             </div>
             <div class="message-list" id="messageList"></div>
@@ -571,9 +577,43 @@
         </div>
     </main>
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script>
+        class User {
+            constructor(username, email, password, idWorker, profilePic = '/assets/user.JPG') {
+                this.username = username;
+                this.email = email;
+                this.password = password;
+                this.idWorker = idWorker;
+                this.profilePic = profilePic;
+            }
+        }
+
+        class AuthSystem {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('users')) || [];
+            }
+
+            register(username, email, password, idWorker, profilePic) {
+                const userExists = this.users.some(user => user.email === email);
+                if (userExists) {
+                    throw new Error('Pengguna sudah terdaftar!');
+                }
+                const user = new User(username, email, password, idWorker, profilePic);
+                this.users.push(user);
+                localStorage.setItem('users', JSON.stringify(this.users));
+                return user;
+            }
+
+            login(email, password) {
+                const user = this.users.find(u => u.email === email && u.password === password);
+                if (user) {
+                    return user;
+                }
+                throw new Error('Email atau kata sandi salah!');
+            }
+        }
+
+        const auth = new AuthSystem();
         const firebaseConfig = {
             apiKey: "AIzaSyAef3SJwvVVTunr6CWki79aenfpXlgYc0s",
             authDomain: "digitaltwinparkingbrin.firebaseapp.com",
@@ -586,234 +626,3 @@
         };
         firebase.initializeApp(firebaseConfig);
         const dbRef = firebase.database().ref("slot_messages_vr");
-
-        let messagesData = [];
-
-        // Tour Steps Configuration
-        const tourSteps = [
-            {
-                element: 'header',
-                title: "Petunjuk Website",
-                text: "Klik logo BRIN untuk membuka toolbar samping yang berisi fitur seperti Profile, Log Out, Live Overview, Previous Analysis, Export Data, Helpdesk, dan Parking Analysis.",
-                position: 'bottom'
-            },
-            {
-                element: '.analysis-panel',
-                title: "Panel Analisis Parkir",
-                text: "Bagian ini menampilkan analisis pesan parkir, termasuk waktu saat ini dan daftar pesan dari slot parkir yang tersimpan di Firebase.",
-                position: 'right'
-            },
-            {
-                element: '.filter-container',
-                title: "Filter Pesan",
-                text: "Gunakan dropdown ini untuk mengurutkan pesan berdasarkan nomor slot, pesan terbaru, atau pesan tertua.",
-                position: 'top'
-            },
-            {
-                element: '.message-list',
-                title: "Daftar Pesan",
-                text: "Daftar ini menampilkan pesan dari slot parkir, termasuk nomor slot, tanggal, waktu, dan isi pesan.",
-                position: 'right'
-            }
-        ];
-
-        let currentTourStep = 0;
-
-        function startTour() {
-            document.getElementById('tourOverlay').style.display = 'block';
-            showTooltip(currentTourStep);
-        }
-
-        function showTooltip(step) {
-            const tooltip = document.getElementById('tourTooltip');
-            const title = document.getElementById('tooltipTitle');
-            const text = document.getElementById('tooltipText');
-            const nextBtn = document.getElementById('tourNextBtn');
-
-            const targetElement = document.querySelector(tourSteps[step].element);
-            if (!targetElement) {
-                console.error(`Element ${tourSteps[step].element} not found!`);
-                endTour();
-                return;
-            }
-
-            title.textContent = tourSteps[step].title;
-            text.textContent = tourSteps[step].text;
-            tooltip.style.display = 'block';
-            tooltip.className = 'tour-tooltip ' + tourSteps[step].position;
-
-            const rect = targetElement.getBoundingClientRect();
-            const tooltipRect = tooltip.getBoundingClientRect();
-            let left, top;
-
-            const isMobile = window.innerWidth <= 768;
-            if (isMobile) {
-                left = (window.innerWidth - tooltipRect.width) / 2;
-                top = rect.bottom + 10;
-                tooltip.className = 'tour-tooltip bottom';
-            } else {
-                switch (tourSteps[step].position) {
-                    case 'right':
-                        left = rect.right + 10;
-                        top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
-                        break;
-                    case 'left':
-                        left = rect.left - tooltipRect.width - 10;
-                        top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
-                        break;
-                    case 'top':
-                        left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-                        top = rect.top - tooltipRect.height - 10;
-                        break;
-                    case 'bottom':
-                        left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-                        top = rect.bottom + 10;
-                        break;
-                }
-            }
-
-            tooltip.style.left = `${left}px`;
-            tooltip.style.top = `${top}px`;
-
-            nextBtn.textContent = step === tourSteps.length - 1 ? 'Finish' : 'Next';
-        }
-
-        function endTour() {
-            document.getElementById('tourOverlay').style.display = 'none';
-            document.getElementById('tourTooltip').style.display = 'none';
-            currentTourStep = 0;
-        }
-
-        function showError(message) {
-            const errorElement = document.getElementById('error-message');
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
-            setTimeout(() => { errorElement.style.display = 'none'; }, 5000);
-        }
-
-        function updateClock() {
-            const now = new Date();
-            const options = { timeZone: 'Asia/Jakarta', hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: false };
-            document.getElementById('currentTime').textContent = new Intl.DateTimeFormat('en-US', options).format(now) + ' WIB';
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        function renderMessages() {
-            const messageList = document.getElementById('messageList');
-            messageList.innerHTML = "";
-            const sortOption = document.getElementById('sortFilter').value;
-
-            if (!messagesData.length) {
-                messageList.innerHTML = "<div style='font-size: 14px; color: white; text-align: center; padding: 20px;'>No messages available</div>";
-                return;
-            }
-
-            let sortedMessages = [...messagesData];
-            if (sortOption === 'slot') {
-                sortedMessages.sort((a, b) => a.slotKey.localeCompare(b.slotKey));
-            } else if (sortOption === 'newest') {
-                sortedMessages.sort((a, b) => new Date(b.timeKey) - new Date(a.timeKey));
-            } else if (sortOption === 'oldest') {
-                sortedMessages.sort((a, b) => new Date(a.timeKey) - new Date(b.timeKey));
-            }
-
-            sortedMessages.forEach(({ slotKey, timeKey, msgValue }) => {
-                const div = document.createElement("div");
-                div.className = "message-item";
-                const [dateStr, timeStr] = timeKey.split(" ");
-                const [year, month, day] = dateStr.split("-");
-                const tanggalDisplay = `${day}-${month}-${year}`;
-                const jamDisplay = timeStr ? timeStr.slice(0, 5) : 'N/A';
-                div.innerHTML = `
-                    <span><strong>${slotKey.replace('slot_', 'Slot ')}</strong></span>
-                    <span>${tanggalDisplay}</span>
-                    <span>${jamDisplay}</span>
-                    <span>${msgValue}</span>
-                `;
-                messageList.appendChild(div);
-            });
-        }
-
-        dbRef.on("value", (snapshot) => {
-            messagesData = [];
-            const data = snapshot.val();
-            if (data) {
-                Object.entries(data).forEach(([slotKey, messagesObj]) => {
-                    if (typeof messagesObj === 'object') {
-                        Object.entries(messagesObj).forEach(([timeKey, msgValue]) => {
-                            messagesData.push({ slotKey, timeKey, msgValue });
-                        });
-                    }
-                });
-            }
-            renderMessages();
-        }, (error) => {
-            showError(`Failed to fetch messages: ${error.message}`);
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (!currentUser) {
-                alert('Silakan login terlebih dahulu!');
-                window.location.replace('/login.html');
-                return;
-            }
-            document.getElementById('userName').textContent = currentUser.username;
-            document.getElementById('profilePic').src = currentUser.profilePic || '/assets/user.JPG';
-
-            document.querySelector('.logout').addEventListener('click', () => {
-                localStorage.removeItem('currentUser');
-                alert('Berhasil logout!');
-                window.location.replace('/login.html');
-            });
-
-            const toggleToolbar = document.getElementById('toggleToolbar');
-            const toolbar = document.getElementById('toolbar');
-            const mainContent = document.getElementById('mainContent');
-            toggleToolbar.addEventListener('click', () => {
-                const isActive = toolbar.classList.toggle('active');
-                if (window.innerWidth > 768) {
-                    mainContent.classList.toggle('with-toolbar', isActive);
-                } else {
-                    mainContent.classList.toggle('with-toolbar', isActive);
-                }
-            });
-
-            document.addEventListener('keydown', (event) => {
-                if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'y' || event.key === 'Z' || event.key === 'Y')) {
-                    event.preventDefault();
-                    console.log('Fungsi undo/redo dinonaktifkan');
-                }
-            });
-
-            window.addEventListener('popstate', (event) => {
-                event.preventDefault();
-                if (!localStorage.getItem('currentUser')) {
-                    window.location.replace('/login.html');
-                } else {
-                    history.replaceState(null, null, window.location.href);
-                }
-            });
-
-            // Tour Event Listeners
-            document.getElementById('tourNextBtn').addEventListener('click', () => {
-                currentTourStep++;
-                if (currentTourStep < tourSteps.length) {
-                    showTooltip(currentTourStep);
-                } else {
-                    endTour();
-                }
-            });
-
-            document.getElementById('tourCloseBtn').addEventListener('click', endTour);
-
-            // Start the tour
-            if (localStorage.getItem('tourCompleted') !== 'true') {
-                startTour();
-                localStorage.setItem('tourCompleted', 'true');
-            }
-        });
-    </script>
-</body>
-</html>
