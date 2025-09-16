@@ -190,6 +190,21 @@
             text-align: center;
         }
 
+        .guidance-icon {
+            cursor: pointer;
+            font-size: 12px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            padding: 2px 6px;
+            margin-left: 5px;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        .guidance-icon:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
         .stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -870,6 +885,11 @@
                 padding: 2px 3px;
                 font-size: 7px;
             }
+
+            .guidance-icon {
+                font-size: 10px;
+                padding: 2px 4px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -934,7 +954,7 @@
     <main class="main-content" id="mainContent">
         <div class="main-content-grid">
             <div class="overview">
-                <h1>Live Overview</h1>
+                <h1>Live Overview <span class="guidance-icon" data-section="overview">?</span></h1>
                 <div class="stats">
                     <div>
                         <span>Cars</span>
@@ -963,7 +983,7 @@
                 </div>
             </div>
             <div class="history">
-                <h2>Slot History</h2>
+                <h2>Slot History <span class="guidance-icon" data-section="history">?</span></h2>
                 <div class="history-filters">
                     <div class="filter-item">
                         <label for="filterSlot">Slot Number</label>
@@ -997,7 +1017,7 @@
                 </div>
             </div>
             <div class="park-condition">
-                <h2>Park Condition (3D)</h2>
+                <h2>Park Condition (3D) <span class="guidance-icon" data-section="park3d">?</span></h2>
                 <div id="cameraContainer">
                     <div id="threeContainer"></div>
                     <div id="threeError">3D visualization failed to load.</div>
@@ -1014,7 +1034,7 @@
                 </div>
             </div>
             <div class="park-condition-2d">
-                <h2>Park Condition (2D)</h2>
+                <h2>Park Condition (2D) <span class="guidance-icon" data-section="park2d">?</span></h2>
                 <div class="parking-lot">
                     <div class="column top">
                         <div class="slot" data-slot="20"><span>20</span><div class="car"></div></div>
