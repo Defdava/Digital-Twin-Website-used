@@ -80,16 +80,16 @@
 
         .toolbar {
             position: fixed;
-            top: 0;
+            top: 70px;
             left: -400px;
             width: 240px;
-            height: 100vh;
+            height: 100%;
             background-image: var(--header-gradient);
-            padding: 15px 20px;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
             z-index: 999;
             overflow-y: auto;
             transition: left 0.3s ease-in-out;
-            box-sizing: border-box;
         }
 
         .toolbar.active {
@@ -108,7 +108,6 @@
             margin: 0 0 10px;
             font-size: 18px;
             color: var(--text-color);
-            text-align: center;
         }
 
         .toolbar .feature-box button {
@@ -645,11 +644,6 @@
             transform: translateX(-50%);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
         @media (max-width: 768px) {
             body {
                 font-size: 9px;
@@ -676,11 +670,11 @@
             }
 
             .toolbar {
-                width: 80%;
+                width: 100%;
                 left: -100%;
-                padding: 60px 10px 10px;
-                top: 0;
-                height: 100vh;
+                padding: 20px;
+                top: 70px;
+                height: 100%;
                 background-image: var(--header-gradient);
                 z-index: 999;
                 box-sizing: border-box;
@@ -731,7 +725,7 @@
             }
 
             .main-content.with-toolbar {
-                margin-left: 80%;
+                margin-left: 0;
             }
 
             .main-content-grid {
@@ -878,11 +872,11 @@
             }
 
             .toolbar {
-                width: 85%;
+                width: 100%;
             }
 
             .main-content.with-toolbar {
-                margin-left: 85%;
+                margin-left: 0;
             }
         }
     </style>
@@ -1582,11 +1576,7 @@
             const mainContent = document.getElementById('mainContent');
             toggleToolbar.addEventListener('click', () => {
                 const isActive = toolbar.classList.toggle('active');
-                if (window.innerWidth > 768) {
-                    mainContent.classList.toggle('with-toolbar', isActive);
-                } else {
-                    mainContent.classList.toggle('with-toolbar', isActive);
-                }
+                mainContent.classList.toggle('with-toolbar', isActive);
             });
 
             // Real-time Clock
