@@ -80,10 +80,10 @@
 
         .toolbar {
             position: fixed;
-            top: 0;
-            left: -400px;
+            top: 70px;
+            left: -240px;
             width: 240px;
-            height: 100vh;
+            height: calc(100vh - 70px);
             background-image: var(--header-gradient);
             padding: 15px 20px;
             z-index: 999;
@@ -188,6 +188,21 @@
             color: white;
             font-size: 20px;
             text-align: center;
+        }
+
+        .guidance-icon {
+            cursor: pointer;
+            font-size: 12px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            padding: 2px 6px;
+            margin-left: 5px;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        .guidance-icon:hover {
+            background-color: rgba(255, 255, 255, 0.5);
         }
 
         .stats {
@@ -546,8 +561,8 @@
 
         .tour-tooltip {
             position: absolute;
-            background-image: var(--primary-gradient);
-            border: 2px solid palevioletred;
+            background-color: lightgrey;
+            border: 2px solid #dc3545;
             border-radius: 8px;
             padding: 15px;
             max-width: 300px;
@@ -560,15 +575,14 @@
         }
 
         .tour-tooltip h3 {
-            color: var(--white-transparent);
+            color: #007bff;
             font-size: 16px;
             margin-bottom: 10px;
-            font-weight: bold;
         }
 
         .tour-tooltip p {
-            font-size: 14px;
-            color: var(--white-transparent);
+            font-size: 13px;
+            color: #555;
             margin-bottom: 15px;
             line-height: 1.5;
         }
@@ -582,23 +596,23 @@
         .tour-tooltip button {
             padding: 8px 12px;
             border: none;
-            border-radius: 6px;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             transition: background-color 0.3s;
         }
 
         .tour-tooltip .next-btn {
-            background-color: lightseagreen;
+            background-color: #007bff;
             color: white;
         }
 
         .tour-tooltip .next-btn:hover {
-            background-color: palevioletred;
+            background-color: #0056b3;
         }
 
         .tour-tooltip .close-btn {
-            background-color: palevioletred;
+            background-color: #dc3545;
             color: white;
         }
 
@@ -614,7 +628,7 @@
         }
 
         .tour-tooltip.right:after {
-            border-right-color: palevioletred;
+            border-right-color: lightgrey;
             border-right-width: 10px;
             left: -20px;
             top: 50%;
@@ -622,7 +636,7 @@
         }
 
         .tour-tooltip.left:after {
-            border-left-color: palevioletred;
+            border-left-color: lightgrey;
             border-left-width: 10px;
             right: -20px;
             top: 50%;
@@ -630,7 +644,7 @@
         }
 
         .tour-tooltip.top:after {
-            border-top-color: palevioletred;
+            border-top-color: lightgrey;
             border-top-width: 10px;
             bottom: -20px;
             left: 50%;
@@ -638,7 +652,7 @@
         }
 
         .tour-tooltip.bottom:after {
-            border-bottom-color: palevioletred;
+            border-bottom-color: lightgrey;
             border-bottom-width: 10px;
             top: -20px;
             left: 50%;
@@ -671,17 +685,27 @@
                 margin-left: 4px;
             }
 
+            .header-right {
+                margin-left: 5px;
+                margin-right: 5px;
+                gap: 5px;
+            }
+
             .header-right span {
                 font-size: 9px;
             }
 
+            #guidanceBtn {
+                padding: 3px 5px;
+                font-size: 7px;
+            }
+
             .toolbar {
-                width: 80%;
+                width: 100%;
                 left: -100%;
-                padding: 60px 10px 10px;
-                top: 0;
-                height: 100vh;
-                background-image: var(--header-gradient);
+                padding: 20px;
+                top: 70px;
+                height: calc(100vh - 70px);
                 z-index: 999;
                 box-sizing: border-box;
             }
@@ -731,7 +755,7 @@
             }
 
             .main-content.with-toolbar {
-                margin-left: 80%;
+                margin-left: 0;
             }
 
             .main-content-grid {
@@ -860,6 +884,11 @@
                 padding: 2px 3px;
                 font-size: 7px;
             }
+
+            .guidance-icon {
+                font-size: 10px;
+                padding: 2px 4px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -878,11 +907,11 @@
             }
 
             .toolbar {
-                width: 85%;
+                width: 100%;
             }
 
             .main-content.with-toolbar {
-                margin-left: 85%;
+                margin-left: 0;
             }
         }
     </style>
@@ -900,6 +929,7 @@
         </div>
         <div class="header-right">
             <span>Parking Management System</span>
+            <button id="guidanceBtn">Guidance</button>
         </div>
     </header>
     <aside class="toolbar" id="toolbar">
@@ -923,7 +953,7 @@
     <main class="main-content" id="mainContent">
         <div class="main-content-grid">
             <div class="overview">
-                <h1>Live Overview</h1>
+                <h1>Live Overview <span class="guidance-icon" data-section="overview">?</span></h1>
                 <div class="stats">
                     <div>
                         <span>Cars</span>
@@ -952,7 +982,7 @@
                 </div>
             </div>
             <div class="history">
-                <h2>Slot History</h2>
+                <h2>Slot History <span class="guidance-icon" data-section="history">?</span></h2>
                 <div class="history-filters">
                     <div class="filter-item">
                         <label for="filterSlot">Slot Number</label>
@@ -986,7 +1016,7 @@
                 </div>
             </div>
             <div class="park-condition">
-                <h2>Park Condition (3D)</h2>
+                <h2>Park Condition (3D) <span class="guidance-icon" data-section="park3d">?</span></h2>
                 <div id="cameraContainer">
                     <div id="threeContainer"></div>
                     <div id="threeError">3D visualization failed to load.</div>
@@ -1003,7 +1033,7 @@
                 </div>
             </div>
             <div class="park-condition-2d">
-                <h2>Park Condition (2D)</h2>
+                <h2>Park Condition (2D) <span class="guidance-icon" data-section="park2d">?</span></h2>
                 <div class="parking-lot">
                     <div class="column top">
                         <div class="slot" data-slot="20"><span>20</span><div class="car"></div></div>
@@ -1458,7 +1488,7 @@
             {
                 element: 'header',
                 title: "Petunjuk Website",
-                text: "Klik logo BRIN untuk membuka toolbar samping yang berisi fitur seperti Profile, Log Out, Live Overview, Previous Analysis, Export Data, Helpdesk, dan Parking Analysis.",
+                text: "Klik logo BRIN untuk membuka toolbar samping yang berisi fitur seperti Profile, Log Out, Live Overview, Previous Analysis, Export Data, 3D Viewer VR, Helpdesk, dan Parking Analysis.",
                 position: 'bottom'
             },
             {
@@ -1476,7 +1506,7 @@
             {
                 element: '.park-condition',
                 title: "Park Condition (3D)",
-                text: "Visualisasi 3D area parkir. Gunakan tombol 'Click to Expand' atau 'Full Screen' untuk melihat model interaktif. Pada perangkat seluler, gunakan satu jari untuk memutar, dua jari untuk menggeser, atau cubit untuk zoom. Warna mobil: biru (kecil), kuning (sedang), merah (besar), abu-abu (kosong).",
+                text: "Visualisasi 3D area parkir. Klik 'Click to Expand' untuk melihat model interaktif. Gunakan kontrol kamera untuk navigasi. Warna mobil: biru (kecil), kuning (sedang), merah (besar), abu-abu (kosong).",
                 position: 'right'
             },
             {
@@ -1926,10 +1956,23 @@
 
             document.getElementById('tourCloseBtn').addEventListener('click', endTour);
 
+            document.getElementById('guidanceBtn').addEventListener('click', startTour);
+
             if (localStorage.getItem('tourCompleted') !== 'true') {
                 startTour();
                 localStorage.setItem('tourCompleted', 'true');
             }
+
+            // Guidance Icon Event Listeners
+            document.querySelectorAll('.guidance-icon').forEach(icon => {
+                icon.addEventListener('click', () => {
+                    const section = icon.getAttribute('data-section');
+                    currentTourStep = tourSteps.findIndex(step => step.element.includes(section));
+                    if (currentTourStep !== -1) {
+                        startTour();
+                    }
+                });
+            });
         });
 
         // Handle Page Refresh
