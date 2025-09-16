@@ -168,7 +168,7 @@
             margin-bottom: 20px;
         }
 
-        .overview, .history, .park-condition, .park-condition-2d, .guidance-section {
+        .overview, .history, .park-condition, .park-condition-2d {
             background-image: var(--primary-gradient);
             padding: 15px;
             border-radius: 10px;
@@ -183,24 +183,11 @@
             min-height: 180px;
         }
 
-        .overview h1, .history h2, .park-condition h2, .park-condition-2d h2, .guidance-section h2 {
+        .overview h1, .history h2, .park-condition h2, .park-condition-2d h2 {
             margin: 0 0 15px;
             color: white;
             font-size: 20px;
             text-align: center;
-        }
-
-        .guidance-section ul {
-            margin: 0;
-            padding: 0 20px;
-            list-style-type: disc;
-            font-size: 14px;
-            line-height: 1.6;
-            color: var(--white-transparent);
-        }
-
-        .guidance-section li {
-            margin-bottom: 10px;
         }
 
         .stats {
@@ -592,15 +579,6 @@
             gap: 10px;
         }
 
-        .tour-tooltip button {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s;
-        }
-
         .tour-tooltip .next-btn {
             background-color: lightseagreen;
             color: white;
@@ -617,6 +595,15 @@
 
         .tour-tooltip .close-btn:hover {
             background-color: #c82333;
+        }
+
+        .tour-tooltip button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
         }
 
         .tour-tooltip:after {
@@ -687,10 +674,16 @@
             .header-right {
                 margin-left: 5px;
                 margin-right: 5px;
+                gap: 5px;
             }
 
             .header-right span {
                 font-size: 9px;
+            }
+
+            #guidanceBtn {
+                padding: 3px 5px;
+                font-size: 7px;
             }
 
             .toolbar {
@@ -757,23 +750,13 @@
                 min-width: 800px;
             }
 
-            .overview, .history, .park-condition, .park-condition-2d, .guidance-section {
+            .overview, .history, .park-condition, .park-condition-2d {
                 padding: 2px;
                 min-height: 40px;
             }
 
-            .overview h1, .history h2, .park-condition h2, .park-condition-2d h2, .guidance-section h2 {
+            .overview h1, .history h2, .park-condition h2, .park-condition-2d h2 {
                 font-size: 9px;
-            }
-
-            .guidance-section ul {
-                padding: 0 10px;
-                font-size: 8px;
-                line-height: 1.4;
-            }
-
-            .guidance-section li {
-                margin-bottom: 6px;
             }
 
             .stats {
@@ -927,6 +910,7 @@
         </div>
         <div class="header-right">
             <span>Parking Management System</span>
+            <button id="guidanceBtn">Guidance</button>
         </div>
     </header>
     <aside class="toolbar" id="toolbar">
@@ -1057,17 +1041,6 @@
                         <div class="slot" data-slot="1"><span>1</span><div class="car"></div></div>
                     </div>
                 </div>
-            </div>
-            <div class="guidance-section">
-                <h2>Petunjuk Penggunaan</h2>
-                <ul>
-                    <li>Klik logo BRIN di header untuk membuka toolbar samping yang berisi navigasi ke fitur seperti Profile, Log Out, Live Overview, Previous Analysis, Export Data, Helpdesk, dan Parking Analysis.</li>
-                    <li>Gunakan panel <strong>Live Overview</strong> untuk melihat statistik real-time, seperti jumlah slot terisi, kosong, waktu saat ini, pelanggan loyal, serta total mobil masuk dan keluar hari ini.</li>
-                    <li>Di panel <strong>Slot History</strong>, filter riwayat parkir berdasarkan nomor slot, tanggal, atau status (terisi/kosong) menggunakan input yang disediakan.</li>
-                    <li>Visualisasi <strong>Park Condition (3D)</strong> menampilkan model 3D area parkir. Klik "Click to Expand" untuk melihatnya, atau "Full Screen" untuk tampilan layar penuh. Gunakan tombol "Reset View", "Top View", atau "Side View" untuk mengatur sudut pandang. Pada perangkat seluler, gunakan satu jari untuk memutar, dua jari untuk menggeser, atau cubit untuk zoom. Warna mobil: biru (kecil), kuning (sedang), merah (besar), abu-abu (kosong).</li>
-                    <li>Panel <strong>Park Condition (2D)</strong> menunjukkan peta 2D slot parkir. Slot kuning menandakan terisi, abu-abu menandakan kosong. Warna mobil sesuai dengan ukuran dari Firebase.</li>
-                    <li>Jika pertama kali mengakses halaman ini, tur panduan akan otomatis muncul untuk menjelaskan fitur-fitur utama.</li>
-                </ul>
             </div>
         </div>
         <div class="tour-overlay" id="tourOverlay"></div>
@@ -1522,12 +1495,6 @@
                 title: "Park Condition (2D)",
                 text: "Menampilkan peta 2D slot parkir. Slot kuning menandakan terisi, abu-abu menandakan kosong. Warna mobil sesuai ukuran dari Firebase.",
                 position: 'left'
-            },
-            {
-                element: '.guidance-section',
-                title: "Petunjuk Penggunaan",
-                text: "Bagian ini berisi panduan langkah demi langkah untuk menggunakan semua fitur di halaman Live Overview.",
-                position: 'right'
             }
         ];
 
