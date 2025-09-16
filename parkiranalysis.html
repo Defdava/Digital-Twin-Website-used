@@ -68,21 +68,22 @@
         }
 
         .header-right {
-        display: flex;
-        align-items: center;
-        margin-left: 10px; /* Adjusted to move the text to the left */
-        margin-right: 10px; /* Reduced margin to prevent overflow */
+            display: flex;
+            align-items: center;
+            margin-left: 10px;
+            margin-right: 10px;
         }
+
         .header-right span {
             font-size: 18px;
         }
 
         .toolbar {
             position: fixed;
-            top: 0;
-            left: -400px;
+            top: 70px;
+            left: -240px;
             width: 240px;
-            height: 100vh;
+            height: calc(100vh - 70px);
             background-image: var(--header-gradient);
             padding: 15px 20px;
             z-index: 999;
@@ -381,20 +382,22 @@
                 font-size: 10px;
                 margin-left: 4px;
             }
+
             .header-right {
-            margin-left: 5px; /* Smaller margin for mobile */
-            margin-right: 5px;
+                margin-left: 5px;
+                margin-right: 5px;
             }
 
             .header-right span {
-            font-size: 9px; /* Already in your code, keeps text readable */
+                font-size: 9px;
             }
+
             .toolbar {
-                width: 80%;
+                width: 100%;
                 left: -100%;
-                padding: 60px 10px 10px;
-                top: 0;
-                height: 100vh;
+                padding: 20px;
+                top: 70px;
+                height: calc(100vh - 70px);
                 z-index: 999;
                 box-sizing: border-box;
             }
@@ -444,7 +447,7 @@
             }
 
             .main-content.with-toolbar {
-                margin-left: 80%;
+                margin-left: 0;
             }
 
             .analysis-panel h1 {
@@ -501,11 +504,11 @@
 
         @media (max-width: 480px) {
             .toolbar {
-                width: 85%;
+                width: 100%;
             }
 
             .main-content.with-toolbar {
-                margin-left: 85%;
+                margin-left: 0;
             }
         }
     </style>
