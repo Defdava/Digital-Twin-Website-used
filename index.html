@@ -80,10 +80,10 @@
 
         .toolbar {
             position: fixed;
-            top: 70px;
-            left: -240px;
+            top: 0;
+            left: -400px;
             width: 240px;
-            height: calc(100vh - 70px);
+            height: 100vh;
             background-image: var(--header-gradient);
             padding: 15px 20px;
             z-index: 999;
@@ -188,21 +188,6 @@
             color: white;
             font-size: 20px;
             text-align: center;
-        }
-
-        .guidance-icon {
-            cursor: pointer;
-            font-size: 12px;
-            background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            padding: 2px 6px;
-            margin-left: 5px;
-            color: white;
-            transition: background-color 0.3s;
-        }
-
-        .guidance-icon:hover {
-            background-color: rgba(255, 255, 255, 0.5);
         }
 
         .stats {
@@ -594,6 +579,15 @@
             gap: 10px;
         }
 
+        .tour-tooltip button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
         .tour-tooltip .next-btn {
             background-color: lightseagreen;
             color: white;
@@ -610,15 +604,6 @@
 
         .tour-tooltip .close-btn:hover {
             background-color: #c82333;
-        }
-
-        .tour-tooltip button {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s;
         }
 
         .tour-tooltip:after {
@@ -686,27 +671,17 @@
                 margin-left: 4px;
             }
 
-            .header-right {
-                margin-left: 5px;
-                margin-right: 5px;
-                gap: 5px;
-            }
-
             .header-right span {
                 font-size: 9px;
             }
 
-            #guidanceBtn {
-                padding: 3px 5px;
-                font-size: 7px;
-            }
-
             .toolbar {
-                width: 100%;
+                width: 80%;
                 left: -100%;
-                padding: 20px;
-                top: 70px;
-                height: calc(100vh - 70px);
+                padding: 60px 10px 10px;
+                top: 0;
+                height: 100vh;
+                background-image: var(--header-gradient);
                 z-index: 999;
                 box-sizing: border-box;
             }
@@ -756,7 +731,7 @@
             }
 
             .main-content.with-toolbar {
-                margin-left: 0;
+                margin-left: 80%;
             }
 
             .main-content-grid {
@@ -885,11 +860,6 @@
                 padding: 2px 3px;
                 font-size: 7px;
             }
-
-            .guidance-icon {
-                font-size: 10px;
-                padding: 2px 4px;
-            }
         }
 
         @media (max-width: 480px) {
@@ -908,11 +878,11 @@
             }
 
             .toolbar {
-                width: 100%;
+                width: 85%;
             }
 
             .main-content.with-toolbar {
-                margin-left: 0;
+                margin-left: 85%;
             }
         }
     </style>
@@ -930,7 +900,6 @@
         </div>
         <div class="header-right">
             <span>Parking Management System</span>
-            <button id="guidanceBtn">Guidance</button>
         </div>
     </header>
     <aside class="toolbar" id="toolbar">
@@ -954,7 +923,7 @@
     <main class="main-content" id="mainContent">
         <div class="main-content-grid">
             <div class="overview">
-                <h1>Live Overview <span class="guidance-icon" data-section="overview">?</span></h1>
+                <h1>Live Overview</h1>
                 <div class="stats">
                     <div>
                         <span>Cars</span>
@@ -983,7 +952,7 @@
                 </div>
             </div>
             <div class="history">
-                <h2>Slot History <span class="guidance-icon" data-section="history">?</span></h2>
+                <h2>Slot History</h2>
                 <div class="history-filters">
                     <div class="filter-item">
                         <label for="filterSlot">Slot Number</label>
@@ -1017,7 +986,7 @@
                 </div>
             </div>
             <div class="park-condition">
-                <h2>Park Condition (3D) <span class="guidance-icon" data-section="park3d">?</span></h2>
+                <h2>Park Condition (3D)</h2>
                 <div id="cameraContainer">
                     <div id="threeContainer"></div>
                     <div id="threeError">3D visualization failed to load.</div>
@@ -1034,7 +1003,7 @@
                 </div>
             </div>
             <div class="park-condition-2d">
-                <h2>Park Condition (2D) <span class="guidance-icon" data-section="park2d">?</span></h2>
+                <h2>Park Condition (2D)</h2>
                 <div class="parking-lot">
                     <div class="column top">
                         <div class="slot" data-slot="20"><span>20</span><div class="car"></div></div>
