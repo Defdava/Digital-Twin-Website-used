@@ -1326,10 +1326,8 @@
                 }
             });
 
-            if (localStorage.getItem('tourCompleted') !== 'true') {
-                startTour();
-                localStorage.setItem('tourCompleted', 'true');
-            }
+            // Mulai tur secara otomatis saat halaman dimuat
+            startTour();
         });
     </script>
 </body>

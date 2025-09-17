@@ -1078,11 +1078,8 @@
                 }
             });
 
-            // Start Tour
-            if (localStorage.getItem('tourCompleted') !== 'true') {
-                startTour();
-                localStorage.setItem('tourCompleted', 'true');
-            }
+            // Start Tour automatically on page load
+            startTour();
         });
     </script>
 </body>

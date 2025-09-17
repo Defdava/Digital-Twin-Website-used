@@ -813,11 +813,8 @@
 
             document.getElementById('tourCloseBtn').addEventListener('click', endTour);
 
-            // Start the tour
-            if (localStorage.getItem('tourCompleted') !== 'true') {
-                startTour();
-                localStorage.setItem('tourCompleted', 'true');
-            }
+            // Start the tour automatically on page load
+            startTour();
         });
     </script>
 </body>
